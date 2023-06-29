@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        classpath 'io.bitrise.gradle:remote-cache:1.2.0'
+    }
+}
+
 plugins {
     id("de.fayard.refreshVersions") version "0.40.2"
 }
@@ -40,6 +51,9 @@ rootProject.children.each { subproject ->
 }
 
 
+import io.bitrise.gradle.cache.BitriseBuildCache
+import io.bitrise.gradle.cache.BitriseBuildCacheServiceFactory
+
 buildCache {
 
     def getFile = { dir, filename ->
@@ -58,15 +72,29 @@ buildCache {
         return properties
     }
 
+//    local {
+//        def properties = getLocalProperties(rootDir)
+//        if (properties != null) {
+//            enabled = "true" == properties.getProperty("local.build.cache", "true")
+//        } else {
+//            enabled = true
+//        }
+//        // configure local build cache directory so that it is local to the project dir
+//        directory = new File(rootDir, 'build-cache')
+//        removeUnusedEntriesAfterDays = 7
+//    }
+
+
     local {
-        def properties = getLocalProperties(rootDir)
-        if (properties != null) {
-            enabled = "true" == properties.getProperty("local.build.cache", "true")
-        } else {
-            enabled = true
-        }
-        // configure local build cache directory so that it is local to the project dir
-        directory = new File(rootDir, 'build-cache')
-        removeUnusedEntriesAfterDays = 7
+        enabled = false
+    }
+    registerBuildCacheService(BitriseBuildCache.class, BitriseBuildCacheServiceFactory.class)
+    remote(BitriseBuildCache.class) {
+        enabled = true
+        push = false // read-only is recommended for local builds
+
+        def localProperties = new Properties()
+        file('local.properties').withInputStream { localProperties.load(it) }
+        authToken = '052bdce4382c5706' + ':'+ localProperties.getProperty('io.bitrise.gradle.remoteCache.authToken', '')
     }
 }

@@ -1,0 +1,22 @@
+gradle.settingsEvaluated { settings ->
+
+    def localProperties = new Properties()
+    file('local.properties').withInputStream { localProperties.load(it) }
+
+
+    settings.buildCache {
+        local {
+            enabled = false
+        }
+
+        remote(HttpBuildCache) {
+            url = "https://edge-cache.services.bitrise.io/cache/a30582d0b5311216/"
+            credentials {
+                username = "bitrise"
+                password = localProperties.getProperty('io.bitrise.gradle.remoteCache.authToken', '')
+            }
+            push = true//false
+            enabled = true
+        }
+    }
+}

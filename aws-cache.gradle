@@ -1,0 +1,18 @@
+gradle.settingsEvaluated { settings ->
+    settings.buildCache {
+        local {
+            enabled = false
+        }
+
+        remote(HttpBuildCache) {
+            url = "https://34.223.110.61/cache/"
+            credentials {
+                username = "ben"
+                password = "thisbenmy^1"
+            }
+            push = true//false
+            enabled = true
+            allowUntrustedServer = true
+        }
+    }
+}
