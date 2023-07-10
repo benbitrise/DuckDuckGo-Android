@@ -91,8 +91,7 @@ buildCache {
     registerBuildCacheService(BitriseBuildCache.class, BitriseBuildCacheServiceFactory.class)
     remote(BitriseBuildCache.class) {
         enabled = true
-        push = false // read-only is recommended for local builds
-
+        push = "$System.env.CI" == true
         def localProperties = new Properties()
         file('local.properties').withInputStream { localProperties.load(it) }
         authToken = '052bdce4382c5706' + ':'+ localProperties.getProperty('io.bitrise.gradle.remoteCache.authToken', '')
