@@ -96,4 +96,7 @@ buildCache {
         file('local.properties').withInputStream { localProperties.load(it) }
         authToken = '052bdce4382c5706' + ':'+ localProperties.getProperty('io.bitrise.gradle.remoteCache.authToken', '')
     }
+    println("CI")
+    println("$System.env.CI")
+    println("$System.env.CI" == true)
 }
