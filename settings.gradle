@@ -50,7 +50,6 @@ rootProject.children.each { subproject ->
     }
 }
 
-
 import io.bitrise.gradle.cache.BitriseBuildCache
 import io.bitrise.gradle.cache.BitriseBuildCacheServiceFactory
 
@@ -72,31 +71,16 @@ buildCache {
         return properties
     }
 
-//    local {
-//        def properties = getLocalProperties(rootDir)
-//        if (properties != null) {
-//            enabled = "true" == properties.getProperty("local.build.cache", "true")
-//        } else {
-//            enabled = true
-//        }
-//        // configure local build cache directory so that it is local to the project dir
-//        directory = new File(rootDir, 'build-cache')
-//        removeUnusedEntriesAfterDays = 7
-//    }
-
-
     local {
         enabled = false
     }
+
     registerBuildCacheService(BitriseBuildCache.class, BitriseBuildCacheServiceFactory.class)
     remote(BitriseBuildCache.class) {
         enabled = true
-        push = "$System.env.CI" == true
+        push = false
         def localProperties = new Properties()
         file('local.properties').withInputStream { localProperties.load(it) }
         authToken = '052bdce4382c5706' + ':'+ localProperties.getProperty('io.bitrise.gradle.remoteCache.authToken', '')
     }
-    println("CI")
-    println("$System.env.CI")
-    println("$System.env.CI" == true)
 }
