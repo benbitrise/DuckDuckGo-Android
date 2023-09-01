@@ -26,11 +26,13 @@ import com.duckduckgo.mobile.android.vpn.AppTpVpnFeature
 import com.duckduckgo.mobile.android.vpn.apps.TrackingProtectionAppsRepository
 import com.duckduckgo.mobile.android.vpn.network.VpnNetworkStack
 import com.duckduckgo.mobile.android.vpn.network.VpnNetworkStack.VpnTunnelConfig
+import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor.VpnStopReason
 import com.duckduckgo.vpn.network.api.*
 import com.squareup.anvil.annotations.ContributesBinding
 import com.squareup.anvil.annotations.ContributesMultibinding
 import dagger.Lazy
 import dagger.SingleInstanceIn
+import java.lang.IllegalStateException
 import java.net.InetAddress
 import javax.inject.Inject
 import logcat.LogPriority
@@ -98,16 +100,21 @@ class NgVpnNetworkStack @Inject constructor(
         return startNative(tunfd.fd)
     }
 
-    override fun onStopVpn(): Result<Unit> {
+    override fun onStopVpn(reason: VpnStopReason): Result<Unit> {
         return stopNative()
     }
 
     override fun onDestroyVpn(): Result<Unit> {
         val vpnNetwork = vpnNetwork.safeGet().getOrElse { return Result.failure(it) }
 
-        synchronized(jniLock) {
-            vpnNetwork.destroy(jniContext)
-            jniContext = 0
+        if (jniContext != 0L) {
+            synchronized(jniLock) {
+                vpnNetwork.destroy(jniContext)
+                jniContext = 0
+                logcat { "VPN network destroyed" }
+            }
+        } else {
+            logcat { "VPN network already destroyed...noop" }
         }
         vpnNetwork.addCallback(null)
 
@@ -150,10 +157,8 @@ class NgVpnNetworkStack @Inject constructor(
     }
 
     override fun isAddressBlocked(addressRR: AddressRR): Boolean {
-        val hostname = addressLookupLruCache[addressRR.address] ?: return false
-        val domainAllowed = shouldAllowDomain(hostname, addressRR.uid)
-        logcat { "isAddressBlocked for $addressRR ($hostname) = ${!domainAllowed}" }
-        return !domainAllowed
+        // never blocked based on address because the different domains can point to the same IP address
+        return false
     }
 
     private fun shouldAllowDomain(
@@ -167,6 +172,11 @@ class NgVpnNetworkStack @Inject constructor(
     }
 
     private fun startNative(tunfd: Int): Result<Unit> {
+        if (jniContext == 0L) {
+            logcat(LogPriority.ERROR) { "Trying to start VPN Network without previously creating it" }
+            return Result.failure(IllegalStateException("Trying to start VPN Network without previously creating it"))
+        }
+
         val vpnNetwork = vpnNetwork.safeGet().getOrElse { return Result.failure(it) }
         if (tunnelThread == null) {
             logcat { "Start native runtime" }
@@ -193,7 +203,11 @@ class NgVpnNetworkStack @Inject constructor(
         tunnelThread?.let {
             logcat { "Stopping tunnel thread" }
 
-            vpnNetwork.stop(jniContext)
+            // In this case we don't check for jniContext == 0 and rather runCatching because we want to make sure we stop the tunnelThread
+            // if the jniContext is invalid the stop() call should fail, we log and continue
+            runCatching { vpnNetwork.stop(jniContext) }.onFailure {
+                logcat(LogPriority.ERROR) { "Error stopping the VPN network ${it.asLog()}" }
+            }
 
             var thread = tunnelThread
             while (thread != null && thread.isAlive) {

@@ -18,7 +18,6 @@ package com.duckduckgo.mobile.android.vpn.ui.tracker_activity
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,14 +31,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.duckduckgo.app.global.DispatcherProvider
 import com.duckduckgo.app.global.extensions.safeGetApplicationIcon
-import com.duckduckgo.mobile.android.ui.TextDrawable
 import com.duckduckgo.mobile.android.ui.recyclerviewext.StickyHeaders
+import com.duckduckgo.mobile.android.ui.view.divider.HorizontalDivider
 import com.duckduckgo.mobile.android.ui.view.gone
-import com.duckduckgo.mobile.android.ui.view.hide
+import com.duckduckgo.mobile.android.ui.view.listitem.SectionHeaderListItem
 import com.duckduckgo.mobile.android.ui.view.show
 import com.duckduckgo.mobile.android.vpn.R
+import com.duckduckgo.mobile.android.vpn.ui.tracker_activity.model.TrackerCompanyBadge
 import com.duckduckgo.mobile.android.vpn.ui.tracker_activity.model.TrackerFeedItem
 import com.duckduckgo.mobile.android.vpn.ui.tracker_activity.view.AppsProtectionStateView
+import com.duckduckgo.mobile.android.vpn.ui.util.TextDrawable
 import com.facebook.shimmer.ShimmerFrameLayout
 import javax.inject.Inject
 import kotlinx.coroutines.withContext
@@ -56,12 +57,7 @@ class TrackerFeedAdapter @Inject constructor(
         position: Int,
     ) {
         when (holder) {
-            is TrackerFeedViewHolder -> holder.bind(
-                trackerFeedItems[position] as TrackerFeedItem.TrackerFeedData,
-                onAppClick,
-                position == trackerFeedItems.size - 1,
-            )
-
+            is TrackerFeedViewHolder -> holder.bind(trackerFeedItems[position] as TrackerFeedItem.TrackerFeedData, onAppClick)
             is TrackerSkeletonViewHolder -> holder.bind()
             is TrackerFeedHeaderViewHolder -> holder.bind(trackerFeedItems[position] as TrackerFeedItem.TrackerFeedItemHeader)
             is TrackerAppsProtectionStateViewHolder ->
@@ -131,7 +127,7 @@ class TrackerFeedAdapter @Inject constructor(
     }
 
     private class TrackerFeedHeaderViewHolder(
-        val view: TextView,
+        val view: SectionHeaderListItem,
     ) :
         RecyclerView.ViewHolder(view) {
         companion object {
@@ -140,12 +136,20 @@ class TrackerFeedAdapter @Inject constructor(
             ): TrackerFeedHeaderViewHolder {
                 val inflater = LayoutInflater.from(parent.context)
                 val view = inflater.inflate(R.layout.view_device_shield_activity_entry_header, parent, false)
-                return TrackerFeedHeaderViewHolder(view as TextView)
+                return TrackerFeedHeaderViewHolder(view as SectionHeaderListItem)
             }
         }
 
+        val context: Context = view.context
+        val today = context.getString(com.duckduckgo.app.global.R.string.common_Today)
+        val yesterday = context.getString(com.duckduckgo.app.global.R.string.common_Yesterday)
+
         fun bind(item: TrackerFeedItem.TrackerFeedItemHeader) {
-            view.text = item.timestamp
+            if (item.timestamp == today || item.timestamp == yesterday) {
+                view.primaryText = context.getString(R.string.atp_ActivityBlockedByHeaderText, item.timestamp)
+            } else {
+                view.primaryText = context.getString(R.string.atp_ActivityBlockedByOnDateHeaderText, item.timestamp)
+            }
         }
     }
 
@@ -161,7 +165,6 @@ class TrackerFeedAdapter @Inject constructor(
         val context: Context = view.context
         var activityMessage: TextView = view.findViewById(R.id.activity_message)
         var timeSinceTrackerBlocked: TextView = view.findViewById(R.id.activity_time_since)
-        var splitter: View = view.findViewById(R.id.entry_splitter)
         var trackingAppIcon: ImageView = view.findViewById(R.id.tracking_app_icon)
         var trackerBadgesView: RecyclerView = view.findViewById<RecyclerView>(R.id.tracker_badges).apply {
             adapter = TrackerBadgeAdapter()
@@ -172,13 +175,18 @@ class TrackerFeedAdapter @Inject constructor(
         fun bind(
             tracker: TrackerFeedItem.TrackerFeedData?,
             onAppClick: (TrackerFeedItem.TrackerFeedData) -> Unit,
-            shouldHideDivider: Boolean,
         ) {
             tracker?.let { item ->
                 with(activityMessage) {
                     val trackersCount = tracker.trackersTotalCount
-                    val trackingCompanies = tracker.trackingCompanyBadges.size
                     val trackingAppName = item.trackingApp.appDisplayName
+
+                    var trackingCompanies = tracker.trackingCompanyBadges.size
+                    if (tracker.trackingCompanyBadges.last() is TrackerCompanyBadge.Extra) {
+                        // Subtracting 1 since badge sizes contains the Extra icon with amount
+                        trackingCompanies += (tracker.trackingCompanyBadges.last() as TrackerCompanyBadge.Extra).amount - 1
+                    }
+
                     val textToStyle = if (trackersCount == 1) {
                         if (trackingCompanies == 1) {
                             resources.getString(
@@ -240,16 +248,11 @@ class TrackerFeedAdapter @Inject constructor(
                 itemView.setOnClickListener {
                     onAppClick(item)
                 }
-                if (shouldHideDivider) {
-                    splitter.hide()
-                } else {
-                    splitter.show()
-                }
             }
         }
 
         private fun String.asIconDrawable(): TextDrawable {
-            return TextDrawable.builder().buildRound(this.take(1), Color.DKGRAY)
+            return TextDrawable.asIconDrawable(this)
         }
     }
 
@@ -273,7 +276,9 @@ class TrackerFeedAdapter @Inject constructor(
         }
 
         var protectedAppsState: AppsProtectionStateView = view.findViewById(R.id.protectedAppsState)
+        var protectedAppsDivider: HorizontalDivider = view.findViewById(R.id.protectedAppsBottomDivider)
         var unProtectedAppsState: AppsProtectionStateView = view.findViewById(R.id.unProtectedAppsState)
+        var unProtectedAppsDivider: HorizontalDivider = view.findViewById(R.id.unProtectedAppsBottomDivider)
 
         fun bind(
             tracker: TrackerFeedItem.TrackerTrackerAppsProtection,
@@ -284,16 +289,20 @@ class TrackerFeedAdapter @Inject constructor(
                     onAppClick(tracker.copy(selectedFilter = appsFilter))
                 }
                 protectedAppsState.show()
+                protectedAppsDivider.show()
             } else {
                 protectedAppsState.gone()
+                protectedAppsDivider.gone()
             }
             if (tracker.appsData.unprotectedAppsData.appsCount > 0) {
                 unProtectedAppsState.bind(tracker.appsData.unprotectedAppsData) { appsFilter ->
                     onAppClick(tracker.copy(selectedFilter = appsFilter))
                 }
                 unProtectedAppsState.show()
+                unProtectedAppsDivider.show()
             } else {
                 unProtectedAppsState.gone()
+                unProtectedAppsDivider.gone()
             }
         }
     }

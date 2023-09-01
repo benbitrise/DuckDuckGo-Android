@@ -17,33 +17,33 @@
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
 <resources>
-    <string name="managementScreenTitle">Preenchimento automático de inícios de sessão</string>
-
-    <string name="managementLockedModeText">Desbloquear o preenchimento automático</string>
+    <string name="autofillManagementScreenTitle">Inícios de sessão</string>
 
     <string name="managementDisabledModeCta"><b>Configura nas Definições</b></string>
-    <string name="managementDisabledModeSubtitle">É necessário um padrão de bloqueio do dispositivo, um PIN ou dados biométricos para proteger os teus dados de início de sessão com preenchimento automático.</string>
-    <string name="managementDisabledModeTitle">Protege o teu dispositivo para usares o preenchimento automático</string>
+    <string name="managementDisabledModeSubtitle">É necessário um padrão de bloqueio de dispositivo, PIN ou biometria para proteger os teus inícios de sessão.</string>
+    <string name="managementDisabledModeTitle">Proteger o dispositivo para guardar inícios de sessão</string>
 
-    <string name="saveLoginDialogTitle">Guardar início de sessão?</string>
-    <string name="saveLoginMissingUsernameDialogTitle">Guardar palavra-passe?</string>
     <string name="saveLoginDialogButtonSave">Guardar início de sessão</string>
     <string name="saveLoginMissingUsernameDialogButtonSave">Guardar palavra-passe</string>
     <string name="saveLoginDialogNotNow">Agora não</string>
-    <string name="saveLoginDialogOnboardingExplanationSubtitle">Os inícios de sessão são armazenados com segurança apenas neste dispositivo e podes efetuar a gestão dos mesmo a partir do menu de Preenchimento automático nas Definições.</string>
-    <string name="saveLoginDialogFirstTimeOnboardingExplanationTitle">Queres que o DuckDuckGo guarde o teu início de sessão?</string>
+    <string name="saveLoginDialogSubtitle">Os inícios de sessão são armazenados com segurança no teu dispositivo, e podes efetuar a gestão dos mesmos a partir do menu Inícios de sessão nas Definições.</string>
+    <string name="saveLoginDialogTitle">Queres que o DuckDuckGo guarde o teu início de sessão?</string>
     <string name="saveLoginDialogMoreOptionsButtonLabel">Mais opções</string>
 
-    <string name="useSavedLoginDialogTitle">Utilizar dados de início de sessão guardados?</string>
-    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Dados de início de sessão para %1$s</string>
-    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Dados de início de sessão para o site</string>
+    <string name="useSavedLoginDialogTitle">Utilizar um início de sessão guardado?</string>
+    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Palavra-passe de %1$s</string>
+    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Palavra-passe do site</string>
+    <string name="useSavedLoginDialogGroupThisWebsite">Deste site</string>
+    <string name="useSavedLoginDialogFromDomainLabel" instruction="Placeholder is the URL of a website">De %1$s</string>
 
-    <string name="updateLoginDialogTitle">Atualizar palavra-passe?</string>
     <string name="updateLoginDialogButtonUpdatePassword">Atualizar palavra-passe</string>
     <string name="updateLoginDialogButtonNotNow">Agora não</string>
 
     <string name="updateLoginDialogTitleUpdateUsername">Atualizar nome de utilizador?</string>
     <string name="updateLoginDialogButtonUpdateUsername">Atualizar nome de utilizador</string>
+
+    <string name="updateLoginDialogTitleLine" instruction="Placeholder is the user&apos;s username for this site">Atualizar palavra-passe de \n%1$s?</string>
+    <string name="updateLoginUpdatePasswordExplanation">O DuckDuckGo vai atualizar este início de sessão armazenado no teu dispositivo.</string>
 
     <string name="autofillDialogCloseButtonContentDescription">Fechar caixa de diálogo de preenchimento automático</string>
 
@@ -64,5 +64,57 @@
     <string name="credentialManagementViewMenuDelete">Eliminar</string>
 
     <string name="credentialManagementSuggestionsLabel">Sugerido</string>
+    <string name="credentialManagementNoLoginsSavedTitle">Nenhum início de sessão guardado</string>
+    <string name="credentialManagementNoLoginsSavedSubtitle">Os inícios de sessão são armazenados com segurança no teu dispositivo.</string>
+
+    <string name="autofillManagementAddLogin">Adicionar início de sessão</string>
+    <string name="autofillManagementSearchLogins">Pesquisar inícios de sessão</string>
+    <string name="autofillManagementSearchClearDescription">Limpar introdução da pesquisa</string>
+    <string name="autofillManagementNoSearchResults" instruction="Placeholder is the query the user has searched for. e.g., No results for &apos;kittens&apos;">Nenhum resultado para \"%1$s\"</string>
+
+    <string name="autofillDeleteLoginDialogCancel">Cancelar</string>
+    <string name="autofillDeleteLoginDialogDelete">Eliminar</string>
+    <string name="autofillDeleteLoginDialogTitle">Tens a certeza de que pretendes eliminar este início de sessão?</string>
+
+    <string name="autofillManagementUsernameCopied">Nome de utilizador copiado</string>
+    <string name="autofillManagementPasswordCopied">Palavra-passe copiada</string>
+
+    <string name="autofill_password_generation_offer_title">Utilizar palavra-passe gerada pelo DuckDuckGo?</string>
+    <string name="autofill_password_generation_offer_message">A palavra-passe será guardada em Início de sessão.</string>
+    <string name="autofill_password_generation_offer_accept">Utilizar palavra-passe gerada</string>
+    <string name="autofill_password_generation_offer_decline">Criar a minha própria palavra-passe</string>
+
+    <string name="deviceNotSupportedTitle">Dispositivo não suportado</string>
+    <string name="deviceNotSupportedSubtitle">Para armazenar inícios de sessão com segurança, é necessário encriptá-los e armazená-los no teu dispositivo. Uma vez que o teu dispositivo não suporta armazenamento encriptado, os inícios de sessão não estão disponíveis.</string>
+
+    <string name="autofillManagementDeletedConfirmation">Início de sessão eliminado</string>
+    <string name="autofillManagementUndoDeletion">Anular</string>
+
+    <string name="credentialManagementLinkButtonContentDescription" instruction="Accessibility text for a button that will show next to a text field containing a website address; it will launch the website when tapped">Abrir website</string>
+
+    <string name="credentialManagementDuckAddressLabel" translatable="false">Duck Address</string>
+
+    <string name="credentialManagementDeactivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to deactivate their private &apos;Duck Address&apos;">Desativar Duck Address privado?</string>
+    <string name="credentialManagementDeactivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Os e-mails enviados para %1$s já não serão encaminhados para a tua caixa de entrada.</string>
+    <string name="credentialManagementDeactivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will deactivate their email address, meaning emails sent there will no longer be forwarded to their inbox">Desativar</string>
+    <string name="credentialManagementActivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to reactivate their private &apos;Duck Address&apos;">Reativar Duck Address privado?</string>
+    <string name="credentialManagementActivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Os e-mails enviados para %1$s serão encaminhados para a tua caixa de entrada.</string>
+    <string name="credentialManagementActivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will reactivate their email address, meaning emails sent there will again be forwarded to their inbox">Reativar</string>
+
+    <string name="credentialManagementDuckAddressActivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is active">Ativo</string>
+    <string name="credentialManagementDuckAddressActivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from deactivated to active">A ativar…</string>
+
+    <string name="credentialManagementDuckAddressDeactivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is deactivated">Desativado</string>
+    <string name="credentialManagementDuckAddressDeactivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from active to deactivated">A desativar…</string>
+
+    <string name="credentialManagementDuckAddressManagementTemporarilyUnavailable" instruction="Error message shown when unable to manage this &apos;Duck Address&apos; right now">A gestão deste endereço está temporariamente indisponível.</string>
+
+    <string name="credentialManagementEnableEmailProtectionPrompt" instruction="&apos;Duck Addresses&apos; is the feature name, and should not be translated."><annotation type="enable_duck_address">Ativa a Email Protection</annotation> para gerires os Duck Addresses neste dispositivo.</string>
+
+    <string name="autofill_email_protection_choose_email_dialog_title">Seleciona o endereço de e-mail</string>
+    <string name="autofillTooltipUseYourAliasDescription">Bloquear rastreadores de e-mail</string>
+    <string name="autofillTooltipGenerateAddress" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated.">Gerar um Duck Address Privado</string>
+    <string name="autofillTooltipGenerateAddressDescription" instruction="&apos;hide address&apos; refers to using an alias so your real email address is not used">Bloquear rastreadores de e-mail e ocultar endereço</string>
+
 
 </resources>

@@ -16,19 +16,17 @@
 
 package com.duckduckgo.app.di
 
-import androidx.lifecycle.LifecycleObserver
 import com.duckduckgo.app.fire.UnsentForgetAllPixelStore
 import com.duckduckgo.app.fire.UnsentForgetAllPixelStoreSharedPreferences
 import com.duckduckgo.app.global.events.db.AppUserEventsStore
 import com.duckduckgo.app.global.events.db.UserEventsStore
 import com.duckduckgo.app.global.install.AppInstallSharedPreferences
 import com.duckduckgo.app.global.install.AppInstallStore
+import com.duckduckgo.app.lifecycle.MainProcessLifecycleObserver
 import com.duckduckgo.app.onboarding.store.AppUserStageStore
 import com.duckduckgo.app.onboarding.store.OnboardingSharedPreferences
 import com.duckduckgo.app.onboarding.store.OnboardingStore
 import com.duckduckgo.app.onboarding.store.UserStageStore
-import com.duckduckgo.app.statistics.store.OfflinePixelCountDataStore
-import com.duckduckgo.app.statistics.store.OfflinePixelCountSharedPreferences
 import com.duckduckgo.app.statistics.store.StatisticsDataStore
 import com.duckduckgo.app.statistics.store.StatisticsSharedPreferences
 import com.duckduckgo.app.tabs.db.TabsDbSanitizer
@@ -63,13 +61,10 @@ abstract class StoreModule {
 
     @Binds
     @IntoSet
-    abstract fun bindAppInstallStoreObserver(appInstallStore: AppInstallStore): LifecycleObserver
+    abstract fun bindAppInstallStoreObserver(appInstallStore: AppInstallStore): MainProcessLifecycleObserver
 
     @Binds
     abstract fun bindDataClearingStore(store: UnsentForgetAllPixelStoreSharedPreferences): UnsentForgetAllPixelStore
-
-    @Binds
-    abstract fun bindOfflinePixelDataStore(store: OfflinePixelCountSharedPreferences): OfflinePixelCountDataStore
 
     @Binds
     abstract fun bindUserStageStore(userStageStore: AppUserStageStore): UserStageStore
@@ -79,11 +74,11 @@ abstract class StoreModule {
 
     @Binds
     @IntoSet
-    abstract fun bindTabsDbSanitizerObserver(tabsDbSanitizer: TabsDbSanitizer): LifecycleObserver
+    abstract fun bindTabsDbSanitizerObserver(tabsDbSanitizer: TabsDbSanitizer): MainProcessLifecycleObserver
 
     @Binds
     @IntoSet
-    abstract fun bindFavoritesObserver(favoritesObserver: FavoritesObserver): LifecycleObserver
+    abstract fun bindFavoritesObserver(favoritesObserver: FavoritesObserver): MainProcessLifecycleObserver
 
     @Binds
     abstract fun bindWidgetPreferences(store: AppWidgetThemePreferences): WidgetPreferences

@@ -30,7 +30,7 @@ android {
 
 dependencies {
     implementation project(path: ':app-build-config-api')
-    implementation project(path: ':common')
+    implementation project(path: ':common-utils')
     implementation project(path: ':common-ui')
     implementation project(path: ':di')
     implementation project(path: ':statistics')
@@ -41,9 +41,10 @@ dependencies {
     implementation project(path: ':anvil-annotations')
 
     implementation AndroidX.appCompat
+    implementation Google.android.material
     implementation AndroidX.constraintLayout
     implementation AndroidX.core.ktx
-    implementation AndroidX.lifecycle.runtimeKtx
+    implementation AndroidX.lifecycle.runtime.ktx
     implementation AndroidX.lifecycle.viewModelKtx
     implementation Google.dagger
     implementation JakeWharton.timber

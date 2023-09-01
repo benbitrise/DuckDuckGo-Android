@@ -17,13 +17,10 @@
 package com.duckduckgo.mobile.android.vpn.pixels
 
 import android.content.Context
-import androidx.lifecycle.Lifecycle.Event
-import androidx.lifecycle.Lifecycle.Event.ON_CREATE
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.work.*
 import com.duckduckgo.anvil.annotations.ContributesWorker
+import com.duckduckgo.app.lifecycle.MainProcessLifecycleObserver
 import com.duckduckgo.di.scopes.AppScope
 import com.duckduckgo.mobile.android.vpn.AppTpVpnFeature
 import com.duckduckgo.mobile.android.vpn.VpnFeaturesRegistry
@@ -42,7 +39,7 @@ import logcat.logcat
 object DeviceShieldStatusReportingModule {
     @Provides
     @IntoSet
-    fun provideDeviceShieldStatusReporting(workManager: WorkManager): LifecycleObserver {
+    fun provideDeviceShieldStatusReporting(workManager: WorkManager): MainProcessLifecycleObserver {
         return DeviceShieldStatusReporting(workManager)
     }
 
@@ -54,12 +51,10 @@ object DeviceShieldStatusReportingModule {
 
 class DeviceShieldStatusReporting(
     private val workManager: WorkManager,
-) : LifecycleEventObserver {
+) : MainProcessLifecycleObserver {
 
-    override fun onStateChanged(source: LifecycleOwner, event: Event) {
-        if (event == ON_CREATE) {
-            scheduleDeviceShieldStatusReporting()
-        }
+    override fun onCreate(owner: LifecycleOwner) {
+        scheduleDeviceShieldStatusReporting()
     }
 
     private fun scheduleDeviceShieldStatusReporting() {
@@ -88,7 +83,7 @@ class DeviceShieldStatusReportingWorker(
     lateinit var vpnFeaturesRegistry: VpnFeaturesRegistry
 
     override suspend fun doWork(): Result {
-        if (vpnFeaturesRegistry.isFeatureRegistered(AppTpVpnFeature.APPTP_VPN)) {
+        if (vpnFeaturesRegistry.isFeatureRunning(AppTpVpnFeature.APPTP_VPN)) {
             deviceShieldPixels.reportEnabled()
         } else {
             deviceShieldPixels.reportDisabled()

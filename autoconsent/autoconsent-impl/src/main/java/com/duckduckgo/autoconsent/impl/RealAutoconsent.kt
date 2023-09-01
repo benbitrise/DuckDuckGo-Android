@@ -17,11 +17,9 @@
 package com.duckduckgo.autoconsent.impl
 
 import android.webkit.WebView
-import androidx.core.net.toUri
 import com.duckduckgo.app.global.UriString
-import com.duckduckgo.app.global.domain
 import com.duckduckgo.app.global.plugins.PluginPoint
-import com.duckduckgo.app.userwhitelist.api.UserWhiteListRepository
+import com.duckduckgo.app.privacy.db.UserAllowListRepository
 import com.duckduckgo.autoconsent.api.Autoconsent
 import com.duckduckgo.autoconsent.api.AutoconsentCallback
 import com.duckduckgo.autoconsent.api.AutoconsentFeatureName
@@ -41,7 +39,7 @@ class RealAutoconsent @Inject constructor(
     private val settingsRepository: AutoconsentSettingsRepository,
     private val autoconsentRepository: AutoconsentRepository,
     private val featureToggle: FeatureToggle,
-    private val userAllowlistRepository: UserWhiteListRepository,
+    private val userAllowlistRepository: UserAllowListRepository,
     private val unprotectedTemporary: UnprotectedTemporary,
 ) : Autoconsent {
 
@@ -83,7 +81,7 @@ class RealAutoconsent @Inject constructor(
 
     private fun urlInUserAllowList(url: String): Boolean {
         return try {
-            userAllowlistRepository.userWhiteList.contains(url.toUri().domain())
+            userAllowlistRepository.isUrlInUserAllowList(url)
         } catch (e: Exception) {
             false
         }

@@ -16,32 +16,38 @@
 
 package com.duckduckgo.mobile.android.vpn
 
-import kotlinx.coroutines.flow.Flow
-
 class FakeVpnFeaturesRegistry : VpnFeaturesRegistry {
     private val features = mutableSetOf<String>()
 
-    override fun registerFeature(feature: VpnFeature) {
+    override suspend fun registerFeature(feature: VpnFeature) {
         features.add(feature.featureName)
     }
 
-    override fun unregisterFeature(feature: VpnFeature) {
+    override suspend fun unregisterFeature(feature: VpnFeature) {
         features.remove(feature.featureName)
     }
 
-    override fun isFeatureRegistered(feature: VpnFeature): Boolean {
+    override suspend fun isFeatureRunning(feature: VpnFeature): Boolean {
         return features.contains(feature.featureName)
+    }
+
+    override suspend fun isFeatureRegistered(feature: VpnFeature): Boolean {
+        return isFeatureRunning(feature)
+    }
+
+    override suspend fun isAnyFeatureRunning(): Boolean {
+        return features.isNotEmpty()
+    }
+
+    override suspend fun isAnyFeatureRegistered(): Boolean {
+        return isAnyFeatureRunning()
     }
 
     override suspend fun refreshFeature(feature: VpnFeature) {
         // no-op
     }
 
-    override fun registryChanges(): Flow<Pair<String, Boolean>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getRegisteredFeatures(): List<VpnFeature> {
+    override suspend fun getRegisteredFeatures(): List<VpnFeature> {
         return features.map { VpnFeature { it } }
     }
 }

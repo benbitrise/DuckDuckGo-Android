@@ -29,9 +29,9 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@ExperimentalCoroutinesApi
 class AppTpFeatureConfigImplTest {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     var coroutineRule = CoroutineTestRule()
 
@@ -58,17 +58,11 @@ class AppTpFeatureConfigImplTest {
     fun whenDbTablesAreEmptyThenReturnToggleDefaultValue() {
         AppTpSetting.values().forEach { setting ->
             when (setting) {
-                AppTpSetting.BadHealthMitigation -> assertTrue(config.isEnabled(setting))
-                AppTpSetting.Ipv6Support -> assertFalse(config.isEnabled(setting))
-                AppTpSetting.PrivateDnsSupport -> assertFalse(config.isEnabled(setting))
-                AppTpSetting.InterceptDnsTraffic -> assertFalse(config.isEnabled(setting))
                 AppTpSetting.AlwaysSetDNS -> assertFalse(config.isEnabled(setting))
                 AppTpSetting.CPUMonitoring -> assertFalse(config.isEnabled(setting))
-                AppTpSetting.ConnectivityChecks -> assertFalse(config.isEnabled(setting))
                 AppTpSetting.ProtectGames -> assertFalse(config.isEnabled(setting))
-                AppTpSetting.OpenBeta -> assertFalse(config.isEnabled(setting))
-                AppTpSetting.CheckBlockingFunction -> assertFalse(config.isEnabled(setting))
-                AppTpSetting.StartVpnErrorHandling -> assertTrue(config.isEnabled(setting))
+                AppTpSetting.ExceptionLists -> assertTrue(config.isEnabled(setting))
+                AppTpSetting.RestartOnConnectivityLoss -> assertTrue(config.isEnabled(setting))
             }
         }
     }
@@ -132,43 +126,27 @@ class AppTpFeatureConfigImplTest {
     fun whenInternalBuildThenProperlyHandleManualOverrides() {
         whenever(appBuildConfig.flavor).thenReturn(BuildFlavor.INTERNAL)
 
-        config.setEnabled(AppTpSetting.InterceptDnsTraffic, true, isManualOverride = true)
-        config.setEnabled(AppTpSetting.InterceptDnsTraffic, false, isManualOverride = true)
+        config.setEnabled(AppTpSetting.CPUMonitoring, true, isManualOverride = true)
+        config.setEnabled(AppTpSetting.CPUMonitoring, false, isManualOverride = true)
 
-        config.setEnabled(AppTpSetting.BadHealthMitigation, true, isManualOverride = true)
-        config.setEnabled(AppTpSetting.BadHealthMitigation, false, isManualOverride = false)
+        config.setEnabled(AppTpSetting.AlwaysSetDNS, true, isManualOverride = false)
+        config.setEnabled(AppTpSetting.AlwaysSetDNS, false, isManualOverride = true)
 
-        config.setEnabled(AppTpSetting.Ipv6Support, true, isManualOverride = false)
-        config.setEnabled(AppTpSetting.Ipv6Support, false, isManualOverride = true)
-
-        config.setEnabled(AppTpSetting.PrivateDnsSupport, true, isManualOverride = false)
-        config.setEnabled(AppTpSetting.PrivateDnsSupport, false, isManualOverride = false)
-
-        assertFalse(config.isEnabled(AppTpSetting.InterceptDnsTraffic))
-        assertTrue(config.isEnabled(AppTpSetting.BadHealthMitigation))
-        assertFalse(config.isEnabled(AppTpSetting.Ipv6Support))
-        assertFalse(config.isEnabled(AppTpSetting.PrivateDnsSupport))
+        assertFalse(config.isEnabled(AppTpSetting.CPUMonitoring))
+        assertFalse(config.isEnabled(AppTpSetting.AlwaysSetDNS))
     }
 
     @Test
     fun whenNotInternalBuildThenAlwaysOverride() {
         whenever(appBuildConfig.flavor).thenReturn(BuildFlavor.PLAY)
 
-        config.setEnabled(AppTpSetting.InterceptDnsTraffic, true, isManualOverride = true)
-        config.setEnabled(AppTpSetting.InterceptDnsTraffic, false, isManualOverride = true)
+        config.setEnabled(AppTpSetting.CPUMonitoring, true, isManualOverride = true)
+        config.setEnabled(AppTpSetting.CPUMonitoring, false, isManualOverride = true)
 
-        config.setEnabled(AppTpSetting.BadHealthMitigation, true, isManualOverride = true)
-        config.setEnabled(AppTpSetting.BadHealthMitigation, false, isManualOverride = false)
+        config.setEnabled(AppTpSetting.AlwaysSetDNS, true, isManualOverride = false)
+        config.setEnabled(AppTpSetting.AlwaysSetDNS, false, isManualOverride = true)
 
-        config.setEnabled(AppTpSetting.Ipv6Support, true, isManualOverride = false)
-        config.setEnabled(AppTpSetting.Ipv6Support, false, isManualOverride = true)
-
-        config.setEnabled(AppTpSetting.PrivateDnsSupport, true, isManualOverride = false)
-        config.setEnabled(AppTpSetting.PrivateDnsSupport, false, isManualOverride = false)
-
-        assertFalse(config.isEnabled(AppTpSetting.InterceptDnsTraffic))
-        assertFalse(config.isEnabled(AppTpSetting.BadHealthMitigation))
-        assertFalse(config.isEnabled(AppTpSetting.Ipv6Support))
-        assertFalse(config.isEnabled(AppTpSetting.PrivateDnsSupport))
+        assertFalse(config.isEnabled(AppTpSetting.CPUMonitoring))
+        assertFalse(config.isEnabled(AppTpSetting.AlwaysSetDNS))
     }
 }

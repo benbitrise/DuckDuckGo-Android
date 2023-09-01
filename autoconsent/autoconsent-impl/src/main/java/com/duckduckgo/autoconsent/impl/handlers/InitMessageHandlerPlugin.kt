@@ -69,14 +69,14 @@ class InitMessageHandlerPlugin @Inject constructor(
                     }
 
                     // Reset site
-                    autoconsentCallback.onResultReceived(consentManaged = false, optOutFailed = false, selfTestFailed = false)
+                    autoconsentCallback.onResultReceived(consentManaged = false, optOutFailed = false, selfTestFailed = false, isCosmetic = false)
 
                     val disabledCmps = repository.disabledCmps.map { it.name }
                     val autoAction = getAutoAction()
                     val enablePreHide = settingsRepository.userSetting
                     val detectRetries = 20
 
-                    val config = Config(enabled = true, autoAction, disabledCmps, enablePreHide, detectRetries)
+                    val config = Config(enabled = true, autoAction, disabledCmps, enablePreHide, detectRetries, enableCosmeticRules = true)
                     val initResp = InitResp(rules = getRules(), config = config)
 
                     val response = ReplyHandler.constructReply(getMessage(initResp))
@@ -91,7 +91,7 @@ class InitMessageHandlerPlugin @Inject constructor(
 
     override val supportedTypes: List<String> = listOf("init")
 
-    private fun getAutoAction(): String? {
+    private fun getAutoAction(): String {
         // Remove comment to promote feature
         // return if (!settingsRepository.firstPopupHandled) null else "optOut"
         return "optOut"
@@ -122,6 +122,7 @@ class InitMessageHandlerPlugin @Inject constructor(
         val disabledCmps: List<String>,
         val enablePrehide: Boolean,
         val detectRetries: Int,
+        val enableCosmeticRules: Boolean,
     )
 
     // rules can actually be null, but we will always pass them through

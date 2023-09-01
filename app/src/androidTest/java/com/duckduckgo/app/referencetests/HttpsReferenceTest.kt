@@ -22,24 +22,24 @@ import androidx.test.annotation.UiThreadTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.duckduckgo.app.CoroutineTestRule
 import com.duckduckgo.app.FileUtilities
-import com.duckduckgo.app.global.db.AppDatabase
 import com.duckduckgo.app.global.isHttps
 import com.duckduckgo.app.global.store.BinaryDataStore
-import com.duckduckgo.app.httpsupgrade.HttpsBloomFilterFactory
-import com.duckduckgo.app.httpsupgrade.HttpsBloomFilterFactoryImpl
-import com.duckduckgo.app.httpsupgrade.HttpsUpgrader
-import com.duckduckgo.app.httpsupgrade.HttpsUpgraderImpl
-import com.duckduckgo.app.httpsupgrade.api.HttpsFalsePositivesJsonAdapter
-import com.duckduckgo.app.httpsupgrade.model.HttpsBloomFilterSpec
-import com.duckduckgo.app.httpsupgrade.model.HttpsFalsePositiveDomain
-import com.duckduckgo.app.httpsupgrade.store.HttpsBloomFilterSpecDao
-import com.duckduckgo.app.httpsupgrade.store.HttpsDataPersister
-import com.duckduckgo.app.httpsupgrade.store.HttpsEmbeddedDataPersister
-import com.duckduckgo.app.httpsupgrade.store.HttpsFalsePositivesDao
-import com.duckduckgo.app.privacy.db.UserWhitelistDao
+import com.duckduckgo.app.privacy.db.UserAllowListRepository
 import com.duckduckgo.app.statistics.pixels.Pixel
 import com.duckduckgo.app.trackerdetection.api.ActionJsonAdapter
 import com.duckduckgo.feature.toggles.api.FeatureToggle
+import com.duckduckgo.httpsupgrade.api.HttpsEmbeddedDataPersister
+import com.duckduckgo.httpsupgrade.api.HttpsUpgrader
+import com.duckduckgo.httpsupgrade.impl.HttpsBloomFilterFactory
+import com.duckduckgo.httpsupgrade.impl.HttpsBloomFilterFactoryImpl
+import com.duckduckgo.httpsupgrade.impl.HttpsDataPersister
+import com.duckduckgo.httpsupgrade.impl.HttpsFalsePositivesJsonAdapter
+import com.duckduckgo.httpsupgrade.impl.HttpsUpgraderImpl
+import com.duckduckgo.httpsupgrade.store.HttpsBloomFilterSpec
+import com.duckduckgo.httpsupgrade.store.HttpsBloomFilterSpecDao
+import com.duckduckgo.httpsupgrade.store.HttpsFalsePositiveDomain
+import com.duckduckgo.httpsupgrade.store.HttpsFalsePositivesDao
+import com.duckduckgo.httpsupgrade.store.HttpsUpgradeDatabase
 import com.duckduckgo.privacy.config.api.Https
 import com.duckduckgo.privacy.config.api.HttpsException
 import com.duckduckgo.privacy.config.api.PrivacyFeatureName
@@ -71,6 +71,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import timber.log.Timber
 
+// FIXME reference tests forced to have visibility in things we should not have visibility like httpsupgrade-impl and impl classes :shrug:
 @ExperimentalCoroutinesApi
 @RunWith(Parameterized::class)
 class HttpsReferenceTest(private val testCase: TestCase) {
@@ -79,9 +80,8 @@ class HttpsReferenceTest(private val testCase: TestCase) {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
 
-    private lateinit var db: AppDatabase
+    private lateinit var db: HttpsUpgradeDatabase
     private lateinit var bloomFalsePositiveDao: HttpsFalsePositivesDao
-    private lateinit var userAllowlistDao: UserWhitelistDao
     private lateinit var bloomFilterFactory: HttpsBloomFilterFactory
     private lateinit var httpsBloomFilterSpecDao: HttpsBloomFilterSpecDao
     private lateinit var https: Https
@@ -91,6 +91,7 @@ class HttpsReferenceTest(private val testCase: TestCase) {
     private var mockFeatureToggle: FeatureToggle = mock()
     private val mockHttpsRepository: HttpsRepository = mock()
     private val mockUnprotectedTemporaryRepository: UnprotectedTemporaryRepository = mock()
+    private val mockUserAllowListRepository: UserAllowListRepository = mock()
 
     companion object {
         private val moshi = Moshi.Builder()
@@ -138,7 +139,7 @@ class HttpsReferenceTest(private val testCase: TestCase) {
         initialiseBloomFilter()
         initialiseRemoteConfig()
 
-        testee = HttpsUpgraderImpl(bloomFilterFactory, bloomFalsePositiveDao, userAllowlistDao, toggle = mockFeatureToggle, https = https)
+        testee = HttpsUpgraderImpl(bloomFilterFactory, bloomFalsePositiveDao, toggle = mockFeatureToggle, https = https)
         testee.reloadData()
     }
 
@@ -176,17 +177,16 @@ class HttpsReferenceTest(private val testCase: TestCase) {
         whenever(mockHttpsRepository.exceptions).thenReturn(CopyOnWriteArrayList(httpsExceptions))
         whenever(mockUnprotectedTemporaryRepository.exceptions).thenReturn(exceptionsUnprotectedTemporary)
 
-        https = RealHttps(mockHttpsRepository, RealUnprotectedTemporary(mockUnprotectedTemporaryRepository))
+        https = RealHttps(mockHttpsRepository, RealUnprotectedTemporary(mockUnprotectedTemporaryRepository), mockUserAllowListRepository)
     }
 
     private fun initialiseBloomFilter() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+        db = Room.inMemoryDatabaseBuilder(context, HttpsUpgradeDatabase::class.java)
             .allowMainThreadQueries()
             .build()
 
         bloomFalsePositiveDao = db.httpsFalsePositivesDao()
-        userAllowlistDao = db.userWhitelistDao()
         httpsBloomFilterSpecDao = db.httpsBloomFilterSpecDao()
 
         val binaryDataStore = BinaryDataStore(context)

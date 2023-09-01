@@ -21,6 +21,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.net.http.SslCertificate
 import android.os.Message
+import android.print.PrintAttributes
 import android.util.Patterns
 import android.view.ContextMenu
 import android.view.MenuItem
@@ -44,10 +45,7 @@ import com.duckduckgo.app.autocomplete.api.AutoComplete.AutoCompleteResult
 import com.duckduckgo.app.autocomplete.api.AutoComplete.AutoCompleteSuggestion
 import com.duckduckgo.app.autocomplete.api.AutoComplete.AutoCompleteSuggestion.AutoCompleteBookmarkSuggestion
 import com.duckduckgo.app.autocomplete.api.AutoComplete.AutoCompleteSuggestion.AutoCompleteSearchSuggestion
-import com.duckduckgo.app.bookmarks.model.BookmarkFolder
-import com.duckduckgo.app.bookmarks.model.BookmarksRepository
-import com.duckduckgo.app.bookmarks.model.FavoritesRepository
-import com.duckduckgo.app.bookmarks.model.SavedSite
+import com.duckduckgo.app.bookmarks.ui.EditSavedSiteDialogFragment.DeleteBookmarkListener
 import com.duckduckgo.app.bookmarks.ui.EditSavedSiteDialogFragment.EditSavedSiteListener
 import com.duckduckgo.app.browser.BrowserTabViewModel.Command.*
 import com.duckduckgo.app.browser.BrowserTabViewModel.GlobalLayoutViewState.Browser
@@ -58,6 +56,7 @@ import com.duckduckgo.app.browser.SpecialUrlDetector.UrlType.NonHttpAppLink
 import com.duckduckgo.app.browser.addtohome.AddToHomeCapabilityDetector
 import com.duckduckgo.app.browser.applinks.AppLinksHandler
 import com.duckduckgo.app.browser.autofill.AutofillCredentialsSelectionResultHandler
+import com.duckduckgo.app.browser.autofill.AutofillFireproofDialogSuppressor
 import com.duckduckgo.app.browser.favicon.FaviconManager
 import com.duckduckgo.app.browser.favicon.FaviconSource.ImageFavicon
 import com.duckduckgo.app.browser.favicon.FaviconSource.UrlFavicon
@@ -77,14 +76,16 @@ import com.duckduckgo.app.browser.omnibar.QueryOrigin
 import com.duckduckgo.app.browser.remotemessage.RemoteMessagingModel
 import com.duckduckgo.app.browser.remotemessage.asBrowserTabCommand
 import com.duckduckgo.app.browser.session.WebViewSessionStorage
-import com.duckduckgo.app.browser.ui.HttpAuthenticationDialogFragment.HttpAuthenticationListener
 import com.duckduckgo.app.browser.urlextraction.UrlExtractionListener
 import com.duckduckgo.app.cta.ui.*
 import com.duckduckgo.app.di.AppCoroutineScope
 import com.duckduckgo.app.email.EmailManager
 import com.duckduckgo.app.fire.fireproofwebsite.data.FireproofWebsiteEntity
 import com.duckduckgo.app.fire.fireproofwebsite.data.FireproofWebsiteRepository
+import com.duckduckgo.app.fire.fireproofwebsite.ui.AutomaticFireproofSetting.ALWAYS
+import com.duckduckgo.app.fire.fireproofwebsite.ui.AutomaticFireproofSetting.ASK_EVERY_TIME
 import com.duckduckgo.app.global.*
+import com.duckduckgo.app.global.device.DeviceInfo
 import com.duckduckgo.app.global.events.db.UserEventKey
 import com.duckduckgo.app.global.events.db.UserEventsStore
 import com.duckduckgo.app.global.extensions.asLocationPermissionOrigin
@@ -96,29 +97,26 @@ import com.duckduckgo.app.global.model.domainMatchesUrl
 import com.duckduckgo.app.location.GeoLocationPermissions
 import com.duckduckgo.app.location.data.LocationPermissionType
 import com.duckduckgo.app.location.data.LocationPermissionsRepository
-import com.duckduckgo.app.location.ui.SiteLocationPermissionDialog
-import com.duckduckgo.app.location.ui.SystemLocationPermissionDialog
 import com.duckduckgo.app.pixels.AppPixelName
-import com.duckduckgo.app.pixels.AppPixelName.FACEBOOK_LOGIN_BREAKAGE_INVESTIGATION
-import com.duckduckgo.app.pixels.AppPixelName.FACEBOOK_LOGIN_ERROR_BREAKAGE_INVESTIGATION
 import com.duckduckgo.app.privacy.db.NetworkLeaderboardDao
-import com.duckduckgo.app.privacy.db.UserWhitelistDao
+import com.duckduckgo.app.privacy.db.UserAllowListDao
 import com.duckduckgo.app.settings.db.SettingsDataStore
-import com.duckduckgo.app.settings.db.SettingsSharedPreferences.LoginDetectorPrefsMapper.AutomaticFireproofSetting.ALWAYS
-import com.duckduckgo.app.settings.db.SettingsSharedPreferences.LoginDetectorPrefsMapper.AutomaticFireproofSetting.ASK_EVERY_TIME
 import com.duckduckgo.app.statistics.api.StatisticsUpdater
 import com.duckduckgo.app.statistics.pixels.Pixel
 import com.duckduckgo.app.statistics.pixels.Pixel.PixelParameter
 import com.duckduckgo.app.statistics.pixels.Pixel.PixelParameter.FAVORITE_MENU_ITEM_STATE
 import com.duckduckgo.app.surrogates.SurrogateResponse
 import com.duckduckgo.app.survey.model.Survey
+import com.duckduckgo.app.survey.notification.SurveyNotificationScheduler
 import com.duckduckgo.app.tabs.model.TabEntity
 import com.duckduckgo.app.tabs.model.TabRepository
 import com.duckduckgo.app.trackerdetection.model.TrackingEvent
 import com.duckduckgo.app.usage.search.SearchCountDao
-import com.duckduckgo.autofill.CredentialUpdateExistingCredentialsDialog.CredentialUpdateType
-import com.duckduckgo.autofill.domain.app.LoginCredentials
-import com.duckduckgo.autofill.store.AutofillStore
+import com.duckduckgo.autofill.api.AutofillCapabilityChecker
+import com.duckduckgo.autofill.api.CredentialUpdateExistingCredentialsDialog.CredentialUpdateType
+import com.duckduckgo.autofill.api.domain.app.LoginCredentials
+import com.duckduckgo.autofill.api.passwordgeneration.AutomaticSavedLoginsMonitor
+import com.duckduckgo.autofill.api.store.AutofillStore
 import com.duckduckgo.browser.api.brokensite.BrokenSiteData
 import com.duckduckgo.di.scopes.FragmentScope
 import com.duckduckgo.downloads.api.DownloadCommand
@@ -126,12 +124,17 @@ import com.duckduckgo.downloads.api.DownloadStateListener
 import com.duckduckgo.downloads.api.FileDownloader
 import com.duckduckgo.downloads.api.FileDownloader.PendingFileDownload
 import com.duckduckgo.privacy.config.api.*
-import com.duckduckgo.privacy.config.api.TrackingParameters
 import com.duckduckgo.remote.messaging.api.RemoteMessage
+import com.duckduckgo.savedsites.api.SavedSitesRepository
+import com.duckduckgo.savedsites.api.models.BookmarkFolder
+import com.duckduckgo.savedsites.api.models.SavedSite
+import com.duckduckgo.savedsites.api.models.SavedSite.Bookmark
+import com.duckduckgo.savedsites.api.models.SavedSite.Favorite
 import com.duckduckgo.site.permissions.api.SitePermissionsManager
 import com.duckduckgo.voice.api.VoiceSearchAvailability
 import com.duckduckgo.voice.api.VoiceSearchAvailabilityPixelLogger
 import com.jakewharton.rxrelay2.PublishRelay
+import dagger.Lazy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -150,11 +153,10 @@ class BrowserTabViewModel @Inject constructor(
     private val duckDuckGoUrlDetector: DuckDuckGoUrlDetector,
     private val siteFactory: SiteFactory,
     private val tabRepository: TabRepository,
-    private val userWhitelistDao: UserWhitelistDao,
+    private val userAllowListDao: UserAllowListDao,
     private val contentBlocking: ContentBlocking,
     private val networkLeaderboardDao: NetworkLeaderboardDao,
-    private val bookmarksRepository: BookmarksRepository,
-    private val favoritesRepository: FavoritesRepository,
+    private val savedSitesRepository: SavedSitesRepository,
     private val fireproofWebsiteRepository: FireproofWebsiteRepository,
     private val locationPermissionsRepository: LocationPermissionsRepository,
     private val geoLocationPermissions: GeoLocationPermissions,
@@ -166,7 +168,7 @@ class BrowserTabViewModel @Inject constructor(
     private val specialUrlDetector: SpecialUrlDetector,
     private val faviconManager: FaviconManager,
     private val addToHomeCapabilityDetector: AddToHomeCapabilityDetector,
-    private val remoteMessagingModel: RemoteMessagingModel,
+    private val remoteMessagingModel: Lazy<RemoteMessagingModel>,
     private val ctaViewModel: CtaViewModel,
     private val searchCountDao: SearchCountDao,
     private val pixel: Pixel,
@@ -186,13 +188,16 @@ class BrowserTabViewModel @Inject constructor(
     private val voiceSearchPixelLogger: VoiceSearchAvailabilityPixelLogger,
     private val settingsDataStore: SettingsDataStore,
     private val autofillStore: AutofillStore,
+    private val autofillCapabilityChecker: AutofillCapabilityChecker,
     private val adClickManager: AdClickManager,
     private val sitePermissionsManager: SitePermissionsManager,
+    private val autofillFireproofDialogSuppressor: AutofillFireproofDialogSuppressor,
+    private val automaticSavedLoginsMonitor: AutomaticSavedLoginsMonitor,
+    private val surveyNotificationScheduler: SurveyNotificationScheduler,
+    private val device: DeviceInfo,
 ) : WebViewClientListener,
     EditSavedSiteListener,
-    HttpAuthenticationListener,
-    SiteLocationPermissionDialog.SiteLocationPermissionDialogListener,
-    SystemLocationPermissionDialog.SystemLocationPermissionDialogListener,
+    DeleteBookmarkListener,
     UrlExtractionListener,
     AutofillCredentialsSelectionResultHandler.AutofillCredentialSaver,
     AutofillCredentialsSelectionResultHandler.CredentialInjector,
@@ -279,6 +284,7 @@ class BrowserTabViewModel @Inject constructor(
         val isEditing: Boolean = false,
         val shouldMoveCaretToEnd: Boolean = false,
         val showVoiceSearch: Boolean = false,
+        val forceExpand: Boolean = true,
     )
 
     data class LoadingViewState(
@@ -353,7 +359,8 @@ class BrowserTabViewModel @Inject constructor(
         class AskToFireproofWebsite(val fireproofWebsite: FireproofWebsiteEntity) : Command()
         class AskToAutomateFireproofWebsite(val fireproofWebsite: FireproofWebsiteEntity) : Command()
         class ShareLink(val url: String) : Command()
-        class PrintLink(val url: String) : Command()
+        class SharePromoLinkRMF(val url: String, val shareTitle: String) : Command()
+        class PrintLink(val url: String, val mediaSize: PrintAttributes.MediaSize) : Command()
         class CopyLink(val url: String) : Command()
         class FindInPageCommand(val searchTerm: String) : Command()
         class BrokenSiteFeedback(val data: BrokenSiteData) : Command()
@@ -382,6 +389,7 @@ class BrowserTabViewModel @Inject constructor(
         class LaunchPlayStore(val appPackage: String) : Command()
         class LaunchSurvey(val survey: Survey) : Command()
         object LaunchDefaultBrowser : Command()
+        object LaunchAppTPOnboarding : Command()
         object LaunchAddWidget : Command()
         class RequiresAuthentication(val request: BasicAuthenticationRequest) : Command()
         class SaveCredentials(
@@ -426,13 +434,22 @@ class BrowserTabViewModel @Inject constructor(
         object ChildTabClosed : Command()
 
         class CopyAliasToClipboard(val alias: String) : Command()
-        class InjectEmailAddress(val address: String) : Command()
+        class InjectEmailAddress(
+            val duckAddress: String,
+            val originalUrl: String,
+            val autoSaveLogin: Boolean,
+        ) : Command()
         class ShowEmailTooltip(val address: String) : Command()
         sealed class DaxCommand : Command() {
             object FinishPartialTrackerAnimation : DaxCommand()
             class HideDaxDialog(val cta: Cta) : DaxCommand()
         }
-        class InjectCredentials(val url: String, val credentials: LoginCredentials) : Command()
+
+        class InjectCredentials(
+            val url: String,
+            val credentials: LoginCredentials,
+        ) : Command()
+
         class CancelIncomingAutofillRequest(val url: String) : Command()
         object LaunchAutofillSettings : Command()
         class EditWithSelectedQuery(val query: String) : Command()
@@ -443,10 +460,20 @@ class BrowserTabViewModel @Inject constructor(
             val permissionsToRequest: Array<String>,
             val request: PermissionRequest,
         ) : Command()
+
         class GrantSitePermissionRequest(
             val sitePermissionsToGrant: Array<String>,
             val request: PermissionRequest,
         ) : Command()
+
+        class ShowUserCredentialSavedOrUpdatedConfirmation(
+            val credentials: LoginCredentials,
+            val includeShortcutToViewCredential: Boolean,
+            val messageResourceId: Int,
+        ) : Command()
+
+        class AcceptGeneratedPassword(val url: String) : Command()
+        class RejectGeneratedPassword(val url: String) : Command()
     }
 
     sealed class NavigationCommand : Command() {
@@ -577,17 +604,27 @@ class BrowserTabViewModel @Inject constructor(
     private val loginDetectionObserver = Observer<LoginDetected> { loginEvent ->
         Timber.i("LoginDetection for $loginEvent")
         viewModelScope.launch(dispatchers.io()) {
+            val canPromptAboutFireproofing = !autofillFireproofDialogSuppressor.isAutofillPreventingFireproofPrompts()
+
             if (!isFireproofWebsite(loginEvent.forwardedToDomain)) {
                 withContext(dispatchers.main()) {
                     val showAutomaticFireproofDialog =
                         settingsDataStore.automaticFireproofSetting == ASK_EVERY_TIME && settingsDataStore.showAutomaticFireproofDialog
                     when {
-                        showAutomaticFireproofDialog ->
-                            command.value = AskToAutomateFireproofWebsite(FireproofWebsiteEntity(loginEvent.forwardedToDomain))
+                        showAutomaticFireproofDialog -> {
+                            if (canPromptAboutFireproofing) {
+                                command.value = AskToAutomateFireproofWebsite(FireproofWebsiteEntity(loginEvent.forwardedToDomain))
+                            }
+                        }
+
                         settingsDataStore.automaticFireproofSetting == ALWAYS ->
                             fireproofDialogsEventHandler.onUserConfirmedFireproofDialog(loginEvent.forwardedToDomain)
-                        else ->
-                            command.value = AskToFireproofWebsite(FireproofWebsiteEntity(loginEvent.forwardedToDomain))
+
+                        else -> {
+                            if (canPromptAboutFireproofing) {
+                                command.value = AskToFireproofWebsite(FireproofWebsiteEntity(loginEvent.forwardedToDomain))
+                            }
+                        }
                     }
                 }
             }
@@ -617,7 +654,7 @@ class BrowserTabViewModel @Inject constructor(
 
         observeAccessibilitySettings()
 
-        favoritesRepository.favorites().onEach { favoriteSites ->
+        savedSitesRepository.getFavorites().map { favoriteSites ->
             val favorites = favoriteSites.map { FavoritesQuickAccessAdapter.QuickAccessFavorite(it) }
             ctaViewState.value = currentCtaViewState().copy(favorites = favorites)
             autoCompleteViewState.value = currentAutoCompleteViewState().copy(favorites = favorites)
@@ -625,30 +662,38 @@ class BrowserTabViewModel @Inject constructor(
             browserViewState.value = currentBrowserViewState().copy(favorite = favorite)
         }.launchIn(viewModelScope)
 
-        bookmarksRepository.bookmarks().onEach { bookmarks ->
-            val bookmark = bookmarks.firstOrNull { it.url == url }
-            browserViewState.value = currentBrowserViewState().copy(bookmark = bookmark)
-        }.launchIn(viewModelScope)
+        savedSitesRepository.getBookmarks()
+            .flowOn(dispatchers.io())
+            .map { bookmarks ->
+                val bookmark = bookmarks.firstOrNull { it.url == url }
+                browserViewState.value = currentBrowserViewState().copy(bookmark = bookmark)
+            }
+            .flowOn(dispatchers.main())
+            .launchIn(viewModelScope)
 
-        remoteMessagingModel.activeMessages
-            .combine(ctaChangedTicker.asStateFlow(), ::Pair)
-            .onEach { (activeMessage, ticker) ->
-                Timber.v("RMF: $ticker-$activeMessage")
+        viewModelScope.launch(dispatchers.io()) {
+            remoteMessagingModel.get().activeMessages
+                .combine(ctaChangedTicker.asStateFlow(), ::Pair)
+                .onEach { (activeMessage, ticker) ->
+                    Timber.v("RMF: $ticker-$activeMessage")
 
-                if (ticker.isEmpty()) return@onEach
-                if (currentBrowserViewState().browserShowing) return@onEach
+                    if (ticker.isEmpty()) return@onEach
+                    if (currentBrowserViewState().browserShowing) return@onEach
 
-                val cta = currentCtaViewState().cta?.takeUnless { it ->
-                    activeMessage != null && it is HomePanelCta
+                    val cta = currentCtaViewState().cta?.takeUnless { it ->
+                        activeMessage != null && it is HomePanelCta
+                    }
+
+                    withContext(dispatchers.main()) {
+                        ctaViewState.value = currentCtaViewState().copy(
+                            cta = cta,
+                            message = if (cta == null) activeMessage else null,
+                        )
+                    }
                 }
-
-                withContext(dispatchers.main()) {
-                    ctaViewState.value = currentCtaViewState().copy(
-                        cta = cta,
-                        message = if (cta == null) activeMessage else null,
-                    )
-                }
-            }.launchIn(viewModelScope)
+                .flowOn(dispatchers.io())
+                .launchIn(viewModelScope)
+        }
     }
 
     fun loadData(
@@ -801,8 +846,9 @@ class BrowserTabViewModel @Inject constructor(
 
     suspend fun fireAutocompletePixel(suggestion: AutoCompleteSuggestion) {
         val currentViewState = currentAutoCompleteViewState()
+
         val hasBookmarks = withContext(dispatchers.io()) {
-            bookmarksRepository.hasBookmarks()
+            savedSitesRepository.hasBookmarks()
         }
         val hasBookmarkResults = currentViewState.searchResults.suggestions.any { it is AutoCompleteBookmarkSuggestion }
         val params = mapOf(
@@ -859,9 +905,11 @@ class BrowserTabViewModel @Inject constructor(
             is NonHttpAppLink -> {
                 nonHttpAppLinkClicked(type)
             }
+
             is SpecialUrlDetector.UrlType.CloakedAmpLink -> {
                 handleCloakedAmpLink(type.ampUrl)
             }
+
             else -> {
                 if (type is SpecialUrlDetector.UrlType.ExtractedAmpLink) {
                     Timber.d("AMP link detection: Using extracted URL: ${type.extractedUrl}")
@@ -894,6 +942,7 @@ class BrowserTabViewModel @Inject constructor(
             omnibarText = trimmedInput,
             shouldMoveCaretToEnd = false,
             showVoiceSearch = voiceSearchAvailability.shouldShowVoiceSearch(urlLoaded = urlToNavigate),
+            forceExpand = true,
         )
         browserViewState.value = currentBrowserViewState().copy(browserShowing = true, showClearButton = false)
         autoCompleteViewState.value =
@@ -1094,6 +1143,7 @@ class BrowserTabViewModel @Inject constructor(
             omnibarText = "",
             shouldMoveCaretToEnd = false,
             showVoiceSearch = voiceSearchAvailability.shouldShowVoiceSearch(),
+            forceExpand = true,
         )
         loadingViewState.value = currentLoadingViewState().copy(isLoading = false)
 
@@ -1158,28 +1208,14 @@ class BrowserTabViewModel @Inject constructor(
         command.value = ShowWebContent
     }
 
-    private fun sendBrokenFBLoginPixels(previousUrl: String?, url: String) {
-        // User lands on failed FB login due to WebView incompatibility
-        if (previousUrl != url && url.contains("LOGIN_DISABLED_FROM_WEBVIEW")) {
-            pixel.fire(FACEBOOK_LOGIN_ERROR_BREAKAGE_INVESTIGATION)
-        }
-        if (previousUrl != url && url.contains("facebook.com/login.php")) {
-            pixel.fire(FACEBOOK_LOGIN_BREAKAGE_INVESTIGATION)
-        }
-    }
-
     private fun pageChanged(
         url: String,
         title: String?,
     ) {
         Timber.v("Page changed: $url")
-        val previousUrl = site?.url
-
         hasCtaBeenShownForCurrentPage.set(false)
         buildSiteFactory(url, title)
         setAdClickActiveTabData(url)
-
-        sendBrokenFBLoginPixels(previousUrl, url)
 
         val currentOmnibarViewState = currentOmnibarViewState()
         val omnibarText = omnibarTextForUrl(url)
@@ -1187,6 +1223,7 @@ class BrowserTabViewModel @Inject constructor(
             omnibarText = omnibarText,
             shouldMoveCaretToEnd = false,
             showVoiceSearch = voiceSearchAvailability.shouldShowVoiceSearch(urlLoaded = url),
+            forceExpand = true,
         )
         val currentBrowserViewState = currentBrowserViewState()
         val domain = site?.domain
@@ -1202,7 +1239,6 @@ class BrowserTabViewModel @Inject constructor(
             canSaveSite = domain != null,
             addFavorite = addFavorite,
             addToHomeEnabled = domain != null,
-            addToHomeVisible = addToHomeCapabilityDetector.isAddToHomeSupported(),
             canSharePage = domain != null,
             showPrivacyShield = true,
             canReportSite = domain != null,
@@ -1250,6 +1286,8 @@ class BrowserTabViewModel @Inject constructor(
 
         isProcessingTrackingLink = false
         isLinkOpenedInNewTab = false
+
+        automaticSavedLoginsMonitor.clearAutoSavedLoginId(tabId)
     }
 
     private fun setAdClickActiveTabData(url: String?) {
@@ -1276,22 +1314,22 @@ class BrowserTabViewModel @Inject constructor(
     }
 
     private suspend fun updateLoadingStatePrivacy(domain: String) {
-        val isWhitelisted = isWhitelisted(domain)
+        val isAllowListed = isAllowListed(domain)
         withContext(dispatchers.main()) {
-            loadingViewState.value = currentLoadingViewState().copy(privacyOn = !isWhitelisted)
+            loadingViewState.value = currentLoadingViewState().copy(privacyOn = !isAllowListed)
         }
     }
 
     private suspend fun updatePrivacyProtectionState(domain: String) {
-        val isWhitelisted = isWhitelisted(domain)
+        val isAllowListed = isAllowListed(domain)
         withContext(dispatchers.main()) {
-            browserViewState.value = currentBrowserViewState().copy(isPrivacyProtectionEnabled = isWhitelisted)
+            browserViewState.value = currentBrowserViewState().copy(isPrivacyProtectionEnabled = isAllowListed)
         }
     }
 
-    private suspend fun isWhitelisted(domain: String): Boolean {
+    private suspend fun isAllowListed(domain: String): Boolean {
         return withContext(dispatchers.io()) {
-            userWhitelistDao.contains(domain) || contentBlocking.isAnException(domain)
+            userAllowListDao.contains(domain) || contentBlocking.isAnException(domain)
         }
     }
 
@@ -1308,20 +1346,20 @@ class BrowserTabViewModel @Inject constructor(
 
     private suspend fun getBookmark(url: String): SavedSite.Bookmark? {
         return withContext(dispatchers.io()) {
-            bookmarksRepository.getBookmark(url)
+            savedSitesRepository.getBookmark(url)
         }
     }
 
     private suspend fun getBookmarkFolder(bookmark: SavedSite.Bookmark?): BookmarkFolder? {
         if (bookmark == null) return null
         return withContext(dispatchers.io()) {
-            bookmarksRepository.getBookmarkFolderByParentId(bookmark.parentId)
+            savedSitesRepository.getFolder(bookmark.parentId)
         }
     }
 
     private suspend fun getFavorite(url: String): SavedSite.Favorite? {
         return withContext(dispatchers.io()) {
-            favoritesRepository.favorite(url)
+            savedSitesRepository.getFavorite(url)
         }
     }
 
@@ -1363,6 +1401,7 @@ class BrowserTabViewModel @Inject constructor(
                 omnibarText = omnibarText,
                 shouldMoveCaretToEnd = false,
                 showVoiceSearch = voiceSearchAvailability.shouldShowVoiceSearch(urlLoaded = url),
+                forceExpand = false,
             ),
         )
         browserViewState.postValue(currentBrowserViewState().copy(isFireproofWebsite = isFireproofWebsite()))
@@ -1389,7 +1428,6 @@ class BrowserTabViewModel @Inject constructor(
             canSaveSite = false,
             addFavorite = HighlightableButton.Visible(enabled = false),
             addToHomeEnabled = false,
-            addToHomeVisible = addToHomeCapabilityDetector.isAddToHomeSupported(),
             canSharePage = false,
             showPrivacyShield = false,
             canReportSite = false,
@@ -1430,7 +1468,10 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    override fun onSitePermissionRequested(request: PermissionRequest, sitePermissionsAllowedToAsk: Array<String>) {
+    override fun onSitePermissionRequested(
+        request: PermissionRequest,
+        sitePermissionsAllowedToAsk: Array<String>,
+    ) {
         viewModelScope.launch(dispatchers.io()) {
             val url = request.origin.toString()
             val sitePermissionsGranted = sitePermissionsManager.getSitePermissionsGranted(url, tabId, sitePermissionsAllowedToAsk)
@@ -1487,7 +1528,7 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    override fun onSiteLocationPermissionSelected(
+    fun onSiteLocationPermissionSelected(
         domain: String,
         permission: LocationPermissionType,
     ) {
@@ -1502,11 +1543,13 @@ class BrowserTabViewModel @Inject constructor(
                         faviconManager.persistCachedFavicon(tabId, domain)
                     }
                 }
+
                 LocationPermissionType.ALLOW_ONCE -> {
                     pixel.fire(AppPixelName.PRECISE_LOCATION_SITE_DIALOG_ALLOW_ONCE)
                     locationPermissionSession[domain] = permission
                     locationPermission.callback.invoke(locationPermission.origin, true, false)
                 }
+
                 LocationPermissionType.DENY_ALWAYS -> {
                     pixel.fire(AppPixelName.PRECISE_LOCATION_SITE_DIALOG_DENY_ALWAYS)
                     onSiteLocationPermissionAlwaysDenied()
@@ -1515,6 +1558,7 @@ class BrowserTabViewModel @Inject constructor(
                         faviconManager.persistCachedFavicon(tabId, domain)
                     }
                 }
+
                 LocationPermissionType.DENY_ONCE -> {
                     pixel.fire(AppPixelName.PRECISE_LOCATION_SITE_DIALOG_DENY_ONCE)
                     locationPermissionSession[domain] = permission
@@ -1548,12 +1592,15 @@ class BrowserTabViewModel @Inject constructor(
                 LocationPermissionType.ALLOW_ALWAYS -> {
                     onSiteLocationPermissionAlwaysAllowed()
                 }
+
                 LocationPermissionType.ALLOW_ONCE -> {
                     command.postValue(AskDomainPermission(locationPermission.origin))
                 }
+
                 LocationPermissionType.DENY_ALWAYS -> {
                     onSiteLocationPermissionAlwaysDenied()
                 }
+
                 LocationPermissionType.DENY_ONCE -> {
                     command.postValue(AskDomainPermission(locationPermission.origin))
                 }
@@ -1571,17 +1618,17 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    override fun onSystemLocationPermissionAllowed() {
+    fun onSystemLocationPermissionAllowed() {
         pixel.fire(AppPixelName.PRECISE_LOCATION_SYSTEM_DIALOG_ENABLE)
         command.postValue(RequestSystemLocationPermission)
     }
 
-    override fun onSystemLocationPermissionNotAllowed() {
+    fun onSystemLocationPermissionNotAllowed() {
         pixel.fire(AppPixelName.PRECISE_LOCATION_SYSTEM_DIALOG_LATER)
         onSiteLocationPermissionAlwaysDenied()
     }
 
-    override fun onSystemLocationPermissionNeverAllowed() {
+    fun onSystemLocationPermissionNeverAllowed() {
         locationPermission?.let { locationPermission ->
             onSiteLocationPermissionSelected(locationPermission.origin, LocationPermissionType.DENY_ALWAYS)
             pixel.fire(AppPixelName.PRECISE_LOCATION_SYSTEM_DIALOG_NEVER)
@@ -1609,9 +1656,14 @@ class BrowserTabViewModel @Inject constructor(
         onSiteLocationPermissionAlwaysDenied()
     }
 
+    fun onSystemLocationPermissionDeniedTwice() {
+        pixel.fire(AppPixelName.PRECISE_LOCATION_SETTINGS_LOCATION_PERMISSION_DISABLE)
+        onSystemLocationPermissionDeniedForever()
+    }
+
     fun onSystemLocationPermissionDeniedForever() {
         appSettingsPreferencesStore.appLocationPermissionDeniedForever = true
-        onSystemLocationPermissionDeniedOneTime()
+        onSiteLocationPermissionAlwaysDenied()
     }
 
     private fun registerSiteVisit() {
@@ -1684,10 +1736,16 @@ class BrowserTabViewModel @Inject constructor(
         onSiteChanged()
     }
 
-    fun onAutoconsentResultReceived(consentManaged: Boolean, optOutFailed: Boolean, selfTestFailed: Boolean) {
+    fun onAutoconsentResultReceived(
+        consentManaged: Boolean,
+        optOutFailed: Boolean,
+        selfTestFailed: Boolean,
+        isCosmetic: Boolean?,
+    ) {
         site?.consentManaged = consentManaged
         site?.consentOptOutFailed = optOutFailed
         site?.consentSelfTestFailed = selfTestFailed
+        site?.consentCosmeticHide = isCosmetic
     }
 
     private fun onSiteChanged() {
@@ -1757,6 +1815,7 @@ class BrowserTabViewModel @Inject constructor(
                 isEditing = hasFocus,
                 urlLoaded = url ?: "",
             ),
+            forceExpand = true,
         )
 
         val currentBrowserViewState = currentBrowserViewState()
@@ -1806,6 +1865,24 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
+    fun onFavoriteMenuClicked() {
+        val url = url ?: return
+        viewModelScope.launch {
+            val favorite = currentBrowserViewState().favorite
+            if (favorite != null) {
+                pixel.fire(AppPixelName.MENU_ACTION_REMOVE_FAVORITE_PRESSED.pixelName)
+                removeFavoriteSite(favorite)
+            } else {
+                val buttonHighlighted = currentBrowserViewState().addFavorite.isHighlighted()
+                pixel.fire(
+                    AppPixelName.MENU_ACTION_ADD_FAVORITE_PRESSED.pixelName,
+                    mapOf(FAVORITE_MENU_ITEM_STATE to buttonHighlighted.toString()),
+                )
+                saveFavoriteSite(url, title ?: "")
+            }
+        }
+    }
+
     private suspend fun saveSiteBookmark(
         url: String,
         title: String,
@@ -1814,7 +1891,7 @@ class BrowserTabViewModel @Inject constructor(
             if (url.isNotBlank()) {
                 faviconManager.persistCachedFavicon(tabId, url)
             }
-            bookmarksRepository.insert(title, url)
+            savedSitesRepository.insertBookmark(url, title)
         }
         val bookmarkFolder = getBookmarkFolder(savedBookmark)
         withContext(dispatchers.main()) {
@@ -1822,26 +1899,10 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    fun onFavoriteMenuClicked() {
-        val url = url ?: return
-        val favorite = currentBrowserViewState().favorite
-        if (favorite != null) {
-            pixel.fire(AppPixelName.MENU_ACTION_REMOVE_FAVORITE_PRESSED.pixelName)
-            removeFavoriteSite(favorite)
-        } else {
-            val buttonHighlighted = currentBrowserViewState().addFavorite.isHighlighted()
-            pixel.fire(
-                AppPixelName.MENU_ACTION_ADD_FAVORITE_PRESSED.pixelName,
-                mapOf(FAVORITE_MENU_ITEM_STATE to buttonHighlighted.toString()),
-            )
-            saveFavoriteSite(url, title ?: "")
-        }
-    }
-
     private fun removeFavoriteSite(favorite: SavedSite.Favorite) {
         viewModelScope.launch {
             withContext(dispatchers.io()) {
-                favoritesRepository.delete(favorite)
+                savedSitesRepository.delete(favorite)
             }
             withContext(dispatchers.main()) {
                 command.value = DeleteSavedSiteConfirmation(favorite)
@@ -1857,7 +1918,7 @@ class BrowserTabViewModel @Inject constructor(
             val favorite = withContext(dispatchers.io()) {
                 if (url.isNotBlank()) {
                     faviconManager.persistCachedFavicon(tabId, url)
-                    favoritesRepository.insert(title = title, url = url)
+                    savedSitesRepository.insertFavorite(title = title, url = url)
                 } else {
                     null
                 }
@@ -1956,18 +2017,30 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    override fun onSavedSiteEdited(savedSite: SavedSite) {
-        when (savedSite) {
-            is SavedSite.Bookmark -> {
-                viewModelScope.launch(dispatchers.io()) {
-                    editBookmark(savedSite)
-                }
-            }
-            is SavedSite.Favorite -> {
-                viewModelScope.launch(dispatchers.io()) {
-                    editFavorite(savedSite)
-                }
-            }
+    override fun onFavouriteEdited(favorite: Favorite) {
+        viewModelScope.launch(dispatchers.io()) {
+            savedSitesRepository.updateFavourite(favorite)
+        }
+    }
+
+    override fun onBookmarkEdited(
+        bookmark: Bookmark,
+        oldFolderId: String,
+    ) {
+        viewModelScope.launch(dispatchers.io()) {
+            savedSitesRepository.updateBookmark(bookmark, oldFolderId)
+        }
+    }
+
+    override fun onSavedSiteDeleted(savedSite: SavedSite) {
+        command.value = DeleteSavedSiteConfirmation(savedSite)
+        delete(savedSite)
+    }
+
+    private fun delete(savedSite: SavedSite) {
+        viewModelScope.launch(dispatchers.io()) {
+            faviconManager.deletePersistedFavicon(savedSite.url)
+            savedSitesRepository.delete(savedSite)
         }
     }
 
@@ -1995,18 +2068,6 @@ class BrowserTabViewModel @Inject constructor(
         command.value = DeleteSavedSiteConfirmation(savedSite)
     }
 
-    private suspend fun editBookmark(bookmark: SavedSite.Bookmark) {
-        withContext(dispatchers.io()) {
-            bookmarksRepository.update(bookmark)
-        }
-    }
-
-    private suspend fun editFavorite(favorite: SavedSite.Favorite) {
-        withContext(dispatchers.io()) {
-            favoritesRepository.update(favorite)
-        }
-    }
-
     fun onBrokenSiteSelected() {
         command.value = BrokenSiteFeedback(BrokenSiteData.fromSite(site))
     }
@@ -2014,19 +2075,19 @@ class BrowserTabViewModel @Inject constructor(
     fun onPrivacyProtectionMenuClicked() {
         val domain = site?.domain ?: return
         appCoroutineScope.launch(dispatchers.io()) {
-            if (isWhitelisted(domain)) {
-                removeFromWhitelist(domain)
+            if (isAllowListed(domain)) {
+                removeFromAllowList(domain)
             } else {
-                addToWhitelist(domain)
+                addToAllowList(domain)
             }
             command.postValue(NavigationCommand.Refresh)
         }
     }
 
-    private suspend fun addToWhitelist(domain: String) {
-        pixel.fire(AppPixelName.BROWSER_MENU_WHITELIST_ADD)
+    private suspend fun addToAllowList(domain: String) {
+        pixel.fire(AppPixelName.BROWSER_MENU_ALLOWLIST_ADD)
         withContext(dispatchers.io()) {
-            userWhitelistDao.insert(domain)
+            userAllowListDao.insert(domain)
         }
         withContext(dispatchers.main()) {
             command.value = ShowPrivacyProtectionDisabledConfirmation(domain)
@@ -2034,10 +2095,10 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    private suspend fun removeFromWhitelist(domain: String) {
-        pixel.fire(AppPixelName.BROWSER_MENU_WHITELIST_REMOVE)
+    private suspend fun removeFromAllowList(domain: String) {
+        pixel.fire(AppPixelName.BROWSER_MENU_ALLOWLIST_REMOVE)
         withContext(dispatchers.io()) {
-            userWhitelistDao.delete(domain)
+            userAllowListDao.delete(domain)
         }
         withContext(dispatchers.main()) {
             command.value = ShowPrivacyProtectionEnabledConfirmation(domain)
@@ -2047,7 +2108,7 @@ class BrowserTabViewModel @Inject constructor(
 
     fun onDisablePrivacyProtectionSnackbarUndoClicked(domain: String) {
         viewModelScope.launch(dispatchers.io()) {
-            userWhitelistDao.insert(domain)
+            userAllowListDao.insert(domain)
             withContext(dispatchers.main()) {
                 browserViewState.value = currentBrowserViewState().copy(isPrivacyProtectionEnabled = true)
                 command.value = NavigationCommand.Refresh
@@ -2057,7 +2118,7 @@ class BrowserTabViewModel @Inject constructor(
 
     fun onEnablePrivacyProtectionSnackbarUndoClicked(domain: String) {
         viewModelScope.launch(dispatchers.io()) {
-            userWhitelistDao.delete(domain)
+            userAllowListDao.delete(domain)
             withContext(dispatchers.main()) {
                 browserViewState.value = currentBrowserViewState().copy(isPrivacyProtectionEnabled = false)
                 command.value = NavigationCommand.Refresh
@@ -2090,23 +2151,28 @@ class BrowserTabViewModel @Inject constructor(
                 command.value = OpenInNewTab(query = requiredAction.url, sourceTabId = tabId)
                 true
             }
+
             is RequiredAction.OpenInNewBackgroundTab -> {
                 command.value = GenerateWebViewPreviewImage
                 viewModelScope.launch { openInNewBackgroundTab(requiredAction.url) }
                 true
             }
+
             is RequiredAction.DownloadFile -> {
                 command.value = DownloadImage(requiredAction.url, false)
                 true
             }
+
             is RequiredAction.ShareLink -> {
                 command.value = ShareLink(requiredAction.url)
                 true
             }
+
             is RequiredAction.CopyLink -> {
                 command.value = CopyLink(requiredAction.url)
                 true
             }
+
             RequiredAction.None -> {
                 false
             }
@@ -2201,7 +2267,7 @@ class BrowserTabViewModel @Inject constructor(
     private suspend fun initializeViewStatesFromPersistedData() {
         withContext(dispatchers.io()) {
             val addToHomeSupported = addToHomeCapabilityDetector.isAddToHomeSupported()
-            val showAutofill = autofillStore.autofillAvailable
+            val showAutofill = autofillCapabilityChecker.canAccessCredentialManagementScreen()
             val showVoiceSearch = voiceSearchAvailability.shouldShowVoiceSearch()
 
             withContext(dispatchers.main()) {
@@ -2329,9 +2395,12 @@ class BrowserTabViewModel @Inject constructor(
             ctaViewState.value = currentCtaViewState().copy(cta = null)
             return
         }
-        if (survey != null) {
-            viewModelScope.launch {
-                refreshCta(locale)
+        viewModelScope.launch {
+            if (survey != null) {
+                refreshCta()
+                surveyNotificationScheduler.scheduleSurveyAvailableNotification(survey)
+            } else {
+                surveyNotificationScheduler.removeScheduledSurveyAvailableNotification()
             }
         }
     }
@@ -2343,7 +2412,7 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    suspend fun refreshCta(locale: Locale = Locale.getDefault()): Cta? {
+    suspend fun refreshCta(): Cta? {
         if (currentGlobalLayoutState() is Browser) {
             val isBrowserShowing = currentBrowserViewState().browserShowing
             if (hasCtaBeenShownForCurrentPage.get() && isBrowserShowing) return null
@@ -2353,7 +2422,6 @@ class BrowserTabViewModel @Inject constructor(
                     isBrowserShowing,
                     siteLiveData.value,
                     showFavoritesOnboarding,
-                    locale,
                 )
             }
             if (isBrowserShowing && cta != null) hasCtaBeenShownForCurrentPage.set(true)
@@ -2365,7 +2433,8 @@ class BrowserTabViewModel @Inject constructor(
     }
 
     private fun showOrHideKeyboard(cta: Cta?) {
-        command.value = if (cta is DialogCta || cta is HomePanelCta) HideKeyboard else ShowKeyboard
+        command.value =
+            if (cta is DialogCta || cta is HomePanelCta) HideKeyboard else ShowKeyboard
     }
 
     fun registerDaxBubbleCtaDismissed() {
@@ -2396,14 +2465,14 @@ class BrowserTabViewModel @Inject constructor(
     fun onMessageShown() {
         val message = currentCtaViewState().message ?: return
         viewModelScope.launch {
-            remoteMessagingModel.onMessageShown(message)
+            remoteMessagingModel.get().onMessageShown(message)
         }
     }
 
     fun onMessageCloseButtonClicked() {
         val message = currentCtaViewState().message ?: return
         viewModelScope.launch {
-            remoteMessagingModel.onMessageDismissed(message)
+            remoteMessagingModel.get().onMessageDismissed(message)
             refreshCta()
         }
     }
@@ -2411,7 +2480,7 @@ class BrowserTabViewModel @Inject constructor(
     fun onMessagePrimaryButtonClicked() {
         val message = currentCtaViewState().message ?: return
         viewModelScope.launch {
-            val action = remoteMessagingModel.onPrimaryActionClicked(message) ?: return@launch
+            val action = remoteMessagingModel.get().onPrimaryActionClicked(message) ?: return@launch
             command.value = action.asBrowserTabCommand() ?: return@launch
             refreshCta()
         }
@@ -2420,7 +2489,16 @@ class BrowserTabViewModel @Inject constructor(
     fun onMessageSecondaryButtonClicked() {
         val message = currentCtaViewState().message ?: return
         viewModelScope.launch {
-            val action = remoteMessagingModel.onSecondaryActionClicked(message) ?: return@launch
+            val action = remoteMessagingModel.get().onSecondaryActionClicked(message) ?: return@launch
+            command.value = action.asBrowserTabCommand() ?: return@launch
+            refreshCta()
+        }
+    }
+
+    fun onMessageActionButtonClicked() {
+        val message = currentCtaViewState().message ?: return
+        viewModelScope.launch {
+            val action = remoteMessagingModel.get().onActionClicked(message) ?: return@launch
             command.value = action.asBrowserTabCommand() ?: return@launch
             refreshCta()
         }
@@ -2516,7 +2594,7 @@ class BrowserTabViewModel @Inject constructor(
     fun onPrintSelected() {
         url?.let {
             pixel.fire(AppPixelName.MENU_ACTION_PRINT_PRESSED)
-            command.value = PrintLink(removeAtbAndSourceParamsFromSearch(it))
+            command.value = PrintLink(removeAtbAndSourceParamsFromSearch(it), defaultMediaSize())
         }
     }
 
@@ -2543,13 +2621,14 @@ class BrowserTabViewModel @Inject constructor(
             omnibarViewState.value = currentOmnibarViewState().copy(
                 omnibarText = request.site,
                 showVoiceSearch = false,
+                forceExpand = true,
             )
             command.value = HideWebContent
         }
         command.value = RequiresAuthentication(request)
     }
 
-    override fun handleAuthentication(
+    fun handleAuthentication(
         request: BasicAuthenticationRequest,
         credentials: BasicAuthenticationCredentials,
     ) {
@@ -2558,7 +2637,7 @@ class BrowserTabViewModel @Inject constructor(
         command.value = SaveCredentials(request, credentials)
     }
 
-    override fun cancelAuthentication(request: BasicAuthenticationRequest) {
+    fun cancelAuthentication(request: BasicAuthenticationRequest) {
         request.handler.cancel()
         command.value = ShowWebContent
     }
@@ -2649,9 +2728,15 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    fun consumeAlias() {
+    /**
+     * API called after user selected to autofill a private alias into a form
+
+     * Consumes the alias and injects it into the current page
+     * Will also automatically save a login for this site if saving logins is enabled
+     */
+    fun consumeAlias(originalUrl: String) {
         emailManager.getAlias()?.let {
-            command.postValue(InjectEmailAddress(it))
+            command.postValue(InjectEmailAddress(duckAddress = it, originalUrl = originalUrl, autoSaveLogin = true))
             pixel.enqueueFire(
                 AppPixelName.EMAIL_USE_ALIAS,
                 mapOf(
@@ -2663,9 +2748,9 @@ class BrowserTabViewModel @Inject constructor(
         }
     }
 
-    fun useAddress() {
+    fun useAddress(originalUrl: String) {
         emailManager.getEmailAddress()?.let {
-            command.postValue(InjectEmailAddress(it))
+            command.postValue(InjectEmailAddress(duckAddress = it, originalUrl = originalUrl, autoSaveLogin = false))
             pixel.enqueueFire(
                 AppPixelName.EMAIL_USE_ADDRESS,
                 mapOf(
@@ -2686,22 +2771,21 @@ class BrowserTabViewModel @Inject constructor(
     }
 
     fun deleteQuickAccessItem(savedSite: SavedSite) {
-        val favorite = savedSite as? SavedSite.Favorite ?: return
         viewModelScope.launch(dispatchers.io() + NonCancellable) {
-            favoritesRepository.delete(favorite)
+            faviconManager.deletePersistedFavicon(savedSite.url)
+            savedSitesRepository.delete(savedSite)
         }
     }
 
     fun insertQuickAccessItem(savedSite: SavedSite) {
-        val favorite = savedSite as? SavedSite.Favorite ?: return
         viewModelScope.launch(dispatchers.io()) {
-            favoritesRepository.insert(favorite)
+            savedSitesRepository.insert(savedSite)
         }
     }
 
     fun onQuickAccessListChanged(newList: List<FavoritesQuickAccessAdapter.QuickAccessFavorite>) {
         viewModelScope.launch(dispatchers.io()) {
-            favoritesRepository.updateWithPosition(newList.map { it.favorite })
+            savedSitesRepository.updateWithPosition(newList.map { it.favorite })
         }
     }
 
@@ -2731,18 +2815,14 @@ class BrowserTabViewModel @Inject constructor(
         initialUrl: String,
         extractedUrl: String?,
     ) {
-        val destinationUrl: String = if (extractedUrl != null) {
-            ampLinks.lastAmpLinkInfo = AmpLinkInfo(ampLink = initialUrl)
-            Timber.d("AMP link detection: Success! Loading extracted URL: $extractedUrl")
-            extractedUrl
-        } else {
-            Timber.d("AMP link detection: Failed! Loading initial URL: $initialUrl")
-            initialUrl
-        }
+        val destinationUrl = ampLinks.processDestinationUrl(initialUrl, extractedUrl)
         command.postValue(LoadExtractedUrl(extractedUrl = destinationUrl))
     }
 
-    override fun shareCredentialsWithPage(originalUrl: String, credentials: LoginCredentials) {
+    override fun shareCredentialsWithPage(
+        originalUrl: String,
+        credentials: LoginCredentials,
+    ) {
         command.postValue(InjectCredentials(originalUrl, credentials))
     }
 
@@ -2750,7 +2830,10 @@ class BrowserTabViewModel @Inject constructor(
         command.postValue(CancelIncomingAutofillRequest(originalUrl))
     }
 
-    override suspend fun saveCredentials(url: String, credentials: LoginCredentials): LoginCredentials? {
+    override suspend fun saveCredentials(
+        url: String,
+        credentials: LoginCredentials,
+    ): LoginCredentials? {
         return withContext(appCoroutineScope.coroutineContext) {
             autofillStore.saveCredentials(url, credentials)
         }
@@ -2780,6 +2863,14 @@ class BrowserTabViewModel @Inject constructor(
         return isLinkOpenedInNewTab
     }
 
+    override fun isActiveTab(): Boolean {
+        liveSelectedTab.value?.let {
+            return it.tabId == tabId
+        }
+
+        return false
+    }
+
     fun onAutofillMenuSelected() {
         command.value = LaunchAutofillSettings
     }
@@ -2797,6 +2888,43 @@ class BrowserTabViewModel @Inject constructor(
         return canAutofillSelectCredentialsDialogCanAutomaticallyShow && !currentOmnibarViewState().isEditing
     }
 
+    fun onShowUserCredentialsSaved(it: LoginCredentials) {
+        viewModelScope.launch(dispatchers.main()) {
+            command.value = ShowUserCredentialSavedOrUpdatedConfirmation(
+                credentials = it,
+                includeShortcutToViewCredential = autofillCapabilityChecker.canAccessCredentialManagementScreen(),
+                messageResourceId = R.string.autofillLoginSavedSnackbarMessage,
+            )
+        }
+    }
+
+    fun onShowUserCredentialsUpdated(it: LoginCredentials) {
+        viewModelScope.launch(dispatchers.main()) {
+            command.value = ShowUserCredentialSavedOrUpdatedConfirmation(
+                credentials = it,
+                includeShortcutToViewCredential = autofillCapabilityChecker.canAccessCredentialManagementScreen(),
+                messageResourceId = R.string.autofillLoginUpdatedSnackbarMessage,
+            )
+        }
+    }
+
+    fun acceptGeneratedPassword(originalUrl: String) {
+        command.postValue(AcceptGeneratedPassword(originalUrl))
+    }
+
+    fun rejectGeneratedPassword(originalUrl: String) {
+        command.postValue(RejectGeneratedPassword(originalUrl))
+    }
+
+    private fun defaultMediaSize(): PrintAttributes.MediaSize {
+        val country = device.country.uppercase(Locale.getDefault())
+        return if (PRINT_LETTER_FORMAT_COUNTRIES_ISO3166_2.contains(country)) {
+            PrintAttributes.MediaSize.NA_LETTER
+        } else {
+            PrintAttributes.MediaSize.ISO_A4
+        }
+    }
+
     companion object {
         private const val FIXED_PROGRESS = 50
 
@@ -2805,5 +2933,12 @@ class BrowserTabViewModel @Inject constructor(
         private const val SHOW_CONTENT_MIN_PROGRESS = 50
         private const val NEW_CONTENT_MAX_DELAY_MS = 1000L
         private const val ONE_HOUR_IN_MS = 3_600_000
+
+        // https://www.iso.org/iso-3166-country-codes.html
+        private val PRINT_LETTER_FORMAT_COUNTRIES_ISO3166_2 = setOf(
+            Locale.US.country,
+            Locale.CANADA.country,
+            "MX", // Mexico
+        )
     }
 }

@@ -127,19 +127,6 @@ enum class DeviceShieldPixelNames(override val pixelName: String, val enqueue: B
     ATP_APP_BREAKAGE_REPORT("m_atp_breakage_report"),
     ATP_APP_BREAKAGE_REPORT_UNIQUE("m_atp_breakage_report_u"),
     ATP_APP_CPU_MONITOR_REPORT("m_atp_ev_cpu_usage_above_%d"),
-    ATP_APP_HEALTH_MONITOR_REPORT("m_atp_health_monitor_report"),
-    ATP_APP_HEALTH_ALERT_DAILY("m_atp_health_alert_%s_d"),
-    ATP_APP_BAD_HEALTH_RESOLVED_BY_RESTART("m_atp_bad_health_resolved_by_restart_c"),
-    ATP_APP_BAD_HEALTH_RESOLVED_BY_RESTART_DAILY("m_atp_bad_health_resolved_by_restart_d"),
-    ATP_APP_BAD_HEALTH_RESOLVED_ITSELF("m_atp_bad_health_resolved_itself_c"),
-    ATP_APP_BAD_HEALTH_RESOLVED_ITSELF_DAILY("m_atp_bad_health_resolved_itself_d"),
-    ATP_DID_RESTART_VPN_ON_BAD_HEALTH("m_atp_did_restart_vpn_on_bad_health_c"),
-    ATP_DID_RESTART_VPN_ON_BAD_HEALTH_DAILY("m_atp_did_restart_vpn_on_bad_health_d"),
-    ATP_DID_RESTART_VPN_PROCESS_ON_BAD_HEALTH("m_atp_did_restart_vpn_process_on_bad_health_c"),
-    ATP_DID_RESTART_VPN_PROCESS_ON_BAD_HEALTH_DAILY("m_atp_did_restart_vpn_process_on_bad_health_d"),
-
-    ATP_ENCRYPTED_IO_EXCEPTION("m_atp_ev_encrypted_io_error_c"),
-    ATP_ENCRYPTED_GENERAL_EXCEPTION("m_atp_ev_encrypted_error_c"),
 
     ATP_DID_SHOW_REPORT_BREAKAGE_APP_LIST("m_atp_imp_report_breakage_c"),
     ATP_DID_SHOW_REPORT_BREAKAGE_APP_LIST_DAILY("m_atp_imp_report_breakage_d"),
@@ -150,9 +137,6 @@ enum class DeviceShieldPixelNames(override val pixelName: String, val enqueue: B
     ATP_DID_CHOOSE_DISABLE_TRACKING_PROTECTION_DIALOG("m_atp_ev_selected_disable_protection_c"),
     ATP_DID_CHOOSE_DISABLE_ONE_APP_PROTECTION_DIALOG("m_atp_ev_selected_disable_app_protection_c"),
     ATP_DID_CHOOSE_CANCEL_APP_PROTECTION_DIALOG("m_atp_ev_selected_cancel_app_protection_c"),
-
-    ATP_DID_PRESS_WAITLIST_DIALOG_NOTIFY_ME("m_atp_ev_waitlist_dialog_notify_me_c"),
-    ATP_DID_PRESS_WAITLIST_DIALOG_DISMISS("m_atp_ev_waitlist_dialog_dismiss_c"),
 
     ATP_DID_SHOW_VPN_CONFLICT_DIALOG("m_atp_imp_vpn_conflict_dialog_c"),
     ATP_DID_CHOOSE_DISMISS_VPN_CONFLICT_DIALOG_DAILY("m_atp_ev_vpn_conflict_dialog_dismiss_d"),

@@ -24,6 +24,7 @@ import com.duckduckgo.app.browser.R
 import com.duckduckgo.app.downloads.DownloadViewItem.Empty
 import com.duckduckgo.app.downloads.DownloadViewItem.Header
 import com.duckduckgo.app.downloads.DownloadViewItem.Item
+import com.duckduckgo.app.downloads.DownloadViewItem.NotifyMe
 import com.duckduckgo.app.downloads.DownloadsViewModel.Command.CancelDownload
 import com.duckduckgo.app.downloads.DownloadsViewModel.Command.DisplayMessage
 import com.duckduckgo.app.downloads.DownloadsViewModel.Command.DisplayUndoMessage
@@ -31,6 +32,7 @@ import com.duckduckgo.app.downloads.DownloadsViewModel.Command.OpenFile
 import com.duckduckgo.app.downloads.DownloadsViewModel.Command.ShareFile
 import com.duckduckgo.app.global.R as CommonR
 import com.duckduckgo.app.global.formatters.time.RealTimeDiffFormatter
+import com.duckduckgo.app.global.formatters.time.TimeDiffFormatter
 import com.duckduckgo.downloads.api.DownloadsRepository
 import com.duckduckgo.downloads.api.model.DownloadItem
 import com.duckduckgo.downloads.store.DownloadStatus.FINISHED
@@ -64,7 +66,7 @@ class DownloadsViewModelTest {
     private val testee: DownloadsViewModel by lazy {
         val model =
             DownloadsViewModel(
-                RealTimeDiffFormatter(context),
+                FakeTimeDiffFormatter(TODAY, RealTimeDiffFormatter(context)),
                 mockDownloadsRepository,
                 coroutineRule.testDispatcherProvider,
             )
@@ -72,13 +74,13 @@ class DownloadsViewModelTest {
     }
 
     @Test
-    fun whenDownloadsCalledAndNoDownloadsThenViewStateEmittedWithEmptyViewItem() = runTest {
+    fun whenNoDownloadsAndVisibilityChangedCalledWithValueFalseThenViewStateEmittedWithEmptyItem() = runTest {
+        val visible = false
         val list = emptyList<DownloadItem>()
         whenever(mockDownloadsRepository.getDownloadsAsFlow()).thenReturn(flowOf(list))
+        testee.onItemVisibilityChanged(visible)
 
-        testee.downloads()
-
-        testee.viewState().test {
+        testee.viewState.test {
             val items = awaitItem().downloadItems
             assertEquals(1, items.size)
             assertTrue(items[0] is Empty)
@@ -86,13 +88,28 @@ class DownloadsViewModelTest {
     }
 
     @Test
-    fun whenDownloadsCalledAndOneDownloadThenViewStateEmittedWithOneItem() = runTest {
+    fun whenNoDownloadsAndVisibilityChangedCalledWithValueTrueThenViewStateEmittedWithNotifyMeAndEmptyItems() = runTest {
+        val visible = true
+        val list = emptyList<DownloadItem>()
+        whenever(mockDownloadsRepository.getDownloadsAsFlow()).thenReturn(flowOf(list))
+        testee.onItemVisibilityChanged(visible)
+
+        testee.viewState.test {
+            val items = awaitItem().downloadItems
+            assertEquals(2, items.size)
+            assertTrue(items[0] is NotifyMe)
+            assertTrue(items[1] is Empty)
+        }
+    }
+
+    @Test
+    fun whenOneDownloadAndVisibilityChangedCalledWithValueFalseThenViewStateEmittedWithHeaderAndOneItem() = runTest {
+        val visible = false
         val list = listOf(oneItem())
         whenever(mockDownloadsRepository.getDownloadsAsFlow()).thenReturn(flowOf(list))
+        testee.onItemVisibilityChanged(visible)
 
-        testee.downloads()
-
-        testee.viewState().test {
+        testee.viewState.test {
             val items = awaitItem().downloadItems
             assertEquals(2, items.size)
             assertTrue(items[0] is Header)
@@ -102,8 +119,27 @@ class DownloadsViewModelTest {
     }
 
     @Test
-    fun whenDownloadsCalledAndMultipleDownloadsThenViewStateEmittedWithMultipleItemsAndHeaders() = runTest {
-        val today = LocalDateTime.now()
+    fun whenOneDownloadAndVisibilityChangedCalledWithValueTrueThenViewStateEmittedWithNotifyMeAndHeaderAndOneItem() = runTest {
+        val visible = true
+        val list = listOf(oneItem())
+        whenever(mockDownloadsRepository.getDownloadsAsFlow()).thenReturn(flowOf(list))
+        testee.onItemVisibilityChanged(visible)
+
+        testee.viewState.test {
+            val items = awaitItem().downloadItems
+            assertEquals(3, items.size)
+            assertTrue(items[0] is NotifyMe)
+            assertTrue(items[1] is Header)
+            assertTrue(items[2] is Item)
+            assertEquals(list[0].fileName, (items[2] as Item).downloadItem.fileName)
+        }
+    }
+
+    @Test
+    fun whenMultipleDownloadsAndVisibilityChangedCalledWithValueFalseThenViewStateEmittedWithMultipleItemsAndHeaders() = runTest {
+        val visible = false
+        val formatter = org.threeten.bp.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val today = LocalDateTime.parse(TODAY, formatter)
         val yesterday = today.minusDays(1)
         val sometimeDuringPastWeek = today.minusDays(6)
         val sometimeDuringPastMonth = today.minusDays(20)
@@ -125,10 +161,9 @@ class DownloadsViewModelTest {
         whenever(context.getString(CommonR.string.common_Yesterday)).thenReturn("Yesterday")
         whenever(context.getString(CommonR.string.common_PastWeek)).thenReturn("Past Week")
         whenever(context.getString(CommonR.string.common_PastMonth)).thenReturn("Past Month")
+        testee.onItemVisibilityChanged(visible)
 
-        testee.downloads()
-
-        testee.viewState().test {
+        testee.viewState.test {
             val items = awaitItem().downloadItems
             assertEquals(12, items.size)
 
@@ -209,11 +244,11 @@ class DownloadsViewModelTest {
     fun whenOnQueryTextChangeThenViewStateEmittedWithTwoFilteredItems() = runTest {
         val list = listOf(oneItem(), otherItem())
         whenever(mockDownloadsRepository.getDownloadsAsFlow()).thenReturn(flowOf(list))
-        testee.downloads()
+        testee.onItemVisibilityChanged(false)
 
         testee.onQueryTextChange("other")
 
-        testee.viewState().test {
+        testee.viewState.test {
             val items = awaitItem()
             assertEquals(3, items.downloadItems.size)
             assertEquals(2, items.filteredItems.size)
@@ -227,11 +262,11 @@ class DownloadsViewModelTest {
     fun whenOnQueryTextChangeThenViewStateEmittedWithZeroFilteredItems() = runTest {
         val list = listOf(oneItem(), otherItem())
         whenever(mockDownloadsRepository.getDownloadsAsFlow()).thenReturn(flowOf(list))
-        testee.downloads()
+        testee.onItemVisibilityChanged(false)
 
         testee.onQueryTextChange("text_that_does_not_exist_in_list")
 
-        testee.viewState().test {
+        testee.viewState.test {
             val items = awaitItem()
             assertEquals(3, items.downloadItems.size)
             assertEquals(1, items.filteredItems.size)
@@ -329,4 +364,37 @@ class DownloadsViewModelTest {
             createdAt = "2022-02-21T10:56:22",
             filePath = "/",
         )
+
+    companion object {
+        private const val TODAY = "2022-11-02T13:00:00"
+    }
+}
+
+private class FakeTimeDiffFormatter(
+    today: String,
+    private val realTimeDiffFormatter: RealTimeDiffFormatter,
+) : TimeDiffFormatter by realTimeDiffFormatter {
+    private val formatter = org.threeten.bp.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+    private val formattedToday = LocalDateTime.parse(today, formatter)
+
+    override fun formatTimePassed(endLocalDateTime: LocalDateTime, startLocalDateTime: LocalDateTime): String {
+        return realTimeDiffFormatter.formatTimePassed(
+            endLocalDateTime = formattedToday,
+            startLocalDateTime = startLocalDateTime,
+        )
+    }
+
+    override fun formatTimePassedInDays(endLocalDateTime: LocalDateTime, startLocalDateTime: LocalDateTime): String {
+        return realTimeDiffFormatter.formatTimePassedInDays(
+            endLocalDateTime = formattedToday,
+            startLocalDateTime = startLocalDateTime,
+        )
+    }
+
+    override fun formatTimePassedInDaysWeeksMonthsYears(endLocalDateTime: LocalDateTime, startLocalDateTime: LocalDateTime): String {
+        return realTimeDiffFormatter.formatTimePassedInDaysWeeksMonthsYears(
+            endLocalDateTime = formattedToday,
+            startLocalDateTime = startLocalDateTime,
+        )
+    }
 }

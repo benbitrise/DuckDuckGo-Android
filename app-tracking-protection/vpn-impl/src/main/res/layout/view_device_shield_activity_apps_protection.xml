@@ -21,27 +21,28 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.duckduckgo.mobile.android.ui.view.divider.HorizontalDivider
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/apps_protection_state_insetPadding"
-        app:defaultPadding="false" />
-
     <com.duckduckgo.mobile.android.vpn.ui.tracker_activity.view.AppsProtectionStateView
         android:id="@+id/protectedAppsState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <com.duckduckgo.mobile.android.ui.view.divider.HorizontalDivider
+        android:id="@+id/protectedAppsBottomDivider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/horizontalDividerHeight"
         android:layout_marginStart="@dimen/apps_protection_state_insetPadding"
         app:defaultPadding="false" />
 
     <com.duckduckgo.mobile.android.vpn.ui.tracker_activity.view.AppsProtectionStateView
         android:id="@+id/unProtectedAppsState"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/keyline_3"/>
+        android:layout_height="wrap_content"/>
+
+    <com.duckduckgo.mobile.android.ui.view.divider.HorizontalDivider
+        android:id="@+id/unProtectedAppsBottomDivider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/horizontalDividerHeight"
+        android:layout_marginStart="@dimen/apps_protection_state_insetPadding"
+        app:defaultPadding="false" />
 
 </LinearLayout>

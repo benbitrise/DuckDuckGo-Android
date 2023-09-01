@@ -29,5 +29,7 @@ fun Action.asBrowserTabCommand(): Command? {
         is PlayStore -> LaunchPlayStore(this.value)
         is Url -> SubmitUrl(this.value)
         is DefaultBrowser -> LaunchDefaultBrowser
+        is AppTpOnboarding -> LaunchAppTPOnboarding
+        is Share -> SharePromoLinkRMF(this.value, this.title)
     }
 }

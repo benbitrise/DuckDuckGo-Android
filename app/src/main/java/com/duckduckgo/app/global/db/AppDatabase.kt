@@ -17,6 +17,7 @@
 package com.duckduckgo.app.global.db
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -33,13 +34,6 @@ import com.duckduckgo.app.fire.fireproofwebsite.data.FireproofWebsiteEntity
 import com.duckduckgo.app.global.events.db.UserEventEntity
 import com.duckduckgo.app.global.events.db.UserEventTypeConverter
 import com.duckduckgo.app.global.events.db.UserEventsDao
-import com.duckduckgo.app.global.exception.UncaughtExceptionDao
-import com.duckduckgo.app.global.exception.UncaughtExceptionEntity
-import com.duckduckgo.app.global.exception.UncaughtExceptionSourceConverter
-import com.duckduckgo.app.httpsupgrade.model.HttpsBloomFilterSpec
-import com.duckduckgo.app.httpsupgrade.model.HttpsFalsePositiveDomain
-import com.duckduckgo.app.httpsupgrade.store.HttpsBloomFilterSpecDao
-import com.duckduckgo.app.httpsupgrade.store.HttpsFalsePositivesDao
 import com.duckduckgo.app.location.data.LocationPermissionEntity
 import com.duckduckgo.app.location.data.LocationPermissionsDao
 import com.duckduckgo.app.notification.db.NotificationDao
@@ -47,7 +41,7 @@ import com.duckduckgo.app.notification.model.Notification
 import com.duckduckgo.app.onboarding.store.*
 import com.duckduckgo.app.privacy.db.*
 import com.duckduckgo.app.privacy.model.PrivacyProtectionCountsEntity
-import com.duckduckgo.app.privacy.model.UserWhitelistedDomain
+import com.duckduckgo.app.privacy.model.UserAllowListedDomain
 import com.duckduckgo.app.settings.db.SettingsDataStore
 import com.duckduckgo.app.settings.db.SettingsSharedPreferences.LoginDetectorPrefsMapper
 import com.duckduckgo.app.statistics.model.PixelEntity
@@ -64,18 +58,21 @@ import com.duckduckgo.app.usage.app.AppDaysUsedDao
 import com.duckduckgo.app.usage.app.AppDaysUsedEntity
 import com.duckduckgo.app.usage.search.SearchCountDao
 import com.duckduckgo.app.usage.search.SearchCountEntity
+import com.duckduckgo.savedsites.store.Entity
+import com.duckduckgo.savedsites.store.EntityTypeConverter
+import com.duckduckgo.savedsites.store.Relation
+import com.duckduckgo.savedsites.store.SavedSitesEntitiesDao
+import com.duckduckgo.savedsites.store.SavedSitesRelationsDao
 
 @Database(
     exportSchema = true,
-    version = 44,
+    version = 49,
     entities = [
         TdsTracker::class,
         TdsEntity::class,
         TdsDomainEntity::class,
         TdsCnameEntity::class,
-        UserWhitelistedDomain::class,
-        HttpsBloomFilterSpec::class,
-        HttpsFalsePositiveDomain::class,
+        UserAllowListedDomain::class,
         NetworkLeaderboardEntry::class,
         SitesVisitedEntity::class,
         TabEntity::class,
@@ -90,7 +87,6 @@ import com.duckduckgo.app.usage.search.SearchCountEntity
         AppEnjoymentEntity::class,
         Notification::class,
         PrivacyProtectionCountsEntity::class,
-        UncaughtExceptionEntity::class,
         TdsMetadata::class,
         UserStage::class,
         FireproofWebsiteEntity::class,
@@ -99,6 +95,8 @@ import com.duckduckgo.app.usage.search.SearchCountEntity
         PixelEntity::class,
         WebTrackerBlocked::class,
         AuthCookieAllowedDomainEntity::class,
+        Entity::class,
+        Relation::class,
     ],
 )
 
@@ -110,11 +108,11 @@ import com.duckduckgo.app.usage.search.SearchCountEntity
     ActionTypeConverter::class,
     RuleTypeConverter::class,
     CategoriesTypeConverter::class,
-    UncaughtExceptionSourceConverter::class,
     StageTypeConverter::class,
     UserEventTypeConverter::class,
     LocationPermissionTypeConverter::class,
     QueryParamsTypeConverter::class,
+    EntityTypeConverter::class,
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -122,9 +120,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun tdsEntityDao(): TdsEntityDao
     abstract fun tdsDomainEntityDao(): TdsDomainEntityDao
     abstract fun tdsCnameEntityDao(): TdsCnameEntityDao
-    abstract fun userWhitelistDao(): UserWhitelistDao
-    abstract fun httpsFalsePositivesDao(): HttpsFalsePositivesDao
-    abstract fun httpsBloomFilterSpecDao(): HttpsBloomFilterSpecDao
+    abstract fun userAllowListDao(): UserAllowListDao
     abstract fun networkLeaderboardDao(): NetworkLeaderboardDao
     abstract fun tabsDao(): TabsDao
     abstract fun bookmarksDao(): BookmarksDao
@@ -137,7 +133,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appEnjoymentDao(): AppEnjoymentDao
     abstract fun notificationDao(): NotificationDao
     abstract fun privacyProtectionCountsDao(): PrivacyProtectionCountDao
-    abstract fun uncaughtExceptionDao(): UncaughtExceptionDao
     abstract fun tdsDao(): TdsMetadataDao
     abstract fun userStageDao(): UserStageDao
     abstract fun fireproofWebsiteDao(): FireproofWebsiteDao
@@ -146,6 +141,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun pixelDao(): PendingPixelDao
     abstract fun authCookiesAllowedDomainsDao(): AuthCookiesAllowedDomainsDao
     abstract fun webTrackersBlockedDao(): WebTrackersBlockedDao
+
+    abstract fun syncEntitiesDao(): SavedSitesEntitiesDao
+
+    abstract fun syncRelationsDao(): SavedSitesRelationsDao
 }
 
 @Suppress("PropertyName")
@@ -575,6 +574,47 @@ class MigrationsProvider(val context: Context, val settingsDataStore: SettingsDa
         }
     }
 
+    val MIGRATION_44_TO_45: Migration = object : Migration(44, 45) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                "CREATE TABLE IF NOT EXISTS `entities` (`entityId` TEXT NOT NULL, " +
+                    "`title` TEXT NOT NULL, `url` TEXT, `type` TEXT NOT NULL, PRIMARY KEY(`entityId`))",
+            )
+
+            database.execSQL(
+                "CREATE TABLE IF NOT EXISTS `relations` (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                    "`folderId` TEXT NOT NULL, `entityId` TEXT NOT NULL)",
+            )
+        }
+    }
+
+    private val MIGRATION_45_TO_46: Migration = object : Migration(45, 46) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("DROP TABLE `UncaughtExceptionEntity`")
+        }
+    }
+
+    private val MIGRATION_46_TO_47: Migration = object : Migration(46, 47) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE `entities` ADD COLUMN `lastModified` TEXT")
+            database.execSQL("ALTER TABLE `entities` ADD COLUMN `deleted` INTEGER NOT NULL DEFAULT 0")
+            database.execSQL("UPDATE `entities` SET deleted=0")
+        }
+    }
+
+    private val MIGRATION_47_TO_48: Migration = object : Migration(47, 48) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE `app_days_used` ADD COLUMN `previous_date` TEXT")
+        }
+    }
+
+    private val MIGRATION_48_TO_49: Migration = object : Migration(48, 49) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("DROP TABLE `https_bloom_filter_spec`")
+            database.execSQL("DROP TABLE `https_false_positive_domain`")
+        }
+    }
+
     val BOOKMARKS_DB_ON_CREATE = object : RoomDatabase.Callback() {
         override fun onCreate(database: SupportSQLiteDatabase) {
             database.execSQL(
@@ -644,6 +684,11 @@ class MigrationsProvider(val context: Context, val settingsDataStore: SettingsDa
             MIGRATION_41_TO_42,
             MIGRATION_42_TO_43,
             MIGRATION_43_TO_44,
+            MIGRATION_44_TO_45,
+            MIGRATION_45_TO_46,
+            MIGRATION_46_TO_47,
+            MIGRATION_47_TO_48,
+            MIGRATION_48_TO_49,
         )
 
     @Deprecated(
@@ -655,15 +700,15 @@ class MigrationsProvider(val context: Context, val settingsDataStore: SettingsDa
         private val keyVersion = "com.duckduckgo.app.onboarding.currentVersion"
         private val currentVersion = 1
 
+        private val preferences: SharedPreferences by lazy { context.getSharedPreferences(fileName, Context.MODE_PRIVATE) }
+
         fun shouldShow(): Boolean {
-            val preferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE)
             return preferences.getInt(keyVersion, 0) < currentVersion
         }
 
         fun isReturningUser(): Boolean {
             // This was used by the 2 retuning users experiments.
             // First released in 5.103.0 and fully disabled in 5.114.0.
-            val preferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE)
             return preferences.getBoolean("HIDE_TIPS_FOR_RETURNING_USER", false)
         }
     }

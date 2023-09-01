@@ -18,9 +18,10 @@ package com.duckduckgo.app.bookmarks.ui.bookmarkfolders
 
 import android.os.Bundle
 import android.view.View
-import com.duckduckgo.app.bookmarks.model.BookmarkFolder
 import com.duckduckgo.app.bookmarks.ui.SavedSiteDialogFragment
 import com.duckduckgo.app.browser.R
+import com.duckduckgo.savedsites.api.models.BookmarkFolder
+import java.util.*
 
 class AddBookmarkFolderDialogFragment : SavedSiteDialogFragment() {
 
@@ -37,12 +38,12 @@ class AddBookmarkFolderDialogFragment : SavedSiteDialogFragment() {
 
     private fun configureFieldVisibility() {
         binding.savedSiteLocationContainer.visibility = View.VISIBLE
-        binding.savedSiteUrlInputContainer.visibility = View.GONE
+        binding.urlInput.visibility = View.GONE
     }
 
     override fun onConfirmation() {
-        arguments?.getLong(KEY_PARENT_FOLDER_ID)?.let {
-            val name = binding.titleInput.text.toString()
+        arguments?.getString(KEY_PARENT_FOLDER_ID)?.let {
+            val name = binding.titleInput.text
             if (name.isNotBlank()) {
                 listener?.onBookmarkFolderAdded(BookmarkFolder(name = name, parentId = it))
             }
@@ -54,12 +55,12 @@ class AddBookmarkFolderDialogFragment : SavedSiteDialogFragment() {
         const val KEY_PARENT_FOLDER_NAME = "KEY_PARENT_FOLDER_NAME"
 
         fun instance(
-            parentFolderId: Long,
+            parentFolderId: String,
             parentFolderName: String,
         ): AddBookmarkFolderDialogFragment {
             val dialogFragment = AddBookmarkFolderDialogFragment()
             val bundle = Bundle()
-            bundle.putLong(KEY_PARENT_FOLDER_ID, parentFolderId)
+            bundle.putString(KEY_PARENT_FOLDER_ID, parentFolderId)
             bundle.putString(KEY_PARENT_FOLDER_NAME, parentFolderName)
             dialogFragment.arguments = bundle
             return dialogFragment

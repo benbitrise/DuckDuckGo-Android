@@ -32,7 +32,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.duckduckgo.anvil.annotations.InjectWith
-import com.duckduckgo.app.bookmarks.model.SavedSite
 import com.duckduckgo.app.bookmarks.ui.EditSavedSiteDialogFragment
 import com.duckduckgo.app.browser.BrowserActivity
 import com.duckduckgo.app.browser.R
@@ -56,6 +55,7 @@ import com.duckduckgo.di.scopes.ActivityScope
 import com.duckduckgo.mobile.android.R as CommonR
 import com.duckduckgo.mobile.android.ui.view.*
 import com.duckduckgo.mobile.android.ui.viewbinding.viewBinding
+import com.duckduckgo.savedsites.api.models.SavedSite
 import com.duckduckgo.voice.api.VoiceSearchAvailability
 import com.duckduckgo.voice.api.VoiceSearchLauncher
 import com.duckduckgo.voice.api.VoiceSearchLauncher.Source.WIDGET
@@ -106,6 +106,8 @@ class SystemSearchActivity : DuckDuckGoActivity() {
     private val textChangeWatcher = object : TextChangedWatcher() {
         override fun afterTextChanged(editable: Editable) {
             showOmnibar()
+            val searchQuery = omnibarTextInput.text.toString()
+            binding.clearTextButton.isVisible = searchQuery.isNotEmpty()
             viewModel.userUpdatedQuery(omnibarTextInput.text.toString())
         }
     }
@@ -315,7 +317,7 @@ class SystemSearchActivity : DuckDuckGoActivity() {
             refreshOnboardingToggleText(viewState.expanded)
         } else {
             systemSearchOnboarding.onboarding.visibility = View.GONE
-            binding.results.elevation = resources.getDimension(CommonR.dimen.systemSearchResultsElevation)
+            binding.results.elevation = resources.getDimension(CommonR.dimen.keyline_1)
         }
     }
 

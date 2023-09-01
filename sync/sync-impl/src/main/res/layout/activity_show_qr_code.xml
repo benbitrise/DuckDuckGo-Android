@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2023 DuckDuckGo
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/includeToolbar"
+        layout="@layout/include_default_toolbar"/>
+
+    <View
+        app:layout_constraintTop_toBottomOf="@id/includeToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/contentBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        android:background="?attr/daxColorSurface"/>
+
+    <ImageView
+        android:id="@+id/qrCodeImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginVertical="@dimen/keyline_6"
+        app:layout_constraintTop_toTopOf="@id/contentBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/copyCodeButton"
+        android:visibility="gone"
+        tools:ignore="ContentDescription"/>
+
+    <com.duckduckgo.mobile.android.ui.view.button.DaxButtonPrimary
+        android:id="@+id/copyCodeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/contentBackground"
+        android:gravity="center"
+        app:buttonSize="small"
+        app:icon="@drawable/ic_copy"
+        android:layout_marginBottom="@dimen/keyline_6"
+        android:layout_marginStart="@dimen/keyline_5"
+        android:layout_marginEnd="@dimen/keyline_5"
+        android:layout_gravity="center"
+        android:text="@string/sync_connect_copy_code"/>
+
+    <com.duckduckgo.mobile.android.ui.view.text.DaxTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/contentBackground"
+        app:typography="body1"
+        android:layout_margin="@dimen/keyline_4"
+        android:text="@string/sync_connect_scan_qr_hint"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

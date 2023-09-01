@@ -19,14 +19,13 @@ package com.duckduckgo.app.settings.db
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.duckduckgo.app.browser.R
+import com.duckduckgo.app.fire.fireproofwebsite.ui.AutomaticFireproofSetting
+import com.duckduckgo.app.fire.fireproofwebsite.ui.AutomaticFireproofSetting.ASK_EVERY_TIME
+import com.duckduckgo.app.fire.fireproofwebsite.ui.AutomaticFireproofSetting.NEVER
 import com.duckduckgo.app.icon.api.AppIcon
 import com.duckduckgo.app.settings.clear.ClearWhatOption
 import com.duckduckgo.app.settings.clear.ClearWhenOption
 import com.duckduckgo.app.settings.clear.FireAnimation
-import com.duckduckgo.app.settings.db.SettingsSharedPreferences.LoginDetectorPrefsMapper.AutomaticFireproofSetting
-import com.duckduckgo.app.settings.db.SettingsSharedPreferences.LoginDetectorPrefsMapper.AutomaticFireproofSetting.ASK_EVERY_TIME
-import com.duckduckgo.app.settings.db.SettingsSharedPreferences.LoginDetectorPrefsMapper.AutomaticFireproofSetting.NEVER
 import com.duckduckgo.appbuildconfig.api.AppBuildConfig
 import com.duckduckgo.di.scopes.AppScope
 import com.squareup.anvil.annotations.ContributesBinding
@@ -64,6 +63,8 @@ interface SettingsDataStore {
     var automaticallyClearWhenOption: ClearWhenOption
     var appBackgroundedTimestamp: Long
     var appNotificationsEnabled: Boolean
+    var notifyMeInDownloadsDismissed: Boolean
+
     fun isCurrentlySelected(clearWhatOption: ClearWhatOption): Boolean
     fun isCurrentlySelected(clearWhenOption: ClearWhenOption): Boolean
     fun isCurrentlySelected(fireAnimation: FireAnimation): Boolean
@@ -189,6 +190,10 @@ class SettingsSharedPreferences @Inject constructor(
         return selectedFireAnimationSavedValue() == fireAnimation
     }
 
+    override var notifyMeInDownloadsDismissed: Boolean
+        get() = preferences.getBoolean(KEY_NOTIFY_ME_IN_DOWNLOADS_DISMISSED, false)
+        set(enabled) = preferences.edit { putBoolean(KEY_NOTIFY_ME_IN_DOWNLOADS_DISMISSED, enabled) }
+
     private fun automaticallyClearWhatSavedValue(): ClearWhatOption? {
         val savedValue = preferences.getString(KEY_AUTOMATICALLY_CLEAR_WHAT_OPTION, null) ?: return null
         return ClearWhatOption.valueOf(savedValue)
@@ -204,8 +209,7 @@ class SettingsSharedPreferences @Inject constructor(
         return fireAnimationMapper.fireAnimationFrom(selectedFireAnimationSavedValue, FireAnimation.HeroFire)
     }
 
-    private val preferences: SharedPreferences
-        get() = context.getSharedPreferences(FILENAME, Context.MODE_PRIVATE)
+    private val preferences: SharedPreferences by lazy { context.getSharedPreferences(FILENAME, Context.MODE_PRIVATE) }
 
     private fun defaultIcon(): AppIcon {
         return if (appBuildConfig.isDebug) {
@@ -235,6 +239,7 @@ class SettingsSharedPreferences @Inject constructor(
         const val APP_LINKS_ENABLED = "APP_LINKS_ENABLED"
         const val SHOW_APP_LINKS_PROMPT = "SHOW_APP_LINKS_PROMPT"
         const val SHOW_AUTOMATIC_FIREPROOF_DIALOG = "SHOW_AUTOMATIC_FIREPROOF_DIALOG"
+        const val KEY_NOTIFY_ME_IN_DOWNLOADS_DISMISSED = "KEY_NOTIFY_ME_IN_DOWNLOADS_DISMISSED"
     }
 
     private class FireAnimationPrefsMapper {
@@ -265,12 +270,6 @@ class SettingsSharedPreferences @Inject constructor(
     }
 
     class LoginDetectorPrefsMapper {
-        enum class AutomaticFireproofSetting(val stringRes: Int) {
-            ASK_EVERY_TIME(R.string.fireproofWebsiteSettingsSelectionDialogAskEveryTime),
-            ALWAYS(R.string.fireproofWebsiteSettingsSelectionDialogAlways),
-            NEVER(R.string.fireproofWebsiteSettingsSelectionDialogNever),
-        }
-
         fun mapToAutomaticFireproofSetting(oldLoginDetectorValue: Boolean): AutomaticFireproofSetting {
             return when (oldLoginDetectorValue) {
                 false -> NEVER

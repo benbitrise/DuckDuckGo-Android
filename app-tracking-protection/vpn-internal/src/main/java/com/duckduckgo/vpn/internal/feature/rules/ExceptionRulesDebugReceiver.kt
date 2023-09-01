@@ -26,6 +26,7 @@ import com.duckduckgo.mobile.android.vpn.service.VpnServiceCallbacks
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor.VpnStopReason
 import com.duckduckgo.mobile.android.vpn.trackers.AppTrackerExceptionRule
 import com.squareup.anvil.annotations.ContributesMultibinding
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -80,11 +81,10 @@ class ExceptionRulesDebugReceiverRegister @Inject constructor(
 ) : VpnServiceCallbacks {
 
     private val exceptionRulesSavedState = mutableListOf<AppTrackerExceptionRule>()
+    private val shouldSaveRules = AtomicBoolean(true)
 
     override fun onVpnStarted(coroutineScope: CoroutineScope) {
         logcat { "Debug receiver ExceptionRulesDebugReceiver registered" }
-
-        saveExceptionRulesState(coroutineScope)
 
         ExceptionRulesDebugReceiver(context) { intent ->
             val appId = kotlin.runCatching { intent.getStringExtra("app") }.getOrNull()
@@ -94,6 +94,8 @@ class ExceptionRulesDebugReceiverRegister @Inject constructor(
 
             if (appId != null && domain != null) {
                 coroutineScope.launch(dispatchers.io()) {
+                    // first save the current state, just once
+                    saveExceptionRulesState()
                     exclusionRulesRepository.upsertRule(appId, domain)
                 }
             }
@@ -104,18 +106,25 @@ class ExceptionRulesDebugReceiverRegister @Inject constructor(
         coroutineScope: CoroutineScope,
         vpnStopReason: VpnStopReason,
     ) {
-        logcat { "Debug receiver ExceptionRulesDebugReceiver restoring exception rules" }
+        if (shouldSaveRules.get()) {
+            // We haven't saved any rules yet - noop
+            logcat { "Debug receiver ExceptionRulesDebugReceiver will not restore rules. Rules size = ${exceptionRulesSavedState.size} " }
+            return
+        }
+
+        logcat { "Debug receiver ExceptionRulesDebugReceiver restoring exception rules of size = ${exceptionRulesSavedState.size}" }
 
         coroutineScope.launch(dispatchers.io()) {
             exclusionRulesRepository.deleteAllTrackerRules()
             exclusionRulesRepository.insertTrackerRules(exceptionRulesSavedState).also {
                 exceptionRulesSavedState.clear()
             }
+            shouldSaveRules.set(true)
         }
     }
 
-    private fun saveExceptionRulesState(coroutineScope: CoroutineScope) {
-        coroutineScope.launch(dispatchers.io()) {
+    private suspend fun saveExceptionRulesState() {
+        if (shouldSaveRules.compareAndSet(true, false)) {
             exceptionRulesSavedState.clear()
             exceptionRulesSavedState.addAll(exclusionRulesRepository.getAllTrackerRules())
         }

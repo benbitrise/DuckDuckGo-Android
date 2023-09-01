@@ -17,33 +17,33 @@
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
 <resources>
-    <string name="managementScreenTitle">Completare automată la autentificare</string>
-
-    <string name="managementLockedModeText">Deblochează completarea automată</string>
+    <string name="autofillManagementScreenTitle">Conectări</string>
 
     <string name="managementDisabledModeCta"><b>Configurează în Setări</b></string>
-    <string name="managementDisabledModeSubtitle">Este necesar un model de blocare a dispozitivului, un cod PIN sau date biometrice pentru a-ți proteja detaliile de autentificare prin completarea automată.</string>
-    <string name="managementDisabledModeTitle">Asigură-ți dispozitivul pentru a utiliza completarea automată</string>
+    <string name="managementDisabledModeSubtitle">Este necesar un model de blocare a dispozitivului, un cod PIN sau date biometrice pentru a-ți proteja conectările.</string>
+    <string name="managementDisabledModeTitle">Securizează-ți dispozitivul pentru a salva conectările</string>
 
-    <string name="saveLoginDialogTitle">Salvezi autentificarea?</string>
-    <string name="saveLoginMissingUsernameDialogTitle">Salvezi parola?</string>
     <string name="saveLoginDialogButtonSave">Salvează autentificarea</string>
     <string name="saveLoginMissingUsernameDialogButtonSave">Salvează parola</string>
     <string name="saveLoginDialogNotNow">Nu acum</string>
-    <string name="saveLoginDialogOnboardingExplanationSubtitle">Autentificările sunt stocate în siguranță doar pe acest dispozitiv și pot fi gestionate din meniul de completare automată din Setări.</string>
-    <string name="saveLoginDialogFirstTimeOnboardingExplanationTitle">Dorești ca DuckDuckGo să îți salveze datele de autentificare?</string>
+    <string name="saveLoginDialogSubtitle">Datele de conectare sunt stocate în siguranță pe dispozitivul tău și pot fi gestionate din Setări, meniul Date de conectare.</string>
+    <string name="saveLoginDialogTitle">Vrei ca DuckDuckGo să îți salveze datele de conectare?</string>
     <string name="saveLoginDialogMoreOptionsButtonLabel">Mai multe opțiuni</string>
 
-    <string name="useSavedLoginDialogTitle">Folosești datele de autentificare salvate?</string>
-    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Autentificare pentru %1$s</string>
-    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Autentificare pentru site</string>
+    <string name="useSavedLoginDialogTitle">Folosești datele de conectare salvate?</string>
+    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Parola pentru %1$s</string>
+    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Parola pentru site</string>
+    <string name="useSavedLoginDialogGroupThisWebsite">De pe acest site web</string>
+    <string name="useSavedLoginDialogFromDomainLabel" instruction="Placeholder is the URL of a website">Din %1$s</string>
 
-    <string name="updateLoginDialogTitle">Actualizezi parola?</string>
     <string name="updateLoginDialogButtonUpdatePassword">Actualizează parola</string>
     <string name="updateLoginDialogButtonNotNow">Nu acum</string>
 
     <string name="updateLoginDialogTitleUpdateUsername">Actualizezi numele de utilizator?</string>
     <string name="updateLoginDialogButtonUpdateUsername">Actualizează numele de utilizator</string>
+
+    <string name="updateLoginDialogTitleLine" instruction="Placeholder is the user&apos;s username for this site">Actualizezi parola pentru \n%1$s?</string>
+    <string name="updateLoginUpdatePasswordExplanation">DuckDuckGo va actualiza aceste date de conectare stocate pe dispozitivul tău.</string>
 
     <string name="autofillDialogCloseButtonContentDescription">Închide dialogul de completare automată</string>
 
@@ -64,5 +64,57 @@
     <string name="credentialManagementViewMenuDelete">Ștergere</string>
 
     <string name="credentialManagementSuggestionsLabel">Sugerat</string>
+    <string name="credentialManagementNoLoginsSavedTitle">Nu au fost salvate încă date de autentificare</string>
+    <string name="credentialManagementNoLoginsSavedSubtitle">Datele de conectare sunt stocate în siguranță pe dispozitivul tău.</string>
+
+    <string name="autofillManagementAddLogin">Adaugă date de autentificare</string>
+    <string name="autofillManagementSearchLogins">Date de autentificare pentru căutare</string>
+    <string name="autofillManagementSearchClearDescription">Șterge datele introduse pentru căutare</string>
+    <string name="autofillManagementNoSearchResults" instruction="Placeholder is the query the user has searched for. e.g., No results for &apos;kittens&apos;">Nu există rezultate pentru „%1$s”</string>
+
+    <string name="autofillDeleteLoginDialogCancel">Anulare</string>
+    <string name="autofillDeleteLoginDialogDelete">Ștergere</string>
+    <string name="autofillDeleteLoginDialogTitle">Sigur vrei să ștergi aceste date de autentificare?</string>
+
+    <string name="autofillManagementUsernameCopied">Numele de utilizator a fost copiat</string>
+    <string name="autofillManagementPasswordCopied">Parolă copiată</string>
+
+    <string name="autofill_password_generation_offer_title">Vrei să folosești parola generată de DuckDuckGo?</string>
+    <string name="autofill_password_generation_offer_message">Parola va fi salvată în Datele de conectare.</string>
+    <string name="autofill_password_generation_offer_accept">Folosește parola generată</string>
+    <string name="autofill_password_generation_offer_decline">Îmi creez propria parolă</string>
+
+    <string name="deviceNotSupportedTitle">Dispozitivul nu este acceptat</string>
+    <string name="deviceNotSupportedSubtitle">Pentru a stoca datele de conectare în siguranță, trebuie să le criptăm și să le stocăm pe dispozitivul tău. Deoarece dispozitivul tău nu acceptă stocarea criptată, secțiunea Date de conectare nu este disponibilă.</string>
+
+    <string name="autofillManagementDeletedConfirmation">Date de conectare șterse</string>
+    <string name="autofillManagementUndoDeletion">Anulează</string>
+
+    <string name="credentialManagementLinkButtonContentDescription" instruction="Accessibility text for a button that will show next to a text field containing a website address; it will launch the website when tapped">Deschide site-ul</string>
+
+    <string name="credentialManagementDuckAddressLabel" translatable="false">Duck Address</string>
+
+    <string name="credentialManagementDeactivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to deactivate their private &apos;Duck Address&apos;">Dezactivează Duck Address privată?</string>
+    <string name="credentialManagementDeactivateDuckAddressDialogMessage" instruction="Placeholder is an email address">E-mailurile trimise la %1$s nu vor mai fi redirecționate către căsuța ta de inbox.</string>
+    <string name="credentialManagementDeactivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will deactivate their email address, meaning emails sent there will no longer be forwarded to their inbox">Dezactivează</string>
+    <string name="credentialManagementActivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to reactivate their private &apos;Duck Address&apos;">Reactivezi Duck Address privată?</string>
+    <string name="credentialManagementActivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Mesajele de e-mail trimise la %1$s vor fi din nou redirecționate către căsuța ta de inbox.</string>
+    <string name="credentialManagementActivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will reactivate their email address, meaning emails sent there will again be forwarded to their inbox">Reactivează</string>
+
+    <string name="credentialManagementDuckAddressActivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is active">Activ</string>
+    <string name="credentialManagementDuckAddressActivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from deactivated to active">Se activează...</string>
+
+    <string name="credentialManagementDuckAddressDeactivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is deactivated">Dezactivat</string>
+    <string name="credentialManagementDuckAddressDeactivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from active to deactivated">Se dezactivează...</string>
+
+    <string name="credentialManagementDuckAddressManagementTemporarilyUnavailable" instruction="Error message shown when unable to manage this &apos;Duck Address&apos; right now">Gestionarea acestei adrese este temporar indisponibilă.</string>
+
+    <string name="credentialManagementEnableEmailProtectionPrompt" instruction="&apos;Duck Addresses&apos; is the feature name, and should not be translated."><annotation type="enable_duck_address">Activează Email Protection</annotation> pentru a gestiona adresele Duck Address pe acest dispozitiv.</string>
+
+    <string name="autofill_email_protection_choose_email_dialog_title">Selectează adresa de e-mail</string>
+    <string name="autofillTooltipUseYourAliasDescription">Blochează tehnologiile de urmărire din e-mail</string>
+    <string name="autofillTooltipGenerateAddress" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated.">Generează o Duck Address privată</string>
+    <string name="autofillTooltipGenerateAddressDescription" instruction="&apos;hide address&apos; refers to using an alias so your real email address is not used">Blochează tehnologiile de urmărire din e-mailuri și ascunde adresa</string>
+
 
 </resources>

@@ -32,7 +32,7 @@ android {
 
     lint {
         abortOnError true
-        ignoreTestSources true
+        ignoreTestSources false
     }
 
     buildTypes {
@@ -42,8 +42,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlin {
+        jvmToolchain(17)
     }
     buildFeatures {
         viewBinding = true
@@ -67,10 +70,6 @@ tasks.register('jvm_checks') {
 
 tasks.register('jvm_tests') {
     dependsOn 'testDebugUnitTest'
-}
-
-tasks.register('code_format_checks') {
-    dependsOn 'spotlessCheck', 'lintKotlin'
 }
 
 tasks.register('lint_check') {

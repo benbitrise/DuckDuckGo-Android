@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Блокировка отслеживания приложениями</string>
     <string name="refresh">Обновить</string>
 
@@ -167,10 +167,10 @@
     <string name="atp_ReportBreakageAppNextCta">Далее</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Опишите, что происходит, что ожидалось и какие действия привели к неполадке.</string>
     <string name="atp_ReportBreakageFormInputHint">Расскажите о проблеме немного подробнее</string>
-    <string name="atp_ReportBreakageFormCheckboxText">Нажимая кнопку «Отправить», я тем самым соглашаюсь, что DuckDuckGo может использовать полученную информацию в целях улучшения защиты от слежки.
+    <string name="atp_ReportBreakageFormCheckboxText">Нажимая кнопку «Отправить», я разрешаю DuckDuckGo использовать данные в этом отчете для улучшения работы приложения.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Помимо сведений, внесенных в форме, в отчет о сбоях приложения также войдет следующая информация:<br/>• имя пакета приложения<br/>• список заблокированных в приложении трекеров<br/>• была ли включена защита от слежки<br/>• сводная диагностика приложения DuckDuckGo<br/>]]>
+        <![CDATA[Помимо сведений, указанных в форме, в отчет о сбое приложения также войдет следующая информация:<br/>• имя пакета приложения<br/>• список заблокированных в приложении трекеров<br/>• данные о включении функций DuckDuckGo<br/>• сводная диагностика приложения DuckDuckGo<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Отчет отправлен. Спасибо! Ваши отзывы помогают нам улучшать защиту от слежки для всех.</string>
     <string name="atp_ThanksForTheFeedback">Спасибо за отзыв!</string>
@@ -218,13 +218,13 @@
     <string name="atp_ActivityPastWeekBlocked">Заблокировано</string>
     <string name="atp_ActivityPastWeekAcross">в</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">попытка отслеживания</item>
         <item quantity="few">попытки отслеживания</item>
         <item quantity="many">попыток отслеживания</item>
         <item quantity="other">попытки отслеживания</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">приложении</item>
         <item quantity="few">приложениях</item>
         <item quantity="many">приложениях</item>
@@ -237,6 +237,10 @@
     <string name="atp_ActivityAbout">О нас</string>
     <string name="atp_ActivityManage">Настроить</string>
     <string name="atp_ActivityRemoveFeature">Отключить и удалить данные</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">DuckDuckGo блокирует скрытые трекеры в различных приложениях.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Чтобы повторно включить блокировку трекеров, активируйте функцию защиты от слежки в приложениях.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">Заблокировано DuckDuckGo %1$s</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">Заблокировано DuckDuckGo %1$s</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">Вопросы и ответы</string>
@@ -254,8 +258,6 @@
     <string name="atp_FAQSixthText">Защита от слежки работает на вашем устройстве и не передает ваши личные данные в DuckDuckGo.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Блокировка отслеживания приложениями</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Очередь на защиту от слежки</string>
     <string name="atp_WaitlistNotificationTitle">Вы получили приглашение воспользоваться защитой от слежки!</string>
     <string name="atp_WaitlistNotificationDescription">Ранее вы просили добавить вас в список ожидания, чтобы мы сообщили, когда вам станет доступна защита от слежки. Нажмите, чтобы открыть приглашение.</string>
     <string name="atp_WaitlistStatusNotJoined">Один простой шаг для надежной защиты данных!</string>
@@ -274,7 +276,6 @@
     <string name="atp_WaitlistErrorJoining">При постановке в очередь произошла ошибка. Пожалуйста, повторите попытку позже.</string>
     <string name="atp_WaitlistJoinedWithNotification">Когда защита от слежки станет доступна, мы отправим вам уведомление.\n\n<annotation type="beta_link">Подробнее о бета-версии</annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Приглашение тестировать защиту от слежки придет сюда. Загляните сюда позже либо дождитесь нашего уведомления, когда подойдет ваша очередь\n\n<annotation type="notify_me_link">Получить уведомление</annotation>\n\n<annotation type="beta_link">Подробнее о бета-версии...</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Введите код приглашения</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Готово! Вы приняты.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -286,10 +287,10 @@
         <item quantity="other">Попыток: %1$d. Обычно собирает:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">Пресечена %1$d попытка отслеживания</item>
-        <item quantity="few">Пресечено %1$d попытки отслеживания</item>
-        <item quantity="many">Пресечено %1$d попыток отслеживания</item>
-        <item quantity="other">Пресечено попыток отслеживания: %1$d</item>
+        <item quantity="one">DuckDuckGo пресек %1$d попытку отслеживания</item>
+        <item quantity="few">DuckDuckGo пресек %1$d попытки отслеживания</item>
+        <item quantity="many">DuckDuckGo пресек %1$d попыток отслеживания</item>
+        <item quantity="other">DuckDuckGo пресек попытки отслеживания (%1$d)</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Сообщить о проблеме с приложением</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">Показать еще %1$d</string>
@@ -428,5 +429,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Это бета-версия функции. Проблемы с приложением? <annotation type="app_settings_link">Давайте устраним их вместе!</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Активация блокировки отслеживания приложениями может нарушить работу некоторых программ.\n<annotation type="learn_why_link">С чем это связано...</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Защита отключена для сбоивших приложений. Ее можно включить снова, но при этом приложения могут работать некорректно. <annotation type="learn_why_link">С чем это связано...</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Всегда в курсе блокировок</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Уведомления о пресеченных попытках отслеживания в панели уведомлений.</string>
 
 </resources>

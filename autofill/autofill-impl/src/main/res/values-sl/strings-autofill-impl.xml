@@ -17,33 +17,33 @@
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
 <resources>
-    <string name="managementScreenTitle">Samodejno izpolnjevanje obrazcev za prijavo</string>
-
-    <string name="managementLockedModeText">Odkleni samodejno izpolnjevanje</string>
+    <string name="autofillManagementScreenTitle">Prijave</string>
 
     <string name="managementDisabledModeCta"><b>Nastavitev v nastavitvah</b></string>
-    <string name="managementDisabledModeSubtitle">Za zaščito podatkov samodejnega izpolnjevanja prijave je potreben vzorec za zaklepanje naprave, koda PIN ali biometrični podatki.</string>
-    <string name="managementDisabledModeTitle">Zaščitite svojo napravo za uporabo samodejnega izpolnjevanja</string>
+    <string name="managementDisabledModeSubtitle">Za zaščito prijav je potreben vzorec za zaklepanje naprave, koda PIN ali biometrični podatki.</string>
+    <string name="managementDisabledModeTitle">Zavarujte svojo napravo, če želite shraniti prijave</string>
 
-    <string name="saveLoginDialogTitle">Želite shraniti prijavo?</string>
-    <string name="saveLoginMissingUsernameDialogTitle">Želite shraniti geslo?</string>
     <string name="saveLoginDialogButtonSave">Shrani prijavo</string>
     <string name="saveLoginMissingUsernameDialogButtonSave">Shrani geslo</string>
     <string name="saveLoginDialogNotNow">Ne zdaj</string>
-    <string name="saveLoginDialogOnboardingExplanationSubtitle">Prijave so varno shranjene samo v tej napravi in jih lahko upravljate v meniju Samodejno izpolnjevanje v Nastavitvah.</string>
-    <string name="saveLoginDialogFirstTimeOnboardingExplanationTitle">Ali želite, da DuckDuckGo shrani vašo prijavo?</string>
+    <string name="saveLoginDialogSubtitle">Prijave so varno shranjene v tej napravi in jih lahko upravljate v razdelku Prijave v nastavitvah.</string>
+    <string name="saveLoginDialogTitle">Ali želite, da DuckDuckGo shrani vašo prijavo?</string>
     <string name="saveLoginDialogMoreOptionsButtonLabel">Več možnosti</string>
 
-    <string name="useSavedLoginDialogTitle">Želite uporabiti shranjene prijavne podatke?</string>
-    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Prijava za %1$s</string>
-    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Prijava za spletno mesto</string>
+    <string name="useSavedLoginDialogTitle">Želite uporabiti shranjene podatke za prijavo?</string>
+    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Geslo za spletno mesto %1$s</string>
+    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Geslo za spletno mesto</string>
+    <string name="useSavedLoginDialogGroupThisWebsite">S tega spletnega mesta</string>
+    <string name="useSavedLoginDialogFromDomainLabel" instruction="Placeholder is the URL of a website">S spletnega mesta %1$s</string>
 
-    <string name="updateLoginDialogTitle">Želite posodobiti geslo?</string>
     <string name="updateLoginDialogButtonUpdatePassword">Posodobitev gesla</string>
     <string name="updateLoginDialogButtonNotNow">Ne zdaj</string>
 
     <string name="updateLoginDialogTitleUpdateUsername">Želite posodobiti uporabniško ime?</string>
     <string name="updateLoginDialogButtonUpdateUsername">Posodobi uporabniško ime</string>
+
+    <string name="updateLoginDialogTitleLine" instruction="Placeholder is the user&apos;s username for this site">Želite posodobiti geslo za \n%1$s?</string>
+    <string name="updateLoginUpdatePasswordExplanation">DuckDuckGo bo posodobil to shranjeno prijavo v vaši napravi.</string>
 
     <string name="autofillDialogCloseButtonContentDescription">Zapri pogovorno okno za samodejno izpolnjevanje</string>
 
@@ -64,5 +64,57 @@
     <string name="credentialManagementViewMenuDelete">Izbriši</string>
 
     <string name="credentialManagementSuggestionsLabel">Predlagano</string>
+    <string name="credentialManagementNoLoginsSavedTitle">Podatki za prijavo še niso shranjeni</string>
+    <string name="credentialManagementNoLoginsSavedSubtitle">Prijave so varno shranjene v vaši napravi.</string>
+
+    <string name="autofillManagementAddLogin">Dodajanje podatkov za prijavo</string>
+    <string name="autofillManagementSearchLogins">Iskanje podatkov za prijavo</string>
+    <string name="autofillManagementSearchClearDescription">Počisti vhod iskanja</string>
+    <string name="autofillManagementNoSearchResults" instruction="Placeholder is the query the user has searched for. e.g., No results for &apos;kittens&apos;">Ni rezultatov za »%1$s«</string>
+
+    <string name="autofillDeleteLoginDialogCancel">Prekliči</string>
+    <string name="autofillDeleteLoginDialogDelete">Izbriši</string>
+    <string name="autofillDeleteLoginDialogTitle">Ali ste prepričani, da želite izbrisati te podatke za prijavo?</string>
+
+    <string name="autofillManagementUsernameCopied">Uporabniško ime je bilo kopirano</string>
+    <string name="autofillManagementPasswordCopied">Geslo je bilo kopirano</string>
+
+    <string name="autofill_password_generation_offer_title">Želite uporabiti geslo, ki ga je ustvaril DuckDuckGo?</string>
+    <string name="autofill_password_generation_offer_message">Geslo bo shranjeno v razdelku Prijave.</string>
+    <string name="autofill_password_generation_offer_accept">Uporabi ustvarjeno geslo</string>
+    <string name="autofill_password_generation_offer_decline">Ustvari svoje</string>
+
+    <string name="deviceNotSupportedTitle">Naprava ni podprta</string>
+    <string name="deviceNotSupportedSubtitle">Za varno shranjevanje prijav jih moramo šifrirati in shraniti v vaši napravi. Ker vaša naprava ne podpira šifriranega shranjevanja, funkcija Prijave ni na voljo.</string>
+
+    <string name="autofillManagementDeletedConfirmation">Prijava je izbrisana</string>
+    <string name="autofillManagementUndoDeletion">Razveljavi</string>
+
+    <string name="credentialManagementLinkButtonContentDescription" instruction="Accessibility text for a button that will show next to a text field containing a website address; it will launch the website when tapped">Odpri spletno mesto</string>
+
+    <string name="credentialManagementDuckAddressLabel" translatable="false">Duck Address</string>
+
+    <string name="credentialManagementDeactivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to deactivate their private &apos;Duck Address&apos;">Želite deaktivirati zasebni naslov Duck Address?</string>
+    <string name="credentialManagementDeactivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Elektronska sporočila, poslana na naslov %1$s, ne bodo več posredovana v vaš poštni predal.</string>
+    <string name="credentialManagementDeactivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will deactivate their email address, meaning emails sent there will no longer be forwarded to their inbox">Deaktiviraj</string>
+    <string name="credentialManagementActivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to reactivate their private &apos;Duck Address&apos;">Želite znova aktivirati zasebni naslov Duck Address?</string>
+    <string name="credentialManagementActivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Elektronska sporočila, poslana na naslov %1$s, bodo znova posredovana v vaš e-poštni predal.</string>
+    <string name="credentialManagementActivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will reactivate their email address, meaning emails sent there will again be forwarded to their inbox">Znova aktiviraj</string>
+
+    <string name="credentialManagementDuckAddressActivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is active">Aktivno</string>
+    <string name="credentialManagementDuckAddressActivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from deactivated to active">Aktiviranje ...</string>
+
+    <string name="credentialManagementDuckAddressDeactivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is deactivated">Deaktivirano</string>
+    <string name="credentialManagementDuckAddressDeactivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from active to deactivated">Deaktiviranje ...</string>
+
+    <string name="credentialManagementDuckAddressManagementTemporarilyUnavailable" instruction="Error message shown when unable to manage this &apos;Duck Address&apos; right now">Upravljanje tega naslova trenutno ni na voljo.</string>
+
+    <string name="credentialManagementEnableEmailProtectionPrompt" instruction="&apos;Duck Addresses&apos; is the feature name, and should not be translated."><annotation type="enable_duck_address">Omogočite zaščito elektronske pošte</annotation>, če želite upravljati naslove Duck Addresses v tej napravi.</string>
+
+    <string name="autofill_email_protection_choose_email_dialog_title">Izberite e-poštni naslov</string>
+    <string name="autofillTooltipUseYourAliasDescription">Blokirajte sledilnike e-pošte</string>
+    <string name="autofillTooltipGenerateAddress" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated.">Ustvarjanje zasebnega naslova Duck</string>
+    <string name="autofillTooltipGenerateAddressDescription" instruction="&apos;hide address&apos; refers to using an alias so your real email address is not used">Blokirajte sledilnike e-pošte in skrijte naslov</string>
+
 
 </resources>

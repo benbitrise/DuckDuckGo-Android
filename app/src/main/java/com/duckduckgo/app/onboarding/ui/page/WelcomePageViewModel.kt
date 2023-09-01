@@ -64,7 +64,9 @@ class WelcomePageViewModel(
 
         pixel.fire(
             AppPixelName.DEFAULT_BROWSER_SET,
-            mapOf(Pixel.PixelParameter.DEFAULT_BROWSER_SET_FROM_ONBOARDING to true.toString()),
+            mapOf(
+                Pixel.PixelParameter.DEFAULT_BROWSER_SET_FROM_ONBOARDING to true.toString(),
+            ),
         )
 
         emit(WelcomePageView.State.Finish)
@@ -77,7 +79,9 @@ class WelcomePageViewModel(
 
         pixel.fire(
             AppPixelName.DEFAULT_BROWSER_NOT_SET,
-            mapOf(Pixel.PixelParameter.DEFAULT_BROWSER_SET_FROM_ONBOARDING to true.toString()),
+            mapOf(
+                Pixel.PixelParameter.DEFAULT_BROWSER_SET_FROM_ONBOARDING to true.toString(),
+            ),
         )
 
         emit(WelcomePageView.State.Finish)

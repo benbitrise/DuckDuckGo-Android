@@ -20,15 +20,14 @@ import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
-import com.duckduckgo.app.bookmarks.model.BookmarkFolder
 import com.duckduckgo.app.bookmarks.ui.bookmarkfolders.BookmarkFoldersActivity
 import com.duckduckgo.app.bookmarks.ui.bookmarkfolders.BookmarkFoldersActivity.Companion.KEY_BOOKMARK_FOLDER_ID
 import com.duckduckgo.app.bookmarks.ui.bookmarkfolders.BookmarkFoldersActivity.Companion.KEY_BOOKMARK_FOLDER_NAME
@@ -38,13 +37,18 @@ import com.duckduckgo.app.browser.R
 import com.duckduckgo.app.browser.databinding.DialogFragmentSavedSiteBinding
 import com.duckduckgo.app.global.view.TextChangedWatcher
 import com.duckduckgo.mobile.android.R as CommonR
+import com.duckduckgo.mobile.android.ui.view.dialog.TextAlertDialogBuilder
 import com.duckduckgo.mobile.android.ui.view.showKeyboard
-import kotlinx.android.synthetic.main.include_find_in_page.*
+import com.duckduckgo.mobile.android.ui.view.text.DaxTextInput
+import com.duckduckgo.savedsites.api.models.BookmarkFolder
 
 abstract class SavedSiteDialogFragment : DialogFragment() {
 
     abstract fun onConfirmation()
     abstract fun configureUI()
+    open fun deleteConfirmationTitle(): String = ""
+    open fun deleteConfirmationMessage(): Spanned? = null
+    open fun onDeleteConfirmed() = Unit
 
     private var _binding: DialogFragmentSavedSiteBinding? = null
     protected val binding get() = _binding!!
@@ -52,7 +56,7 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
     private var initialTitle: String? = null
     private var titleState = ValidationState.UNCHANGED
 
-    private var initialParentFolderId: Long? = null
+    private var initialParentFolderId: String? = null
     private var folderChanged = false
 
     var showAddFolderMenu: Boolean = false
@@ -66,20 +70,20 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
 
     private fun populateFolderNameFromIntent(data: Intent) {
         data.getStringExtra(KEY_BOOKMARK_FOLDER_NAME)?.let { name ->
-            binding.savedSiteLocation.setText(name)
+            binding.savedSiteLocation.text = name
         }
     }
 
     private fun storeFolderIdFromIntent(data: Intent) {
-        val parentId = data.getLongExtra(KEY_BOOKMARK_FOLDER_ID, 0)
+        val parentId = data.getStringExtra(KEY_BOOKMARK_FOLDER_ID)
         folderChanged = parentId != initialParentFolderId
         setConfirmationVisibility()
-        arguments?.putLong(KEY_BOOKMARK_FOLDER_ID, parentId)
+        arguments?.putString(KEY_BOOKMARK_FOLDER_ID, parentId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.SavedSiteFullScreenDialog)
+        setStyle(STYLE_NO_TITLE, CommonR.style.Widget_DuckDuckGo_DialogFullScreen)
     }
 
     override fun onCreateView(
@@ -90,12 +94,12 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
         _binding = DialogFragmentSavedSiteBinding.inflate(inflater, container, false)
         configureClickListeners()
         arguments?.getString(KEY_BOOKMARK_FOLDER_NAME)?.let { name ->
-            binding.savedSiteLocation.setText(name)
+            binding.savedSiteLocation.text = name
         }
         configureToolbar(binding.savedSiteAppBar.toolbar)
         configureUI()
         initialTitle = binding.titleInput.text.toString()
-        initialParentFolderId = arguments?.getLong(EditBookmarkFolderDialogFragment.KEY_PARENT_FOLDER_ID)
+        initialParentFolderId = arguments?.getString(EditBookmarkFolderDialogFragment.KEY_PARENT_FOLDER_ID)
         addTextWatchers()
         showKeyboard(binding.titleInput)
         return binding.root
@@ -107,19 +111,22 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
 
     private fun configureToolbar(toolbar: Toolbar) {
         toolbar.inflateMenu(R.menu.edit_saved_site_menu)
-        toolbar.setOnMenuItemClickListener(
-            Toolbar.OnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.action_confirm_changes -> {
-                        onConfirmation()
-                        hideKeyboard()
-                        dismiss()
-                        return@OnMenuItemClickListener true
-                    }
+        toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_confirm_changes -> {
+                    onConfirmation()
+                    hideKeyboard()
+                    dismiss()
+                    true
                 }
-                false
-            },
-        )
+                R.id.action_delete -> {
+                    showDeleteConfirmation()
+                    hideKeyboard()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -139,7 +146,7 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
     }
 
     private fun configureUpNavigation(toolbar: Toolbar) {
-        toolbar.setNavigationIcon(CommonR.drawable.ic_back_24)
+        toolbar.setNavigationIcon(CommonR.drawable.ic_arrow_left_24)
         toolbar.setNavigationOnClickListener {
             dismiss()
         }
@@ -148,7 +155,7 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
     private fun configureClickListeners() {
         binding.savedSiteLocation.setOnClickListener {
             context?.let { context ->
-                arguments?.getLong(KEY_BOOKMARK_FOLDER_ID)?.let {
+                arguments?.getString(KEY_BOOKMARK_FOLDER_ID)?.let {
                     if (arguments?.getSerializable(KEY_CURRENT_FOLDER) != null) {
                         launcher.launch(
                             BookmarkFoldersActivity.intent(
@@ -166,8 +173,7 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
         }
     }
 
-    private fun showKeyboard(inputEditText: EditText) {
-        inputEditText.setSelection(inputEditText.text.length)
+    private fun showKeyboard(inputEditText: DaxTextInput) {
         inputEditText.showKeyboard()
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
     }
@@ -185,7 +191,7 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
     }
 
     protected fun setConfirmationVisibility(inputState: ValidationState = ValidationState.UNCHANGED) {
-        binding.savedSiteAppBar.toolbar.menu.findItem(R.id.action_confirm_changes).isVisible =
+        binding.savedSiteAppBar.toolbar.menu.findItem(R.id.action_confirm_changes).isEnabled =
             (inputState == ValidationState.CHANGED || titleState == ValidationState.CHANGED || folderChanged) &&
             (inputState != ValidationState.INVALID && titleState != ValidationState.INVALID)
     }
@@ -205,6 +211,26 @@ abstract class SavedSiteDialogFragment : DialogFragment() {
             }
             setConfirmationVisibility()
         }
+    }
+
+    private fun showDeleteConfirmation() {
+        val title = deleteConfirmationTitle()
+        val message = deleteConfirmationMessage() ?: ""
+
+        TextAlertDialogBuilder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setDestructiveButtons(true)
+            .setPositiveButton(R.string.deleteSavedSiteConfirmationDialogDelete)
+            .setNegativeButton(R.string.deleteSavedSiteConfirmationDialogCancel)
+            .addEventListener(
+                object : TextAlertDialogBuilder.EventListener() {
+                    override fun onPositiveButtonClicked() {
+                        onDeleteConfirmed()
+                    }
+                },
+            )
+            .show()
     }
 }
 

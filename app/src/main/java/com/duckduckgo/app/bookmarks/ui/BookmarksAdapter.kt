@@ -26,15 +26,14 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.duckduckgo.app.bookmarks.model.SavedSite
 import com.duckduckgo.app.browser.R
 import com.duckduckgo.app.browser.databinding.ViewSavedSiteEmptyHintBinding
-import com.duckduckgo.app.browser.databinding.ViewSavedSiteEntryBinding
 import com.duckduckgo.app.browser.favicon.FaviconManager
 import com.duckduckgo.app.global.DispatcherProvider
 import com.duckduckgo.app.global.baseHost
+import com.duckduckgo.mobile.android.databinding.RowTwoLineItemBinding
 import com.duckduckgo.mobile.android.ui.menu.PopupMenu
-import kotlinx.coroutines.channels.Channel
+import com.duckduckgo.savedsites.api.models.SavedSite
 import kotlinx.coroutines.launch
 
 class BookmarksAdapter(
@@ -48,26 +47,13 @@ class BookmarksAdapter(
     companion object {
         const val EMPTY_STATE_TYPE = 0
         const val BOOKMARK_TYPE = 1
-        private const val FAVICON_REQ_CHANNEL_CONSUMERS = 10
     }
 
     private val bookmarkItems = mutableListOf<BookmarksItemTypes>()
 
-    private val faviconRequestsChannel = Channel<String>(Channel.UNLIMITED)
-
     interface BookmarksItemTypes
     object EmptyHint : BookmarksItemTypes
     data class BookmarkItem(val bookmark: SavedSite.Bookmark) : BookmarksItemTypes
-
-    init {
-        repeat(FAVICON_REQ_CHANNEL_CONSUMERS) {
-            lifecycleOwner.lifecycleScope.launch(dispatchers.io()) {
-                for (item in faviconRequestsChannel) {
-                    faviconManager.saveFaviconForUrl(item)
-                }
-            }
-        }
-    }
 
     fun setItems(
         bookmarkItems: List<BookmarkItem>,
@@ -82,12 +68,6 @@ class BookmarksAdapter(
 
         if (filteringMode || bookmarkItems.isEmpty()) {
             return
-        }
-
-        lifecycleOwner.lifecycleScope.launch(dispatchers.io()) {
-            bookmarkItems.forEach {
-                faviconRequestsChannel.send(it.bookmark.url)
-            }
         }
     }
 
@@ -108,7 +88,7 @@ class BookmarksAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             BOOKMARK_TYPE -> {
-                val binding = ViewSavedSiteEntryBinding.inflate(inflater, parent, false)
+                val binding = RowTwoLineItemBinding.inflate(inflater, parent, false)
                 return BookmarkScreenViewHolders.BookmarksViewHolder(
                     layoutInflater,
                     binding,
@@ -183,7 +163,7 @@ sealed class BookmarkScreenViewHolders(itemView: View) : RecyclerView.ViewHolder
 
     class BookmarksViewHolder(
         private val layoutInflater: LayoutInflater,
-        private val binding: ViewSavedSiteEntryBinding,
+        private val binding: RowTwoLineItemBinding,
         private val viewModel: BookmarksViewModel,
         private val lifecycleOwner: LifecycleOwner,
         private val faviconManager: FaviconManager,
@@ -205,7 +185,7 @@ sealed class BookmarkScreenViewHolders(itemView: View) : RecyclerView.ViewHolder
 
             loadFavicon(bookmark.url, twoListItem.leadingIcon())
 
-            twoListItem.setTrailingIcon(R.drawable.ic_overflow)
+            twoListItem.setTrailingIconResource(com.duckduckgo.mobile.android.R.drawable.ic_menu_vertical_24)
             twoListItem.setTrailingIconClickListener { anchor ->
                 showOverFlowMenu(anchor, bookmark)
             }

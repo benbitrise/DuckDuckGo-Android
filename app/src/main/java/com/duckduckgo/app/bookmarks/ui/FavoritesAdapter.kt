@@ -26,16 +26,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.duckduckgo.app.bookmarks.model.SavedSite.Favorite
 import com.duckduckgo.app.browser.R
 import com.duckduckgo.app.browser.databinding.ViewSavedSiteEmptyHintBinding
-import com.duckduckgo.app.browser.databinding.ViewSavedSiteEntryBinding
 import com.duckduckgo.app.browser.favicon.FaviconManager
 import com.duckduckgo.app.global.DispatcherProvider
 import com.duckduckgo.app.global.baseHost
+import com.duckduckgo.mobile.android.databinding.RowTwoLineItemBinding
 import com.duckduckgo.mobile.android.databinding.ViewSectionHeaderBinding
 import com.duckduckgo.mobile.android.ui.menu.PopupMenu
-import kotlinx.coroutines.channels.Channel
+import com.duckduckgo.savedsites.api.models.SavedSite.Favorite
 import kotlinx.coroutines.launch
 
 class FavoritesAdapter(
@@ -50,27 +49,14 @@ class FavoritesAdapter(
         const val FAVORITE_SECTION_TITLE_TYPE = 0
         const val EMPTY_STATE_TYPE = 1
         const val FAVORITE_TYPE = 2
-        private const val FAVICON_REQ_CHANNEL_CONSUMERS = 10
     }
 
     private val favoriteItems = mutableListOf<FavoriteItemTypes>()
-
-    private val faviconRequestsChannel = Channel<String>(capacity = 2000)
 
     interface FavoriteItemTypes
     object Header : FavoriteItemTypes
     object EmptyHint : FavoriteItemTypes
     data class FavoriteItem(val favorite: Favorite) : FavoriteItemTypes
-
-    init {
-        repeat(FAVICON_REQ_CHANNEL_CONSUMERS) {
-            lifecycleOwner.lifecycleScope.launch(dispatchers.io()) {
-                for (item in faviconRequestsChannel) {
-                    faviconManager.saveFaviconForUrl(item)
-                }
-            }
-        }
-    }
 
     fun setItems(
         favoriteItems: List<FavoriteItem>,
@@ -83,12 +69,6 @@ class FavoritesAdapter(
 
         if (favoriteItems.isEmpty()) {
             return
-        }
-
-        lifecycleOwner.lifecycleScope.launch(dispatchers.io()) {
-            favoriteItems.forEach {
-                faviconRequestsChannel.send(it.favorite.url)
-            }
         }
     }
 
@@ -103,7 +83,7 @@ class FavoritesAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             FAVORITE_TYPE -> {
-                val binding = ViewSavedSiteEntryBinding.inflate(inflater, parent, false)
+                val binding = RowTwoLineItemBinding.inflate(inflater, parent, false)
                 return FavoritesScreenViewHolders.FavoriteViewHolder(
                     layoutInflater,
                     binding,
@@ -198,7 +178,7 @@ sealed class FavoritesScreenViewHolders(itemView: View) : RecyclerView.ViewHolde
 
     class FavoriteViewHolder(
         private val layoutInflater: LayoutInflater,
-        private val binding: ViewSavedSiteEntryBinding,
+        private val binding: RowTwoLineItemBinding,
         private val viewModel: BookmarksViewModel,
         private val lifecycleOwner: LifecycleOwner,
         private val faviconManager: FaviconManager,
@@ -223,7 +203,7 @@ sealed class FavoritesScreenViewHolders(itemView: View) : RecyclerView.ViewHolde
 
             loadFavicon(favorite.url, listItem.leadingIcon())
 
-            listItem.setTrailingIcon(R.drawable.ic_overflow)
+            listItem.setTrailingIconResource(com.duckduckgo.mobile.android.R.drawable.ic_menu_vertical_24)
             listItem.setTrailingIconClickListener { anchor ->
                 showOverFlowMenu(anchor, favorite)
             }

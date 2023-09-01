@@ -43,14 +43,12 @@ class DevSettingsSharedPreferences @Inject constructor(private val context: Cont
         get() = selectedUASavedValue()
         set(value) = preferences.edit { putString(KEY_SELECTED_UA, value.name) }
 
-    private val preferences: SharedPreferences
-        get() = context.getSharedPreferences(FILENAME, Context.MODE_PRIVATE)
+    private val preferences: SharedPreferences by lazy { context.getSharedPreferences(FILENAME, Context.MODE_PRIVATE) }
 
     private fun selectedUASavedValue(): UAOverride {
         val savedValue = preferences.getString(KEY_SELECTED_UA, null) ?: return UAOverride.DDG
         return UAOverride.valueOf(savedValue)
     }
-
     companion object {
         const val FILENAME = "com.duckduckgo.app.dev_settings_activity.dev_settings"
         const val KEY_NEXT_TDS_ENABLED = "KEY_NEXT_TDS_ENABLED"

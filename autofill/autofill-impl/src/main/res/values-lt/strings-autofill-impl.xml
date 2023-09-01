@@ -17,33 +17,33 @@
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
 <resources>
-    <string name="managementScreenTitle">Automatiškai užpildyti prisijungimus</string>
-
-    <string name="managementLockedModeText">Atrakinti automatinį pildymą</string>
+    <string name="autofillManagementScreenTitle">Prisijungimai</string>
 
     <string name="managementDisabledModeCta"><b>Nustatyti nustatymuose</b></string>
-    <string name="managementDisabledModeSubtitle">Norint apsaugoti automatinio pildymo prisijungimo duomenis, reikia naudoti įrenginio užrakinimo šabloną, PIN kodą arba biometrinius duomenis.</string>
-    <string name="managementDisabledModeTitle">Apsaugokite įrenginį, kad galėtumėte naudoti automatinį pildymą</string>
+    <string name="managementDisabledModeSubtitle">Prisijungimams apsaugoti reikia naudoti prietaiso užrakinimo šabloną, PIN kodą arba biometrinius duomenis.</string>
+    <string name="managementDisabledModeTitle">Apsaugokite įrenginį, kad išsaugotumėte prisijungimus</string>
 
-    <string name="saveLoginDialogTitle">Išsaugoti prisijungimą?</string>
-    <string name="saveLoginMissingUsernameDialogTitle">Išsaugoti slaptažodį?</string>
     <string name="saveLoginDialogButtonSave">Išsaugoti prisijungimą</string>
     <string name="saveLoginMissingUsernameDialogButtonSave">Išsaugoti slaptažodį</string>
     <string name="saveLoginDialogNotNow">Ne dabar</string>
-    <string name="saveLoginDialogOnboardingExplanationSubtitle">Prisijungimai saugiai saugomi tik šiame prietaise, o juos galima tvarkyti nustatymų automatinio pildymo meniu.</string>
-    <string name="saveLoginDialogFirstTimeOnboardingExplanationTitle">Ar norite, kad „DuckDuckGo“ išsaugotų jūsų prisijungimą?</string>
+    <string name="saveLoginDialogSubtitle">Prisijungimai saugiai laikomi tik šiame įrenginyje, o juos galima tvarkyti nustatymuose, prisijungimų meniu.</string>
+    <string name="saveLoginDialogTitle">Ar norite, kad „DuckDuckGo“ išsaugotų jūsų prisijungimą?</string>
     <string name="saveLoginDialogMoreOptionsButtonLabel">Daugiau parinkčių</string>
 
     <string name="useSavedLoginDialogTitle">Naudoti išsaugotą prisijungimą?</string>
-    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Prisijungimas prie %1$s</string>
-    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Prisijungimas prie svetainės</string>
+    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">„%1$s“ slaptažodis</string>
+    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Svetainės slaptažodis</string>
+    <string name="useSavedLoginDialogGroupThisWebsite">Iš šios svetainės</string>
+    <string name="useSavedLoginDialogFromDomainLabel" instruction="Placeholder is the URL of a website">Iš %1$s</string>
 
-    <string name="updateLoginDialogTitle">Atnaujinti slaptažodį?</string>
     <string name="updateLoginDialogButtonUpdatePassword">Atnaujinti slaptažodį</string>
     <string name="updateLoginDialogButtonNotNow">Ne dabar</string>
 
     <string name="updateLoginDialogTitleUpdateUsername">Atnaujinti naudotojo vardą?</string>
     <string name="updateLoginDialogButtonUpdateUsername">Atnaujinti naudotojo vardą</string>
+
+    <string name="updateLoginDialogTitleLine" instruction="Placeholder is the user&apos;s username for this site">Atnaujinti \n%1$s slaptažodį?</string>
+    <string name="updateLoginUpdatePasswordExplanation">„DuckDuckGo“ atnaujins šį jūsų įrenginyje įrašytą prisijungimą.</string>
 
     <string name="autofillDialogCloseButtonContentDescription">Uždaryti automatinio pildymo dialogo langą</string>
 
@@ -64,5 +64,57 @@
     <string name="credentialManagementViewMenuDelete">Trinti</string>
 
     <string name="credentialManagementSuggestionsLabel">Siūloma</string>
+    <string name="credentialManagementNoLoginsSavedTitle">Dar nėra išsaugotų prisijungimų</string>
+    <string name="credentialManagementNoLoginsSavedSubtitle">Prisijungimai saugiai laikomi jūsų įrenginyje.</string>
+
+    <string name="autofillManagementAddLogin">Pridėti prisijungimą</string>
+    <string name="autofillManagementSearchLogins">Ieškoti prisijungimų</string>
+    <string name="autofillManagementSearchClearDescription">Išvalyti paieškos įvestį</string>
+    <string name="autofillManagementNoSearchResults" instruction="Placeholder is the query the user has searched for. e.g., No results for &apos;kittens&apos;">Rezultatų pagal paiešką „%1$s“ nerasta</string>
+
+    <string name="autofillDeleteLoginDialogCancel">Atšaukti</string>
+    <string name="autofillDeleteLoginDialogDelete">Trinti</string>
+    <string name="autofillDeleteLoginDialogTitle">Ar tikrai norite ištrinti šį prisijungimą?</string>
+
+    <string name="autofillManagementUsernameCopied">Naudotojo vardas nukopijuotas</string>
+    <string name="autofillManagementPasswordCopied">Slaptažodis nukopijuotas</string>
+
+    <string name="autofill_password_generation_offer_title">Naudoti sugeneruotą slaptažodį iš „DuckDuckGo“?</string>
+    <string name="autofill_password_generation_offer_message">Slaptažodis bus išsaugotas prisijungimų lange.</string>
+    <string name="autofill_password_generation_offer_accept">Naudoti sugeneruotą slaptažodį</string>
+    <string name="autofill_password_generation_offer_decline">Sukurti savo</string>
+
+    <string name="deviceNotSupportedTitle">Nepalaikomas įrenginys</string>
+    <string name="deviceNotSupportedSubtitle">Norėdami saugiai laikyti prisijungimus, turime juos užšifruoti ir išsaugoti jūsų įrenginyje. Kadangi jūsų įrenginys nepalaiko šifruoto saugojimo, prisijungimai nepasiekiami.</string>
+
+    <string name="autofillManagementDeletedConfirmation">Prisijungimas ištrintas</string>
+    <string name="autofillManagementUndoDeletion">Anuliuoti</string>
+
+    <string name="credentialManagementLinkButtonContentDescription" instruction="Accessibility text for a button that will show next to a text field containing a website address; it will launch the website when tapped">Atidaryti svetainę</string>
+
+    <string name="credentialManagementDuckAddressLabel" translatable="false">Duck Address</string>
+
+    <string name="credentialManagementDeactivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to deactivate their private &apos;Duck Address&apos;">Deaktyvinti privatų „Duck Address“?</string>
+    <string name="credentialManagementDeactivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Laiškai, išsiųsti adresu %1$s, nebebus persiunčiami į jūsų pašto dėžutę.</string>
+    <string name="credentialManagementDeactivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will deactivate their email address, meaning emails sent there will no longer be forwarded to their inbox">Deaktyvinti</string>
+    <string name="credentialManagementActivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to reactivate their private &apos;Duck Address&apos;">Iš naujo suaktyvinti privatų „Duck Address“?</string>
+    <string name="credentialManagementActivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Laiškai, išsiųsti į %1$s, vėl bus persiųsti į jūsų pašto dėžutę.</string>
+    <string name="credentialManagementActivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will reactivate their email address, meaning emails sent there will again be forwarded to their inbox">Iš naujo įjungti</string>
+
+    <string name="credentialManagementDuckAddressActivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is active">Aktyvus</string>
+    <string name="credentialManagementDuckAddressActivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from deactivated to active">Aktyvinama...</string>
+
+    <string name="credentialManagementDuckAddressDeactivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is deactivated">Deaktyvinta</string>
+    <string name="credentialManagementDuckAddressDeactivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from active to deactivated">Deaktyvinama...</string>
+
+    <string name="credentialManagementDuckAddressManagementTemporarilyUnavailable" instruction="Error message shown when unable to manage this &apos;Duck Address&apos; right now">Šio adreso tvarkymas laikinai nepasiekiamas.</string>
+
+    <string name="credentialManagementEnableEmailProtectionPrompt" instruction="&apos;Duck Addresses&apos; is the feature name, and should not be translated."><annotation type="enable_duck_address">Įjunkite el. pašto apsaugą</annotation>, kad galėtumėte valdyti „Duck Address“ šiame prietaise.</string>
+
+    <string name="autofill_email_protection_choose_email_dialog_title">Pasirinkite el. pašto adresą</string>
+    <string name="autofillTooltipUseYourAliasDescription">Blokuoti el. pašto sekimo priemones</string>
+    <string name="autofillTooltipGenerateAddress" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated.">Generuoti privatų „Duck“ adresą</string>
+    <string name="autofillTooltipGenerateAddressDescription" instruction="&apos;hide address&apos; refers to using an alias so your real email address is not used">Blokuoti el. pašto stebėjimo priemones ir slėpti adresą</string>
+
 
 </resources>

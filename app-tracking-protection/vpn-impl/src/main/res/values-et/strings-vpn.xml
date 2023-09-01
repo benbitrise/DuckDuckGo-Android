@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Rakenduse jälgimise kaitse</string>
     <string name="refresh">Värskenda</string>
 
@@ -159,10 +159,10 @@
     <string name="atp_ReportBreakageAppNextCta">Järgmine</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Palun kirjelda, mis toimub, mida sa ootasid ja mis viis probleemi tekkimiseni.</string>
     <string name="atp_ReportBreakageFormInputHint">Räägi meile oma probleemist lähemalt</string>
-    <string name="atp_ReportBreakageFormCheckboxText">Vajutades nuppu „Saada“, nõustun, et DuckDuckGo võib kasutada selles teavituses sisalduvat teavet rakenduse jälgimise kaitse täiustamiseks.
+    <string name="atp_ReportBreakageFormCheckboxText">Nuppu „Saada“ vajutades nõustun, et DuckDuckGo võib kasutada selles teavituses sisalduvat teavet rakenduse funktsioonide täiustamiseks.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Peale sellele vormile sisestatud üksikasjade sisaldab rakenduse probleemi teavitus järgmist.<br/>• Rakenduse paketi nimi<br/>• Rakenduses blokeeritud jälgurite loend<br/>• Kas rakenduse jälgimise kaitse on lubatud<br/>• DuckDuckGo\' rakenduse koondatud diagnostika<br/>]]>
+        <![CDATA[Peale selles vormis sisestatud andmete sisaldab sinu rakenduseprobleemi teavitus järgmist.<br/>• Rakendusepaketi nimi<br/>• Rakenduses blokeeritud jälgurite loetelu<br/>• Kas DuckDuckGo teatud funktsioonid on lubatud<br/>• DuckDuckGo rakenduse koondatud diagnostika<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Teavitus saadetud, aitäh. Sinu tagasiside aitab meil rakenduse jälgimise kaitset kõigi jaoks täiustada.</string>
     <string name="atp_ThanksForTheFeedback">Aitäh tagasiside eest!</string>
@@ -210,11 +210,11 @@
     <string name="atp_ActivityPastWeekBlocked">Blokeeritud</string>
     <string name="atp_ActivityPastWeekAcross">Üle</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Jälgimiskatse</item>
         <item quantity="other">Jälgimiskatsed</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Rakendus</item>
         <item quantity="other">Rakendused</item>
     </plurals>
@@ -225,6 +225,10 @@
     <string name="atp_ActivityAbout">Teave</string>
     <string name="atp_ActivityManage">Halda</string>
     <string name="atp_ActivityRemoveFeature">Keela ja kustuta andmed</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">DuckDuckGo blokeerib varjatud jälgijaid sinu rakendustes.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Luba uuesti App Tracking Protection, et jätkata jälgijate blokeerimist oma rakendustes.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">%1$s DuckDuckGo poolt blokeeritud</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">%1$s DuckDuckGo poolt blokeeritud</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">KKK</string>
@@ -242,8 +246,6 @@
     <string name="atp_FAQSixthText">Rakenduse jälgimise kaitse töötab seadmes ja ei saada sinu isikuandmeid seadmest välja DuckDuckGo\'le.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Rakenduse jälgimise kaitse</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Rakenduse jälgimise kaitse ootenimekiri</string>
     <string name="atp_WaitlistNotificationTitle">Sinu rakenduse jälgimise kaitse kutse on siin.</string>
     <string name="atp_WaitlistNotificationDescription">Liitusid ootenimekirjaga ja palusid meil sind teavitada, kui on sinu kord proovida meie rakenduse jälgimise kaitse funktsiooni. Kutse vaatamiseks puuduta siin.</string>
     <string name="atp_WaitlistStatusNotJoined">Üks lihtne samm parema rakenduse privaatsuse saavutamiseks.</string>
@@ -262,7 +264,6 @@
     <string name="atp_WaitlistErrorJoining">Ooteloendiga liitumisel tekkis tõrge, proovige hiljem uuesti</string>
     <string name="atp_WaitlistJoinedWithNotification">Saadame sulle teate, kui rakenduse jälgimise kaitse on sinu jaoks valmis.\n\n<annotation type="beta_link">Beetaversiooni lisateave</annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Sinu kutse proovida rakenduse jälgimise kaitset saabub siia. Vaata peagi tagasi või saadame sulle teate, kui on sinu kord\n\n<annotation type="notify_me_link">Teavita mind</annotation>\n\n<annotation type="beta_link">Beetaversiooni lisateave</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Sisesta oma kutsekood</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Edu! Oled liitunud.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -272,8 +273,8 @@
         <item quantity="other">%1$d katset. Teada olevalt kogutakse järgmist:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">Blokeeriti %1$d jälgimiskatse</item>
-        <item quantity="other">Blokeeriti %1$d jälgimiskatset</item>
+        <item quantity="one">DuckDuckGo blokeeris %1$d jälgimiskatse</item>
+        <item quantity="other">DuckDuckGo blokeeris %1$d jälgimiskatset</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Teata selle rakendusega seotud probleemist</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">Kuva %1$d rohkem</string>
@@ -360,7 +361,7 @@
     <string name="atp_ManageRecentAppsProtectionEmpty">Siin ilmuvad äsja blokeeritud jälgimiskatsetega rakendused</string>
 
     <!--  App Tracking Protection Remove Feature Dialog -->
-    <string name="atp_RemoveFeatureDialogTitle">Andmete keelamine ja kustutamine?</string>
+    <string name="atp_RemoveFeatureDialogTitle">Kas keelata ja kustutada andmed?</string>
     <string name="atp_RemoveFeatureDialogMessage">Rakenduse jälgimise kaitse keelatakse ning kõik sätted ja jälgimiskatsete ajalugu kustutatakse. Saad selle igal ajal sätetest uuesti lubada.</string>
     <string name="atp_RemoveFeatureDialogCancel">Tühista</string>
     <string name="atp_RemoveFeatureDialogRemove">Keela</string>
@@ -408,5 +409,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">See funktsioon on beetaversioonis. Kas sul on rakendusega probleeme? <annotation type="app_settings_link">Aita meil paremaks saada</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Kui rakenduse jälgimiskaitse on lubatud, võib mõnes rakenduses tekkida probleeme.\n<annotation type="learn_why_link">Loe, miks</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Teadaolevate probleemidega rakenduste kaitse on keelatud. Võid need rakendused lubada, kuid need ei pruugi töötada ootuspäraselt. <annotation type="learn_why_link">Loe, miks</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Hoia blokeeritud jälguritel silm peal</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Saad uuendusi blokeeritud jälgimiskatsete kohta oma teavituste sahtlis.</string>
 
 </resources>

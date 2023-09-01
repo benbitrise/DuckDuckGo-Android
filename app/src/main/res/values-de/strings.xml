@@ -138,6 +138,51 @@
     <string name="settingsAppLinksAskEveryTime">Jedes Mal fragen</string>
     <string name="settingsAppLinksAlways">Immer</string>
     <string name="settingsAppLinksNever">Nie</string>
+    <string name="settingsTitleNotifications">Benachrichtigungen</string>
+    <string name="settingsSubtitleNotificationsDisabled">Deaktiviert</string>
+    <string name="settingsSubtitleNotificationsEnabled">Aktiviert</string>
+    <string name="settingsDefaultBrowserTitle">Standard-Browser</string>
+    <string name="settingsDefaultBrowserSetDescription">DuckDuckGo ist dein Standard-Browser</string>
+    <string name="settingsDefaultBrowserNotSetDescription">Stelle DuckDuckGo als Standard-Browser ein</string>
+    <string name="settingsPrivateSearchTitle">Private Suche</string>
+    <string name="settingsPrivateSearchDescription">Standardmäßig aktiviert</string>
+    <string name="settingsWebTrackingProtectionTitle">Web Tracking Protection</string>
+    <string name="settingsWebTrackingProtectionDescription">Standardmäßig aktiviert</string>
+    <string name="settingsHeadingSettings">Einstellungen</string>
+    <string name="settingsPermissionsSetting">Berechtigungen</string>
+    <string name="settingsAutofillLoginsSetting">Anmeldedaten automatisch ausfüllen</string>
+    <string name="settingsSyncSetting">Synchronisieren</string>
+    <string name="settingsFireButton">Fire Button</string>
+
+    <!-- Private Search -->
+    <string name="privateSearchActivityTitle">Private Suche</string>
+    <string name="privateSearchTitle">Private Search ist aktiviert</string>
+    <string name="privateSearchDescription">DuckDuckGo Private Search ist deine Standardsuchmaschine – du kannst also das Web durchsuchen, ohne getrackt zu werden.</string>
+    <string name="privateSearchHeadingSearchSettings">Sucheinstellungen</string>
+    <string name="privateSearchAutocompleteToggle">Vorschläge für die Autovervollständigung</string>
+    <string name="privateSearchMoreSearchSettingsPrimaryText">Weitere Sucheinstellungen</string>
+    <string name="privateSearchMoreSearchSettingsSecondaryText">Pass deine Sprache, Region und mehr für die Suche an</string>
+    <string name="privateSearchMoreSearchSettingsTitle">Weitere Sucheinstellungen</string>
+
+    <!-- Web Tracking Protection -->
+    <string name="webTrackingProtectionActivityTitle">Web Tracking Protection</string>
+    <string name="webTrackingProtectionLearnMoreTitle">Web Tracking Protection</string>
+    <string name="webTrackingProtectionTitle">Web Tracking Protection ist aktiviert</string>
+    <string name="webTrackingProtectionDescription"><![CDATA[DuckDuckGo trackt dich niemals und wir versuchen, deine Privatsphäre so weit wie möglich zu schützen. Wir pflegen und entwickeln kontinuierlich Schutzmechanismen, um mit neuen Tracking-Methoden Schritt zu halten und viele Schutzfunktionen bereitzustellen, die andere Browser standardmäßig nicht bieten. <u><a href=\"\">Mehr erfahren</a><u/>]]></string>
+
+    <!-- Cookie Pop-Up Protection -->
+    <string name="cookiePopupProtectionTitle">Cookie-Pop-up-Schutz</string>
+    <string name="cookiePopupProtectionDescription">Verbanne diese Pop-ups und minimiere Cookies</string>
+    <string name="cookiePopupProtectionEnabled">Aktiviert</string>
+
+    <!-- Fire Button -->
+    <string name="fireButtonActivityTitle">Fire Button</string>
+
+    <!-- Permissions -->
+    <string name="permissionsActivityTitle">Berechtigungen</string>
+
+    <!-- Appearance -->
+    <string name="appearanceActivityTitle">Aussehen</string>
 
     <!-- Settings - Automatically clearing data -->
     <string name="settingsAutomaticallyClearingDialogSave">Speichern</string>
@@ -182,6 +227,7 @@
     <string name="brokenSiteCategoryLogin">Ich kann mich nicht anmelden</string>
     <string name="brokenSiteCategoryUnsupported">Der Browser ist nicht kompatibel</string>
     <string name="brokenSiteCategoryOther">Etwas anderes</string>
+    <string name="brokenSiteDescriptionTextInputHint">Weitere Details teilen (optional)</string>
 
     <!-- Bookmarks Activity -->
     <string name="bookmarksMenuTitle">Lesezeichen</string>
@@ -242,7 +288,7 @@
     <string name="surveyCtaLaunchButton">An der Umfrage teilnehmen</string>
     <string name="surveyCtaDismissButton">Nein, danke</string>
     <string name="surveyActivityTitle">Benutzerumfrage</string>
-    <string name="surveyTitle">DUCKDUCKGO-UMFRAGE</string>
+    <string name="surveyTitle">Duckduckgo-Umfrage</string>
     <string name="surveyDismissContentDescription">Umfrage verwerfen</string>
     <string name="surveyLoadingErrorTitle">Oh nein!</string>
     <string name="surveyLoadingErrorText">Unsere Umfrage kann derzeit nicht geladen werden.\nBitte versuche es zu einem späteren Zeitpunkt erneut.</string>
@@ -358,7 +404,7 @@
     <string name="otherMainReasonTitleShort">Andere Probleme</string>
 
     <string name="openEndedInputHint">Bitte sei so genau wie möglich</string>
-    <string name="submitFeedback">ABSCHICKEN</string>
+    <string name="submitFeedback">Abschicken</string>
 
     <string name="tellUsHowToImprove">Teile uns bitte mit, was wir verbessern können.</string>
     <string name="thanksForTheFeedback">Vielen Dank für dein Feedback!</string>
@@ -369,8 +415,8 @@
     <string name="whatHaveYouBeenEnjoying">Was hat dir gefallen?</string>
     <string name="awesomeToHear">Das freut uns!</string>
     <string name="shareTheLoveWithARating">Bitte teile deine Begeisterung mit einer Bewertung im Play Store.</string>
-    <string name="rateTheApp">APP BEWERTEN</string>
-    <string name="declineFurtherFeedback">NEIN DANKE, ICH BIN FERTIG</string>
+    <string name="rateTheApp">App bewerten</string>
+    <string name="declineFurtherFeedback">Nein danke, ich bin fertig</string>
     <string name="whichBrokenSites">Wo treten diese Probleme auf?</string>
     <string name="whichBrokenSitesHint">Auf welcher Website gibt es Probleme?</string>
     <string name="feedbackSpecificAsPossible">Bitte sei so genau wie möglich</string>
@@ -386,7 +432,6 @@
 
     <!-- System Search-->
     <string name="systemSearchDeviceAppLabel">Von diesem Gerät</string>
-    <string name="systemSearchOmnibarInputHint"><font size="13">URL eingeben oder suchen</font></string>
     <string name="systemSearchAppNotFound">Die Anwendung konnte nicht gefunden werden.</string>
     <string name="systemSearchOnboardingText">Vielen Dank, dass du dich für DuckDuckGo entschieden hast!\nWenn du jetzt unsere Suche oder App verwendest, sind deine Suchanfragen geschützt.</string>
     <string name="systemSearchOnboardingFeaturesIntroText">Das kann die DuckDuckGo App auch:</string>
@@ -398,7 +443,7 @@
     <string name="systemSearchOnboardingButtonOk">Verstanden</string>
 
     <!-- Dax Dialog -->
-    <string name="daxDialogHideButton">AUSBLENDEN</string>
+    <string name="daxDialogHideButton">Ausblenden</string>
     <string name="daxDialogPhew">Puh!</string>
     <string name="daxDialogNext">Weiter</string>
     <string name="daxDialogHighFive">Schlag ein!</string>
@@ -406,6 +451,11 @@
     <string name="hideTipsTitle">Verbleibende Tipps ausblenden?</string>
     <string name="hideTipsText">Es gibt nur wenige und wir haben versucht, sie informativ zu gestalten.</string>
     <string name="hideTipsButton">Tipps für immer ausblenden</string>
+
+    <!-- AppTP Retention Experiment Dax Dialog -->
+    <string name="daxDialogAppTpRetentionText"><![CDATA[Du blockierst jetzt Tracker im gesamten Web 🎉<br/><br/>Ich kann auch Tracker blockieren, die sich in deinen anderen Apps verstecken, selbst wenn du dein Handy gerade nicht benutzt.]]></string>
+    <string name="daxDialogAppTpRetentionPrimaryButtonText">App Tracking Protection aktivieren</string>
+    <string name="daxDialogAppTpRetentionSecondaryButtonText">Jetzt nicht</string>
 
     <!-- New Onboarding Experience -->
     <string name="onboardingWelcomeTitle">"Willkommen bei DuckDuckGo!"</string>
@@ -418,13 +468,30 @@
         <item quantity="one"><![CDATA[ und <b>%1$d weiteres Tracker-Netzwerk</b> haben versucht, dich hier zu tracken. <br/><br/>Ich habe sie blockiert!<br/><br/> ☝️Du kannst in der Adressleiste sehen, wer dich beim Besuch einer neuen Website tracken will.]]></item>
         <item quantity="other"><![CDATA[ und <b>%1$d weitere Tracker-Netzwerke</b> haben versucht, dich hier zu tracken. <br/><br/>Ich habe sie blockiert!<br/><br/> ☝️Du kannst in der Adressleiste sehen, wer dich beim Besuch einer neuen Website tracken will.]]></item>
     </plurals>
-    <plurals name="daxTrackersBlockedCtaZeroText">
+    <plurals name="daxTrackersBlockedCtaZeroText" tools:ignore="ImpliedQuantity">
         <item quantity="one"><![CDATA[ hat versucht, dich hier zu tracken. <br/><br/>Ich habe das blockiert!<br/><br/> ☝️Du kannst in der URL-Leiste überprüfen, wer versucht, dich zu tracken, wenn du eine neue Website besuchst.]]></item>
         <item quantity="other"><![CDATA[ haben versucht, dich hier zu tracken. <br/><br/>Ich habe sie blockiert!<br/><br/> ☝️Du kannst in der URL-Leiste überprüfen, wer versucht, dich zu tracken, wenn du eine neue Website besuchst.]]></item>
     </plurals>
     <string name="daxNonSerpCtaText"><![CDATA[Während du tippst und scrollst, blockiere ich lästige Tracker. <br/><br/>Auf geht\'s – browse weiter!]]></string>
     <string name="daxMainNetworkCtaText" instruction="%1$s is the name of a company, %2$s is the website where the tracking is happening, %3$s is the name of the company showing in %1$s">Warnung! Ich kann nicht verhindern, dass für %1$s deine Aktivität auf %2$s sichtbar ist.&lt;br/&gt;&lt;br/&gt;Du kannst aber mit mir browsen, wenn ich dafür sorgen soll, dass %3$s insgesamt weniger über dich erfährt – indem ich die entsprechenden Tracker auf vielen anderen Websites blockiere.</string>
     <string name="daxMainNetworkOwnedCtaText" instruction="%1$s is the name of a company, %2$s is the website where the tracking is happening, %3$s is the name of the company showing in %1$s">Warnung! Da sich %2$s im Eigentum von %1$s befindet, kann ich nicht verhindern, dass es deine Aktivitäten hier angezeigt bekommt.&lt;br/&gt;&lt;br/&gt;Du kannst aber mit mir browsen, wenn ich dafür sorgen soll, dass %3$s insgesamt weniger über dich erfährt – indem ich die entsprechende Tracker auf vielen anderen Websites blockiere.</string>
+
+    <!-- Onboarding DDG Feature Options -->
+    <string name="onboardingFeatureOptionsTitle">Was führt dich zu DuckDuckGo?</string>
+    <string name="onboardingFeatureOptionsContinue">Fortsetzen</string>
+    <string name="onboardingFeatureOptionsSkip">Diesen Schritt überspringen</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionPrivateSearch">Private Suche</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionTrackerBlocking">Tracker-Blockade</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionSmallerDigitalFootprint">Geringere digitale Präsenz</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionFasterPageLoads">Schnelleres Laden von Seiten</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionFewerAds">Weniger Werbung</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionOneClickDataClearing">Datenlöschung auf Knopfdruck</string>
 
     <!-- Download Confirmation -->
     <string name="downloadConfirmationContinue">In Downloads speichern</string>
@@ -444,7 +511,7 @@
     <string name="changeIconDialogMessage">Die App wird möglicherweise geschlossen, um Änderungen anzuwenden. Komm zurück, nachdem du dein schönes neues Symbol bewundert hast.</string>
 
     <!-- New dashboard / menu buttons -->
-    <string name="manageWhitelist">Ungeschützte Websites</string>
+    <string name="manageAllowlist">Ungeschützte Websites</string>
     <string name="reportBrokenSite">Fehlerhafte Seite melden</string>
 
     <!-- Dialogs -->
@@ -452,19 +519,19 @@
     <string name="dialogEditTitle">Bearbeiten</string>
     <string name="dialogSaveAction">Speichern</string>
 
-    <!-- Whitelist -->
-    <string name="whitelistActivityTitle">Ungeschützte Websites</string>
+    <!-- Allowlist -->
+    <string name="allowlistActivityTitle">Ungeschützte Websites</string>
     <string name="enablePrivacyProtection">Datenschutz aktivieren</string>
     <string name="disablePrivacyProtection">Datenschutz deaktivieren</string>
-    <string name="whitelistEntryOverflowContentDescription" instruction="Placeholder is a website">Weitere Optionen für die ungeschützte Website %1$s</string>
-    <string name="whitelistEntryDeleteConfirmMessage" instruction="Placeholder is a website">Möchtest du &lt;b&gt;%1$s&lt;/b&gt; wirklich von den ungeschützten Websites entfernen?</string>
-    <string name="whitelistExplanation">Für diese Websites ist der Datenschutz nicht aktiviert.</string>
-    <string name="whitelistNoEntries">Datenschutz für alle Websites aktiviert</string>
-    <string name="whitelistDomainHint">www.example.com</string>
-    <string name="whitelistFormatError">Bitte gib eine Domain wie <b>beispiel.com</b> ein und versuche es erneut</string>
+    <string name="allowlistEntryOverflowContentDescription" instruction="Placeholder is a website">Weitere Optionen für die ungeschützte Website %1$s</string>
+    <string name="allowlistEntryDeleteConfirmMessage" instruction="Placeholder is a website">Möchtest du &lt;b&gt;%1$s&lt;/b&gt; wirklich von den ungeschützten Websites entfernen?</string>
+    <string name="allowlistExplanation">Für diese Websites ist der Datenschutz nicht aktiviert.</string>
+    <string name="allowlistNoEntries">Datenschutz für alle Websites aktiviert</string>
+    <string name="allowlistDomainHint">www.example.com</string>
+    <string name="allowlistFormatError">Bitte gib eine Domain wie <b>beispiel.com</b> ein und versuche es erneut</string>
 
     <!-- Settings -->
-    <string name="settingsPrivacyProtectionWhitelist">Ungeschützte Websites</string>
+    <string name="settingsPrivacyProtectionAllowlist">Ungeschützte Websites</string>
 
     <!-- Fireproof websites -->
     <string name="fireproofWebsitesActivityTitle">Feuerfeste Seiten</string>
@@ -489,8 +556,8 @@
     <string name="fireproofWebsiteSettingsSelectionDialogNever">Nie</string>
     <string name="disableLoginDetectionDialogTitle">Erinnerung zur Feuerfest-Einstellung bei der Anmeldung auf Websites deaktivieren?</string>
     <string name="disableLoginDetectionDialogDescription">Diese Auswahl kann in den Einstellungen jederzeit rückgängig gemacht werden.</string>
-    <string name="disableLoginDetectionDialogPositive">DEAKTIVIEREN</string>
-    <string name="disableLoginDetectionDialogNegative">ABBRECHEN</string>
+    <string name="disableLoginDetectionDialogPositive">Deaktivieren</string>
+    <string name="disableLoginDetectionDialogNegative">Abbrechen</string>
     <string name="automaticFireproofWebsiteLoginDialogTitle">Websites bei der Anmeldung automatisch feuerfest machen?</string>
     <string name="automaticFireproofWebsiteLoginDialogDescription">Wenn du Websites feuerfest machst, bleibst du nach Verwendung der Schaltfläche „Feuer“ angemeldet. Du kannst dies jederzeit in den Einstellungen ändern. </string>
     <string name="automaticFireproofWebsiteLoginDialogFirstOption">Immer feuerfest machen</string>
@@ -539,9 +606,7 @@
 
     <!--  Global Privacy Control-->
     <string name="globalPrivacyControlActivityTitle">Global Privacy Control (GPC)</string>
-    <string name="globalPrivacyControlDescription">
-        <![CDATA[DuckDuckGo blockiert viele Tracker automatisch. Mit Global Privacy Control (GPC) können Sie auch teilnehmende Websites bitten, das Verkaufen oder Teilen Ihrer personenbezogenen Daten mit anderen Unternehmen einzuschränken. <u><a href=\"\">Mehr erfahren</a><u/>]]>
-    </string>
+    <string name="globalPrivacyControlDescription"><![CDATA[DuckDuckGo blockiert viele Tracker automatisch. Mit Global Privacy Control (GPC) können Sie auch teilnehmende Websites bitten, das Verkaufen oder Teilen Ihrer personenbezogenen Daten mit anderen Unternehmen einzuschränken. <u><a href=\"\">Mehr erfahren</a><u/>]]></string>
     <string name="globalPrivacyControlSetting">Global Privacy Control (GPC)</string>
     <string name="globalPrivacyControlToggle">Global Privacy Control (GPC)</string>
     <string name="disabled">Deaktiviert</string>
@@ -560,11 +625,16 @@
 
     <!-- Email Autofill -->
     <string name="aliasToClipboardMessage">Neue Adresse wurde in deine Zwischenablage kopiert</string>
-    <string name="autofillTooltipUseYourAlias" instruction="Placeholder is an alias previously saved by the user">%1$s verwenden</string>
-    <string name="autofillTooltipUseYourAliasDescription">Blockiert E-Mail-Tracker</string>
-    <string name="autofillTooltipGenerateAddress">Private Duck-Adresse generieren</string>
-    <string name="autofillTooltipGenerateAddressDescription">Blockiert E-Mail-Tracker und verbirgt deine Adresse</string>
     <string name="newEmailAliasMenuTitle">Duck-Adresse generieren</string>
+
+    <!-- Autofill -->
+    <string name="autofillSnackbarAction" instruction="Label for a button that lets the user view the details for a login credential">Ansehen</string>
+    <string name="autofillLoginSavedSnackbarMessage">Anmeldedaten gespeichert</string>
+    <string name="autofillLoginUpdatedSnackbarMessage">Anmeldedaten aktualisiert</string>
+    <string name="autofillDisableAutofillPromptTitle">Möchtest du weiterhin Anmeldedaten speichern?</string>
+    <string name="autofillDisableAutofillPromptMessage">Du kannst dies jederzeit in den Einstellungen deaktivieren.</string>
+    <string name="autofillDisableAutofillPromptPositiveButton">Weiterhin speichern</string>
+    <string name="autofillDisableAutofillPromptNegativeButton">Deaktivieren</string>
 
     <!-- Waitlist Notification -->
     <string name="waitlistNotificationDialogDescription">Möchtest du eine Benachrichtigung erhalten, wenn du die E-Mail-Schutzfunktion testen kannst?</string>
@@ -583,6 +653,7 @@
     <string name="folderLocationTitle">Speicherort auswählen</string>
     <string name="addFolder">Ordner hinzufügen</string>
     <string name="editFolder">Ordner bearbeiten</string>
+    <string name="bookmarkFolderDeleteDialogTitle" instruction="Dialog title for deleting a folder with bookmarks">"Ordner und seinen Inhalt löschen?"</string>
     <string name="bookmarkFolderDeleteDialogMessage">"Möchtest du wirklich löschen "</string>
     <string name="bookmarkFolderEmpty">Leer</string>
 
@@ -615,7 +686,7 @@
 
     <!-- MacOs Settings -->
     <string name="macos_settings_description">Privat browsen mit unserer App für Mac</string>
-    <string name="macos_settings_title">DuckDuckGo-Desktop-App</string>
+    <string name="macos_settings_title">DuckDuckGo-App für Mac</string>
 
     <!-- Downloads -->
     <string name="downloadsMenuItem">Downloads</string>
@@ -643,16 +714,17 @@
 
     <!-- Autoconsent -->
     <!-- smartling.character_limit = 82 -->
-    <string name="autoconsentDialogTitle">Sieht so aus, als hätte diese Website ein Cookie-Zustimmungs-Pop-up👇</string>
+    <string name="autoconsentDialogTitle"><![CDATA[<b>Soll ich mich um Cookie-Pop-ups kümmern?</b>]]></string>
     <!-- smartling.character_limit = 160 -->
-    <string name="autoconsentDialogDescription">Soll ich das für dich erledigen? Ich kann versuchen, Cookies zu minimieren, den Datenschutz zu maximieren und Pop-ups wie diese auszublenden.</string>
+    <string name="autoconsentDialogDescription">Ich kann versuchen, die privatesten Einstellungen auszuwählen und Pop-ups wie diese auszublenden.</string>
     <!-- smartling.character_limit = 42 -->
-    <string name="autoconsentPrimaryCta">Cookie-Pop-ups verwalten</string>
+    <string name="autoconsentPrimaryCta">Kümmere dich für mich um Pop-ups</string>
     <!-- smartling.character_limit = 42 -->
-    <string name="autoconsentSecondaryCta">Nein, danke</string>
+    <string name="autoconsentSecondaryCta">Nein, ich verwalte sie selbst</string>
 
     <string name="autoconsentSetting">Cookie-Pop-ups verwalten</string>
-    <string name="autoconsentAnimationText">Cookies verwaltet</string>
+    <string name="autoconsentCosmeticNoticeAnimationText">Pop-up ausgeblendet</string>
+    <string name="autoconsentManagedNoticeAnimationText">Cookies verwaltet</string>
 
     <!-- Site Permissions Settings -->
     <string name="settingsSitePermissions">Website-Berechtigungen</string>
@@ -671,6 +743,32 @@
     <string name="permissionsPerWebsiteAskDisabledSetting">„Fragen“ für alle Seiten deaktiviert</string>
     <string name="permissionsPerWebsiteSelectorDialogTitle" instruction="%1$s is the name of a permissions and %2$s is the name of a website, i.e. Camera permission for example.com">%1$s-Berechtigung für %2$s</string>
 
-    <!-- Autofill -->
-    <string name="autofillSettingsDisplayName">Autovervollständigen</string>
+    <!-- Notify Me View on Downloads -->
+    <string name="downloadsNotifyMeTitle">Erfahre, wann Downloads bereit sind</string>
+    <string name="downloadsNotifyMeSubtitle">Erhalte eine Benachrichtigung, wenn Downloads abgeschlossen sind.</string>
+
+    <!-- Windows Settings -->
+    <string name="windows_settings_title">DuckDuckGo-App für Windows</string>
+    <string name="windows_settings_description">Privat browsen mit unserer App für Windows</string>
+    <string name="windows_settings_description_ready">Download verfügbar</string>
+    <string name="windows_settings_description_list">Du stehst jetzt auf der Warteliste!</string>
+
+    <!-- Full screen message-->
+    <string name="fullScreenMessage">Ziehe von oben nach unten und tippe auf die Zurück-Schaltfläche, um den Vollbildmodus zu verlassen</string>
+
+    <!-- Tab Switcher 'Close All Tabs' confirmation prompt -->
+    <string name="closeAppTabsConfirmationDialogTitle" instruction="Dialog title for deleting all open tabs">Alle Tabs schließen?</string>
+    <string name="closeAppTabsConfirmationDialogDescription">Bist du sicher, dass du alle Tabs schließen möchtest?</string>
+    <string name="closeAppTabsConfirmationDialogCancel">Abbrechen</string>
+    <string name="closeAppTabsConfirmationDialogClose">Schließen</string>
+
+    <!-- Edit Saved Site screen, "Delete Saved Site" confirmation prompt -->
+    <string name="deleteBookmarkConfirmationDialogTitle" instruction="Dialog title for deleting a bookmark">Dieses Lesezeichen löschen?</string>
+    <string name="deleteBookmarkConfirmationDialogDescription" instruction="Placeholder is the name of the bookmark">Dadurch wird dein Lesezeichen für &lt;b&gt;%1$s&lt;/b&gt; gelöscht.</string>
+    <string name="deleteFavoriteConfirmationDialogTitle" instruction="Dialog title for deleting a favorite site">Diesen Favoriten löschen?</string>
+    <string name="deleteFavoriteConfirmationDialogDescription" instruction="Placeholder is the name of the favorite site">Dadurch wird dein Favorit für &lt;b&gt;%1$s&lt;/b&gt; gelöscht.</string>
+    <string name="deleteBookmarkFolderConfirmationDialogTitle" instruction="Dialog title for deleting a bookmark folder">Diesen Lesezeichenordner löschen?</string>
+    <string name="deleteBookmarkFolderConfirmationDialogDescription" instruction="Placeholder is the name of the favorite site">Dadurch wird dein Lesezeichen-Ordner &lt;b&gt;%1$s&lt;/b&gt; gelöscht.</string>
+    <string name="deleteSavedSiteConfirmationDialogCancel">Abbrechen</string>
+    <string name="deleteSavedSiteConfirmationDialogDelete">Löschen</string>
 </resources>

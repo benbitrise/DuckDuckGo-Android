@@ -18,7 +18,7 @@ package com.duckduckgo.app.privacy.cleanup
 
 import android.content.Context
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
 import androidx.work.BackoffPolicy
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -27,10 +27,10 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.duckduckgo.anvil.annotations.ContributesWorker
 import com.duckduckgo.app.global.formatters.time.DatabaseDateFormatter
+import com.duckduckgo.app.lifecycle.MainProcessLifecycleObserver
 import com.duckduckgo.app.trackerdetection.db.WebTrackersBlockedDao
 import com.duckduckgo.di.scopes.AppScope
-import com.duckduckgo.mobile.android.vpn.dao.VpnTrackerDao
-import com.duckduckgo.mobile.android.vpn.store.VpnDatabase
+import com.duckduckgo.mobile.android.vpn.stats.AppTrackerBlockingStatsRepository
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Module
 import dagger.Provides
@@ -49,15 +49,12 @@ class TrackersDbCleanerSchedulerModule {
     @IntoSet
     fun provideDeviceShieldNotificationScheduler(
         workManager: WorkManager,
-    ): LifecycleObserver {
+    ): MainProcessLifecycleObserver {
         return TrackersDbCleanerScheduler(workManager)
     }
-
-    @Provides
-    fun providesVpnTrackerDao(vpnDatabase: VpnDatabase): VpnTrackerDao = vpnDatabase.vpnTrackerDao()
 }
 
-class TrackersDbCleanerScheduler(private val workManager: WorkManager) : DefaultLifecycleObserver {
+class TrackersDbCleanerScheduler(private val workManager: WorkManager) : MainProcessLifecycleObserver {
 
     override fun onCreate(owner: LifecycleOwner) {
         Timber.v("Scheduling Trackers Blocked DB cleaner")
@@ -83,12 +80,12 @@ class TrackersDbCleanerWorker(
     lateinit var webTrackersBlockedDao: WebTrackersBlockedDao
 
     @Inject
-    lateinit var appTrackersDao: VpnTrackerDao
+    lateinit var appTrackerBlockingStatsRepository: AppTrackerBlockingStatsRepository
 
     @WorkerThread
     override suspend fun doWork(): Result {
         webTrackersBlockedDao.deleteOldDataUntil(dateOfLastWeek())
-        appTrackersDao.deleteOldDataUntil(dateOfLastWeek())
+        appTrackerBlockingStatsRepository.deleteTrackersUntil(dateOfLastWeek())
 
         Timber.i("Clear trackers dao job finished; returning SUCCESS")
         return Result.success()

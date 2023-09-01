@@ -19,6 +19,7 @@ package com.duckduckgo.mobile.android.vpn.apps.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -38,15 +39,18 @@ import com.duckduckgo.mobile.android.vpn.apps.ManageAppsProtectionViewModel
 import com.duckduckgo.mobile.android.vpn.apps.TrackingProtectionAppInfo
 import com.duckduckgo.mobile.android.vpn.apps.ViewState
 import com.duckduckgo.mobile.android.vpn.breakage.ReportBreakageContract
+import com.duckduckgo.mobile.android.vpn.breakage.ReportBreakageScreen
 import com.duckduckgo.mobile.android.vpn.databinding.ActivityManageRecentAppsProtectionBinding
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
+import javax.inject.Provider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @InjectWith(ActivityScope::class)
 class ManageRecentAppsProtectionActivity :
@@ -61,6 +65,8 @@ class ManageRecentAppsProtectionActivity :
 
     @Inject lateinit var vpnFeaturesRegistry: VpnFeaturesRegistry
 
+    @Inject lateinit var reportBreakageContract: Provider<ReportBreakageContract>
+
     private val binding: ActivityManageRecentAppsProtectionBinding by viewBinding()
 
     private val viewModel: ManageAppsProtectionViewModel by bindViewModel()
@@ -69,14 +75,22 @@ class ManageRecentAppsProtectionActivity :
 
     private val shimmerLayout by lazy { findViewById<ShimmerFrameLayout>(R.id.manageRecentAppsSkeleton) }
 
-    private val reportBreakage = registerForActivityResult(ReportBreakageContract()) { result ->
-        if (!result.isEmpty()) {
-            Snackbar.make(binding.root, R.string.atp_ReportBreakageSent, LENGTH_LONG).show()
+    private val isAppTPEnabled by lazy {
+        runBlocking {
+            vpnFeaturesRegistry.isFeatureRegistered(AppTpVpnFeature.APPTP_VPN)
         }
     }
 
+    private lateinit var reportBreakage: ActivityResultLauncher<ReportBreakageScreen>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        reportBreakage = registerForActivityResult(reportBreakageContract.get()) { result ->
+            if (!result.isEmpty()) {
+                Snackbar.make(binding.root, R.string.atp_ReportBreakageSent, LENGTH_LONG).show()
+            }
+        }
 
         setContentView(binding.root)
         setupToolbar(binding.includeToolbar.toolbar)
@@ -121,6 +135,13 @@ class ManageRecentAppsProtectionActivity :
         )
 
         val recyclerView = binding.manageRecentAppsRecycler
+
+        if (isAppTPEnabled) {
+            recyclerView.alpha = 1.0f
+        } else {
+            recyclerView.alpha = 0.45f
+        }
+
         recyclerView.adapter = adapter
     }
 
@@ -143,7 +164,7 @@ class ManageRecentAppsProtectionActivity :
             binding.manageRecentAppsEmptyView.show()
         } else {
             binding.manageRecentAppsEmptyView.gone()
-            adapter.update(viewState.excludedApps)
+            adapter.update(viewState.excludedApps, isAppTPEnabled)
             binding.manageRecentAppsRecycler.show()
         }
         binding.manageRecentAppsShowAll.show()
@@ -235,7 +256,7 @@ class ManageRecentAppsProtectionActivity :
 
     companion object {
         private const val REPORT_ISSUES_ANNOTATION = "report_issues_link"
-        fun intent(
+        internal fun intent(
             context: Context,
         ): Intent {
             return Intent(context, ManageRecentAppsProtectionActivity::class.java)

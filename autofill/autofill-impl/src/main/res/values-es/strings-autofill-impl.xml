@@ -17,33 +17,33 @@
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
 <resources>
-    <string name="managementScreenTitle">Autocompletar inicios de sesión</string>
-
-    <string name="managementLockedModeText">Desbloquear Autocompletar</string>
+    <string name="autofillManagementScreenTitle">Inicios de sesión</string>
 
     <string name="managementDisabledModeCta"><b>Configurar en Ajustes</b></string>
-    <string name="managementDisabledModeSubtitle">Se requiere un patrón de bloqueo del dispositivo, un PIN o datos biométricos para proteger tus datos de Autocompletar de inicio de sesión.</string>
-    <string name="managementDisabledModeTitle">Asegura tu dispositivo para usar Autocompletar</string>
+    <string name="managementDisabledModeSubtitle">Se requiere un patrón de bloqueo del dispositivo, un PIN o datos biométricos para proteger tus inicios de sesión.</string>
+    <string name="managementDisabledModeTitle">Protege tu dispositivo para guardar los inicios de sesión</string>
 
-    <string name="saveLoginDialogTitle">¿Guardar inicio de sesión?</string>
-    <string name="saveLoginMissingUsernameDialogTitle">¿Guardar contraseña?</string>
     <string name="saveLoginDialogButtonSave">Guardar inicio de sesión</string>
     <string name="saveLoginMissingUsernameDialogButtonSave">Guardar contraseña</string>
     <string name="saveLoginDialogNotNow">Ahora no</string>
-    <string name="saveLoginDialogOnboardingExplanationSubtitle">Los inicios de sesión se almacenan de forma segura solo en este dispositivo y se pueden administrar desde el menú de Autocompletar en Configuración.</string>
-    <string name="saveLoginDialogFirstTimeOnboardingExplanationTitle">¿Quieres que DuckDuckGo guarde tu inicio de sesión?</string>
+    <string name="saveLoginDialogSubtitle">Los inicios de sesión se almacenan de forma segura en tu dispositivo y se pueden administrar desde el menú de Inicios de Sesión en Ajustes.</string>
+    <string name="saveLoginDialogTitle">¿Quieres que DuckDuckGo guarde tu inicio de sesión?</string>
     <string name="saveLoginDialogMoreOptionsButtonLabel">Más opciones</string>
 
-    <string name="useSavedLoginDialogTitle">¿Usar inicio de sesión guardado?</string>
-    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Iniciar sesión para %1$s</string>
-    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Iniciar sesión en el sitio</string>
+    <string name="useSavedLoginDialogTitle">¿Usar un inicio de sesión guardado?</string>
+    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Contraseña para %1$s</string>
+    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Contraseña para el sitio</string>
+    <string name="useSavedLoginDialogGroupThisWebsite">Desde este sitio web</string>
+    <string name="useSavedLoginDialogFromDomainLabel" instruction="Placeholder is the URL of a website">Desde %1$s</string>
 
-    <string name="updateLoginDialogTitle">¿Actualizar contraseña?</string>
     <string name="updateLoginDialogButtonUpdatePassword">Actualizar contraseña</string>
     <string name="updateLoginDialogButtonNotNow">Ahora no</string>
 
     <string name="updateLoginDialogTitleUpdateUsername">¿Actualizar nombre de usuario?</string>
     <string name="updateLoginDialogButtonUpdateUsername">Actualizar nombre de usuario</string>
+
+    <string name="updateLoginDialogTitleLine" instruction="Placeholder is the user&apos;s username for this site">¿Actualizar contraseña de \n%1$s?</string>
+    <string name="updateLoginUpdatePasswordExplanation">DuckDuckGo actualizará este inicio de sesión almacenado en tu dispositivo.</string>
 
     <string name="autofillDialogCloseButtonContentDescription">Cerrar cuadro de diálogo de Autocompletar</string>
 
@@ -64,5 +64,57 @@
     <string name="credentialManagementViewMenuDelete">Eliminar</string>
 
     <string name="credentialManagementSuggestionsLabel">Sugerencias</string>
+    <string name="credentialManagementNoLoginsSavedTitle">Aún no hay inicios de sesión guardados</string>
+    <string name="credentialManagementNoLoginsSavedSubtitle">Los inicios de sesión se almacenan de forma segura en tu dispositivo.</string>
+
+    <string name="autofillManagementAddLogin">Añadir inicio de sesión</string>
+    <string name="autofillManagementSearchLogins">Buscar inicios de sesión</string>
+    <string name="autofillManagementSearchClearDescription">Borrar búsqueda</string>
+    <string name="autofillManagementNoSearchResults" instruction="Placeholder is the query the user has searched for. e.g., No results for &apos;kittens&apos;">Sin resultados para «%1$s»</string>
+
+    <string name="autofillDeleteLoginDialogCancel">Cancelar</string>
+    <string name="autofillDeleteLoginDialogDelete">Eliminar</string>
+    <string name="autofillDeleteLoginDialogTitle">¿Seguro que quieres eliminar este inicio de sesión?</string>
+
+    <string name="autofillManagementUsernameCopied">Nombre de usuario copiado</string>
+    <string name="autofillManagementPasswordCopied">Contraseña copiada</string>
+
+    <string name="autofill_password_generation_offer_title">¿Usar contraseña generada por DuckDuckGo?</string>
+    <string name="autofill_password_generation_offer_message">La contraseña se guardará en Inicios de sesión.</string>
+    <string name="autofill_password_generation_offer_accept">Usar contraseña generada</string>
+    <string name="autofill_password_generation_offer_decline">Crear la mía propia</string>
+
+    <string name="deviceNotSupportedTitle">Dispositivo no compatible</string>
+    <string name="deviceNotSupportedSubtitle">Para almacenar los inicios de sesión de forma segura, necesitamos cifrarlos y almacenarlos en tu dispositivo. Debido a que tu dispositivo no admite el almacenamiento cifrado, los inicios de sesión no están disponibles.</string>
+
+    <string name="autofillManagementDeletedConfirmation">Inicio de sesión eliminado</string>
+    <string name="autofillManagementUndoDeletion">Deshacer</string>
+
+    <string name="credentialManagementLinkButtonContentDescription" instruction="Accessibility text for a button that will show next to a text field containing a website address; it will launch the website when tapped">Abrir sitio web</string>
+
+    <string name="credentialManagementDuckAddressLabel" translatable="false">Duck Address</string>
+
+    <string name="credentialManagementDeactivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to deactivate their private &apos;Duck Address&apos;">¿Desactivar la Duck Address privada?</string>
+    <string name="credentialManagementDeactivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Los correos electrónicos enviados a %1$s ya no se reenviarán a tu bandeja de entrada.</string>
+    <string name="credentialManagementDeactivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will deactivate their email address, meaning emails sent there will no longer be forwarded to their inbox">Desactivar</string>
+    <string name="credentialManagementActivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to reactivate their private &apos;Duck Address&apos;">¿Reactivar la Duck Address privada?</string>
+    <string name="credentialManagementActivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Los correos electrónicos enviados a %1$s volverán a reenviarse a tu bandeja de entrada.</string>
+    <string name="credentialManagementActivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will reactivate their email address, meaning emails sent there will again be forwarded to their inbox">Reactivar</string>
+
+    <string name="credentialManagementDuckAddressActivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is active">Activo</string>
+    <string name="credentialManagementDuckAddressActivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from deactivated to active">Activando…</string>
+
+    <string name="credentialManagementDuckAddressDeactivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is deactivated">Desactivado</string>
+    <string name="credentialManagementDuckAddressDeactivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from active to deactivated">Desactivando…</string>
+
+    <string name="credentialManagementDuckAddressManagementTemporarilyUnavailable" instruction="Error message shown when unable to manage this &apos;Duck Address&apos; right now">La gestión de esta dirección no está disponible temporalmente.</string>
+
+    <string name="credentialManagementEnableEmailProtectionPrompt" instruction="&apos;Duck Addresses&apos; is the feature name, and should not be translated."><annotation type="enable_duck_address">Habilita la Email Protection</annotation> para gestionar Duck Addresses en este dispositivo.</string>
+
+    <string name="autofill_email_protection_choose_email_dialog_title">Seleccionar dirección de correo electrónico</string>
+    <string name="autofillTooltipUseYourAliasDescription">Bloquear rastreadores de correo electrónico</string>
+    <string name="autofillTooltipGenerateAddress" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated.">Generar Duck Address privada</string>
+    <string name="autofillTooltipGenerateAddressDescription" instruction="&apos;hide address&apos; refers to using an alias so your real email address is not used">Bloquear rastreadores de correo electrónico y ocultar dirección</string>
+
 
 </resources>

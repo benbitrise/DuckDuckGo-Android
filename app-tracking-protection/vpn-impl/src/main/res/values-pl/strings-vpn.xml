@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Ochrona przed śledzeniem przez aplikacje</string>
     <string name="refresh">Odśwież</string>
 
@@ -167,10 +167,10 @@
     <string name="atp_ReportBreakageAppNextCta">Dalej</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Opisz, co się dzieje, czego się spodziewasz i jakie kroki doprowadziły do powstania problemu.</string>
     <string name="atp_ReportBreakageFormInputHint">Opowiedz nam więcej o problemie, który występuje</string>
-    <string name="atp_ReportBreakageFormCheckboxText">Klikając „Prześlij”, zgadzam się na wykorzystanie przez DuckDuckGo informacji zawartych w tym raporcie w celu poprawy ochrony przed śledzeniem przez aplikacje.
+    <string name="atp_ReportBreakageFormCheckboxText">Klikając „Prześlij”, zgadzam się na wykorzystanie przez DuckDuckGo informacji zawartych w tym raporcie w celu ulepszenia funkcji aplikacji.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Oprócz danych wprowadzonych w tym formularzu, Twój raport o problemie z aplikacją będzie zawierał informacje, takie jak:<br/>• Nazwa pakietu aplikacji<br/>• Lista modułów śledzących zablokowanych w aplikacji<br/>• Informacja o tym, czy ochrona przed śledzeniem przez aplikację jest włączona<br/>• Zbiorcza diagnostyka aplikacji DuckDuckGo<br/>]]>
+        <![CDATA[Oprócz danych wprowadzonych w tym formularzu, raport o problemie z aplikacją będzie zawierał następujące informacje:<br/>• Nazwa pakietu aplikacji<br/>• Lista modułów śledzących zablokowanych w aplikacji<br/>• Informacja o tym, czy włączono funkcje DuckDuckGo<br/>• Zbiorcza diagnostyka aplikacji DuckDuckGo<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Przesłano raport, dziękujemy! Twoje opinie pomogą nam ulepszyć ochronę przed śledzeniem przez aplikacje dla każdego użytkownika.</string>
     <string name="atp_ThanksForTheFeedback">Dzięki za opinię!</string>
@@ -218,13 +218,13 @@
     <string name="atp_ActivityPastWeekBlocked">Zablokowano</string>
     <string name="atp_ActivityPastWeekAcross">W</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Próba śledzenia</item>
         <item quantity="few">Próby śledzenia</item>
         <item quantity="many">Prób śledzenia</item>
         <item quantity="other">Próby śledzenia</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Aplikacja</item>
         <item quantity="few">Aplikacje</item>
         <item quantity="many">Aplikacji</item>
@@ -237,6 +237,10 @@
     <string name="atp_ActivityAbout">Informacje</string>
     <string name="atp_ActivityManage">Zarządzaj</string>
     <string name="atp_ActivityRemoveFeature">Wyłącz i usuń dane</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">DuckDuckGo blokuje ukryte mechanizmy śledzące w aplikacjach.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Ponownie włącz ochronę przed śledzeniem przez aplikacje, aby kontynuować blokowanie mechanizmów śledzących w swoich aplikacjach.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">Zablokowane przez DuckDuckGo %1$s</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">Zablokowane przez DuckDuckGo %1$s</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">Najczęściej zadawane pytania</string>
@@ -254,8 +258,6 @@
     <string name="atp_FAQSixthText">Ochrona przed śledzeniem przez aplikacje działa na Twoim urządzeniu i nie wysyła Twoich danych osobowych poza urządzenie do DuckDuckGo.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Ochrona przed śledzeniem przez aplikacje</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Lista oczekujących na ochronę przed śledzeniem przez aplikacje</string>
     <string name="atp_WaitlistNotificationTitle">Oto Twoje zaproszenie do ochrony przed śledzeniem przez aplikacje!</string>
     <string name="atp_WaitlistNotificationDescription">Jesteś już na liście oczekujących i powiadomimy Cię, gdy nadejdzie Twoja kolej na wypróbowanie funkcji ochrony przed śledzeniem przez aplikacje. Dotknij, aby wyświetlić swoje zaproszenie.</string>
     <string name="atp_WaitlistStatusNotJoined">Jeden prosty krok ku większej ochronie prywatności w aplikacjach!</string>
@@ -274,7 +276,6 @@
     <string name="atp_WaitlistErrorJoining">Wystąpił błąd podczas dołączania do listy oczekujących, spróbuj ponownie później</string>
     <string name="atp_WaitlistJoinedWithNotification">Wyślemy Ci powiadomienie, gdy&lt;br/&gt; ochrona przed śledzeniem przez aplikacje będzie gotowa.<annotation type="beta_link"> Dowiedz się więcej o wersji beta</annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Twoje zaproszenie do wypróbowania ochrony przed śledzeniem przez aplikacje pojawi się tutaj. Sprawdź ponownie później. Możemy też wysłać Ci powiadomienie, gdy nadejdzie Twoja kolej.\n\n<annotation type="notify_me_link">Powiadom mnie</annotation>\n\n<annotation type="beta_link">Dowiedz się więcej o wersji beta</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Wprowadź swój kod zaproszenia</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Udało się! Wszystko gotowe.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -286,10 +287,10 @@
         <item quantity="other">%1$d próby. Wiemy, że gromadzone są następujące informacje:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">Zablokowano %1$d próbę śledzenia</item>
-        <item quantity="few">Zablokowano %1$d próby śledzenia</item>
-        <item quantity="many">Zablokowano %1$d prób śledzenia</item>
-        <item quantity="other">Zablokowano %1$d próby śledzenia</item>
+        <item quantity="one">DuckDuckGo zablokował %1$d próbę śledzenia</item>
+        <item quantity="few">DuckDuckGo zablokował %1$d próby śledzenia</item>
+        <item quantity="many">DuckDuckGo zablokował %1$d prób śledzenia</item>
+        <item quantity="other">DuckDuckGo zablokował %1$d próby śledzenia</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Zgłoś problem z tą aplikacją</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">Pokaż jeszcze %1$d</string>
@@ -376,7 +377,7 @@
     <string name="atp_ManageRecentAppsProtectionEmpty">Tutaj pojawią się aplikacje, w których ostatnio zablokowano próby śledzenia.</string>
 
     <!--  App Tracking Protection Remove Feature Dialog -->
-    <string name="atp_RemoveFeatureDialogTitle">Czy chcesz wyłączyć i usunąć dane?</string>
+    <string name="atp_RemoveFeatureDialogTitle">Chcesz wyłączyć i usunąć dane?</string>
     <string name="atp_RemoveFeatureDialogMessage">Ochrona przed śledzeniem zostanie wyłączona, a wszelkie ustawienia i historia prób śledzenia zostaną usunięte. Możesz ją ponownie włączyć w dowolnym momencie w Ustawieniach.</string>
     <string name="atp_RemoveFeatureDialogCancel">Anuluj</string>
     <string name="atp_RemoveFeatureDialogRemove">Wyłącz</string>
@@ -428,5 +429,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Ta funkcja jest w fazie beta. Masz problemy z aplikacją? <annotation type="app_settings_link"> Pomóż nam naprawić błędy</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Gdy ochrona przed śledzeniem przez aplikacje jest włączona, mogą wystąpić problemy z niektórymi aplikacjami.\n<annotation type="learn_why_link">Dowiedz się, dlaczego</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Ochrona została wyłączona dla aplikacji, w których występują znane problemy. Możesz włączyć ochronę dla tych aplikacji, ale wówczas mogą wystąpić z nimi problemy. <annotation type="learn_why_link">Dowiedz się, dlaczego</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Obserwuj zablokowane trackery</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Otrzymuj bieżące powiadomienia o zablokowanych próbach śledzenia w szufladzie powiadomień.</string>
 
 </resources>

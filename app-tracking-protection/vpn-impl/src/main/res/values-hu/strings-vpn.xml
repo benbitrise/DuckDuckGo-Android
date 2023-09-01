@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Alkalmazáskövetés elleni védelem</string>
     <string name="refresh">Frissítés</string>
 
@@ -159,10 +159,10 @@
     <string name="atp_ReportBreakageAppNextCta">Következő</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Írd le, mi történik, mire számítottál, és milyen lépések vezettek a problémához.</string>
     <string name="atp_ReportBreakageFormInputHint">Mondj el többet a tapasztalt problémáról</string>
-    <string name="atp_ReportBreakageFormCheckboxText">A „Beküldés” gombra kattintva elfogadom, hogy a DuckDuckGo felhasználja a jelentésben szereplő információkat az alkalmazáskövetés elleni védelem javítása céljából.
+    <string name="atp_ReportBreakageFormCheckboxText">A „Beküldés” gombra kattintva elfogadom, hogy a DuckDuckGo az alkalmazás funkcióinak javítása céljából felhasználhatja a jelentésben szereplő adatokat.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Az ezen űrlapon megadott adatokon kívül az alkalmazással kapcsolatos problémajelentésed tartalmazza a következőket:<br/>• Az alkalmazáscsomag neve<br/>• Az alkalmazásban blokkolt nyomkövetők listája<br/>• Az alkalmazás nyomkövetés elleni védelem be van-e kapcsolva<br/>• A DuckDuckGo összesített alkalmazásdiagnosztikája<br/>]]>
+        <![CDATA[Az ezen űrlapon megadott adatokon kívül az alkalmazással kapcsolatos problémajelentésed tartalmazza a következőket:<br/>• Az alkalmazáscsomag neve<br/>• Az alkalmazásban blokkolt nyomkövetők listája<br/>• Bizonyos DuckDuckGo-funkciók be vannak-e kapcsolva<br/>• A DuckDuckGo összesített alkalmazásdiagnosztikája<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Jelentés elküldve, köszönjük! A visszajelzésed segítenek nekünk, hogy mindenki számára javítsuk az alkalmazáskövetés elleni védelmet.</string>
     <string name="atp_ThanksForTheFeedback">Köszönjük a visszajelzést!</string>
@@ -210,11 +210,11 @@
     <string name="atp_ActivityPastWeekBlocked">Blokkolt</string>
     <string name="atp_ActivityPastWeekAcross">Itt:</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Követési kísérlet</item>
         <item quantity="other">Követési kísérletek</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Alkalmazás</item>
         <item quantity="other">Alkalmazások</item>
     </plurals>
@@ -225,6 +225,10 @@
     <string name="atp_ActivityAbout">További információ</string>
     <string name="atp_ActivityManage">Kezelés</string>
     <string name="atp_ActivityRemoveFeature">Kikapcsolás és adatok törlése</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">A DuckDuckGo blokkolja a rejtett nyomkövetőket az alkalmazásokban.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Engedélyezd újra az App Tracking Protection funkciót, hogy továbbra is blokkold a nyomkövetőket az alkalmazásokban.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">A DuckDuckGo %1$s blokkolta</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">A DuckDuckGo %1$s-i dátummal blokkolta</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">GYIK</string>
@@ -242,8 +246,6 @@
     <string name="atp_FAQSixthText">Az alkalmazáskövetés elleni védelem a készülékeden működik, és nem küld személyes adatokat a készülékedről a DuckDuckGónak.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Alkalmazáskövetés elleni védelem</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Alkalmazáskövetés elleni védelem várólistája</string>
     <string name="atp_WaitlistNotificationTitle">Megérkezett az alkalmazáskövetés elleni védelmi meghívója!</string>
     <string name="atp_WaitlistNotificationDescription">Feliratkoztál a várólistára, és arra kértél minket, hogy értesítsünk, amikor rád kerül a sor, hogy kipróbálhasd az alkalmazáskövetés elleni védelmi funkciót. Koppints a meghívó megtekintéséhez.</string>
     <string name="atp_WaitlistStatusNotJoined">Egyetlen egyszerű lépés az alkalmazások jobb védelme érdekében!</string>
@@ -262,7 +264,6 @@
     <string name="atp_WaitlistErrorJoining">Hiba történt a várólistához való csatlakozás közben. Kérjük, próbáld újra később.</string>
     <string name="atp_WaitlistJoinedWithNotification">Értesítést küldünk, amikor az alkalmazáskövetés elleni védelem készen áll számodra.\n\n<annotation type="beta_link">További információ a bétaverzióról</annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Ide érkezik az alkalmazáskövetés elleni védelem kipróbálására szóló meghívód. Nézz vissza hamarosan, vagy küldhetünk neked értesítést, amikor sorra kerülsz\n\n<annotation type="notify_me_link">Értesítést kérek</annotation>\n\n<annotation type="beta_link">További információ a bétaverzióról</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Meghívókód megadása</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Sikerült! Bent vagy.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -272,8 +273,8 @@
         <item quantity="other">%1$d kísérlet. A következőket gyűjti:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">%1$d követési kísérletet blokkolva</item>
-        <item quantity="other">%1$d követési kísérletet blokkolva</item>
+        <item quantity="one">A DuckDuckGo %1$d nyomkövetési kísérletet blokkolt</item>
+        <item quantity="other">A DuckDuckGo %1$d nyomkövetési kísérletet blokkolt</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Az alkalmazással kapcsolatos probléma bejelentése</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">További %1$d megjelenítése</string>
@@ -408,5 +409,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Ez a funkció béta verzióban van. Problémáid vannak egy alkalmazással? <annotation type="app_settings_link">Segíts a fejlesztésben</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Egyes alkalmazásoknál problémák merülhetnek fel, ha az alkalmazáskövetés elleni védelem engedélyezve van.\n<annotation type="learn_why_link">Tudd meg, miért</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Az ismert problémákat tartalmazó alkalmazások védelme le van tiltva. Engedélyezheted ezeket az alkalmazásokat, de előfordulhat, hogy nem a várt módon működnek. <annotation type="learn_why_link">Tudd meg, miért</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Blokkolt nyomkövetők szemmel tartása</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Az értesítési fiókodban tájékoztatunk a blokkolt nyomkövetési kísérletekről.</string>
 
 </resources>

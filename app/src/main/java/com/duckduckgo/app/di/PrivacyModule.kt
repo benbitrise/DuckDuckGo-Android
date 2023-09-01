@@ -17,7 +17,6 @@
 package com.duckduckgo.app.di
 
 import android.content.Context
-import androidx.lifecycle.LifecycleObserver
 import com.duckduckgo.adclick.api.AdClickManager
 import com.duckduckgo.app.browser.WebDataManager
 import com.duckduckgo.app.browser.cookies.ThirdPartyCookieManager
@@ -33,6 +32,7 @@ import com.duckduckgo.app.global.DispatcherProvider
 import com.duckduckgo.app.global.file.FileDeleter
 import com.duckduckgo.app.global.view.ClearDataAction
 import com.duckduckgo.app.global.view.ClearPersonalDataAction
+import com.duckduckgo.app.lifecycle.MainProcessLifecycleObserver
 import com.duckduckgo.app.location.GeoLocationPermissions
 import com.duckduckgo.app.location.GeoLocationPermissionsManager
 import com.duckduckgo.app.location.data.LocationPermissionsDao
@@ -46,7 +46,9 @@ import com.duckduckgo.app.trackerdetection.db.TdsDomainEntityDao
 import com.duckduckgo.app.trackerdetection.db.TdsEntityDao
 import com.duckduckgo.cookies.api.DuckDuckGoCookieManager
 import com.duckduckgo.di.scopes.AppScope
+import com.duckduckgo.savedsites.api.SavedSitesRepository
 import com.duckduckgo.site.permissions.api.SitePermissionsManager
+import com.duckduckgo.sync.api.DeviceSyncState
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
@@ -78,6 +80,8 @@ object PrivacyModule {
         adClickManager: AdClickManager,
         fireproofWebsiteRepository: FireproofWebsiteRepository,
         sitePermissionsManager: SitePermissionsManager,
+        deviceSyncState: DeviceSyncState,
+        savedSitesRepository: SavedSitesRepository,
         dispatcherProvider: DispatcherProvider,
     ): ClearDataAction {
         return ClearPersonalDataAction(
@@ -93,6 +97,8 @@ object PrivacyModule {
             adClickManager,
             fireproofWebsiteRepository,
             sitePermissionsManager,
+            deviceSyncState,
+            savedSitesRepository,
             dispatcherProvider,
         )
     }
@@ -107,7 +113,7 @@ object PrivacyModule {
     @IntoSet
     fun dataClearerForegroundAppRestartPixelObserver(
         dataClearerForegroundAppRestartPixel: DataClearerForegroundAppRestartPixel,
-    ): LifecycleObserver = dataClearerForegroundAppRestartPixel
+    ): MainProcessLifecycleObserver = dataClearerForegroundAppRestartPixel
 
     @Provides
     @SingleInstanceIn(AppScope::class)

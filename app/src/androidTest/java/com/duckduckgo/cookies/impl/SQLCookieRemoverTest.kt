@@ -16,6 +16,7 @@
 
 package com.duckduckgo.cookies.impl
 
+import android.annotation.SuppressLint
 import android.webkit.CookieManager
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
@@ -27,11 +28,7 @@ import com.duckduckgo.app.fire.fireproofwebsite.data.FireproofWebsiteRepositoryI
 import com.duckduckgo.app.global.DefaultDispatcherProvider
 import com.duckduckgo.app.global.DispatcherProvider
 import com.duckduckgo.app.global.db.AppDatabase
-import com.duckduckgo.app.global.exception.RootExceptionFinder
-import com.duckduckgo.app.statistics.pixels.ExceptionPixel
 import com.duckduckgo.app.statistics.pixels.Pixel
-import com.duckduckgo.app.statistics.store.OfflinePixelCountDataStore
-import com.duckduckgo.cookies.impl.CookiesPixelName.COOKIE_DATABASE_EXCEPTION_OPEN_ERROR
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
@@ -40,19 +37,19 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import org.junit.After
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.kotlin.*
 
 @ExperimentalCoroutinesApi
+@SuppressLint("NoHardcodedCoroutineDispatcher")
 class SQLCookieRemoverTest {
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
     private val cookieManager = CookieManager.getInstance()
     private val fireproofWebsiteDao = db.fireproofWebsiteDao()
-    private val mockPixel = mock<Pixel>()
-    private val mockOfflinePixelCountDataStore = mock<OfflinePixelCountDataStore>()
+    private val mockPixel: Pixel = mock()
     private val webViewDatabaseLocator = WebViewDatabaseLocator(context)
 
     @After
@@ -72,15 +69,6 @@ class SQLCookieRemoverTest {
     }
 
     @Test
-    fun whenNoCookiesStoredAndRemoveExecutedThenResultTrue() = runTest {
-        val sqlCookieRemover = givenSQLCookieRemover()
-
-        val success = sqlCookieRemover.removeCookies()
-
-        assertTrue(success)
-    }
-
-    @Test
     fun whenUserHasFireproofWebsitesAndRemoveExecutedThenResultTrue() = runTest {
         val sqlCookieRemover = givenSQLCookieRemover()
         givenDatabaseWithCookies()
@@ -92,19 +80,7 @@ class SQLCookieRemoverTest {
     }
 
     @Test
-    fun whenDatabasePathNotFoundThenPixelFired() = runTest {
-        val mockDatabaseLocator = mock<DatabaseLocator> {
-            on { getDatabasePath() } doReturn ""
-        }
-        val sqlCookieRemover = givenSQLCookieRemover(databaseLocator = mockDatabaseLocator)
-
-        sqlCookieRemover.removeCookies()
-
-        verify(mockOfflinePixelCountDataStore).cookieDatabaseNotFoundCount = 1
-    }
-
-    @Test
-    fun whenUnableToOpenDatabaseThenPixelFiredAndSaveOfflineCount() = runTest {
+    fun whenUnableToOpenDatabaseThenSendPixel() = runTest {
         val mockDatabaseLocator = mock<DatabaseLocator> {
             on { getDatabasePath() } doReturn "fakePath"
         }
@@ -112,8 +88,7 @@ class SQLCookieRemoverTest {
 
         sqlCookieRemover.removeCookies()
 
-        verify(mockOfflinePixelCountDataStore).cookieDatabaseOpenErrorCount = 1
-        verify(mockPixel).fire(eq(COOKIE_DATABASE_EXCEPTION_OPEN_ERROR), any(), any())
+        verify(mockPixel).fire(CookiesPixelName.COOKIE_DB_OPEN_ERROR)
     }
 
     private fun givenFireproofWebsitesStored() {
@@ -127,7 +102,7 @@ class SQLCookieRemoverTest {
 
     private suspend fun removeExistingCookies() {
         withContext(Dispatchers.Main) {
-            suspendCoroutine<Unit> { continuation ->
+            suspendCoroutine { continuation ->
                 cookieManager.removeAllCookies { continuation.resume(Unit) }
             }
         }
@@ -136,15 +111,13 @@ class SQLCookieRemoverTest {
     private fun givenSQLCookieRemover(
         databaseLocator: DatabaseLocator = webViewDatabaseLocator,
         repository: FireproofRepository = FireproofWebsiteRepositoryImpl(fireproofWebsiteDao, DefaultDispatcherProvider(), mock()),
-        offlinePixelCountDataStore: OfflinePixelCountDataStore = mockOfflinePixelCountDataStore,
-        exceptionPixel: ExceptionPixel = ExceptionPixel(mockPixel, RootExceptionFinder()),
+        pixel: Pixel = mockPixel,
         dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider(),
     ): SQLCookieRemover {
         return SQLCookieRemover(
             databaseLocator,
             repository,
-            offlinePixelCountDataStore,
-            exceptionPixel,
+            pixel,
             dispatcherProvider,
         )
     }

@@ -17,33 +17,33 @@
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
 <resources>
-    <string name="managementScreenTitle">Anmeldedaten automatisch ausfüllen</string>
-
-    <string name="managementLockedModeText">Autovervollständigen freischalten</string>
+    <string name="autofillManagementScreenTitle">Anmeldungen</string>
 
     <string name="managementDisabledModeCta"><b>In den Einstellungen einrichten</b></string>
-    <string name="managementDisabledModeSubtitle">Ein Entsperrmuster, eine PIN oder biometrische Daten sind erforderlich, um deine Anmeldedaten für das automatische Ausfüllen zu schützen.</string>
-    <string name="managementDisabledModeTitle">Sichere dein Gerät, um das automatische Ausfüllen zu verwenden</string>
+    <string name="managementDisabledModeSubtitle">Es sind ein Entsperrmuster, eine PIN oder biometrische Daten erforderlich, um deine Anmeldedaten zu schützen.</string>
+    <string name="managementDisabledModeTitle">Sichere dein Gerät, um Anmeldungen zu speichern</string>
 
-    <string name="saveLoginDialogTitle">Anmeldedaten speichern?</string>
-    <string name="saveLoginMissingUsernameDialogTitle">Passwort speichern?</string>
     <string name="saveLoginDialogButtonSave">Anmeldedaten speichern</string>
     <string name="saveLoginMissingUsernameDialogButtonSave">Passwort speichern</string>
     <string name="saveLoginDialogNotNow">Jetzt nicht</string>
-    <string name="saveLoginDialogOnboardingExplanationSubtitle">Anmeldedaten werden nur auf diesem Gerät sicher gespeichert und können über das Menü Autovervollständigen in den Einstellungen verwaltet werden.</string>
-    <string name="saveLoginDialogFirstTimeOnboardingExplanationTitle">Möchtest du, dass DuckDuckGo deine Anmeldedaten speichert?</string>
+    <string name="saveLoginDialogSubtitle">Die Anmeldedaten werden auf diesem Gerät sicher gespeichert und können über das Anmeldedaten-Menü in den Einstellungen verwaltet werden.</string>
+    <string name="saveLoginDialogTitle">Möchtest du, dass DuckDuckGo deine Anmeldedaten speichert?</string>
     <string name="saveLoginDialogMoreOptionsButtonLabel">Weitere Optionen</string>
 
     <string name="useSavedLoginDialogTitle">Gespeicherte Anmeldedaten verwenden?</string>
-    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Anmeldedaten für %1$s</string>
-    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Anmeldedaten für Website</string>
+    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Passwort für %1$s</string>
+    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Passwort für die Website</string>
+    <string name="useSavedLoginDialogGroupThisWebsite">Von dieser Website</string>
+    <string name="useSavedLoginDialogFromDomainLabel" instruction="Placeholder is the URL of a website">Von %1$s</string>
 
-    <string name="updateLoginDialogTitle">Passwort aktualisieren?</string>
     <string name="updateLoginDialogButtonUpdatePassword">Passwort aktualisieren</string>
     <string name="updateLoginDialogButtonNotNow">Jetzt nicht</string>
 
     <string name="updateLoginDialogTitleUpdateUsername">Benutzernamen aktualisieren?</string>
     <string name="updateLoginDialogButtonUpdateUsername">Benutzernamen aktualisieren</string>
+
+    <string name="updateLoginDialogTitleLine" instruction="Placeholder is the user&apos;s username for this site">Passwort für \n%1$s aktualisieren?</string>
+    <string name="updateLoginUpdatePasswordExplanation">DuckDuckGo aktualisiert diese gespeicherten Anmeldedaten auf deinem Gerät.</string>
 
     <string name="autofillDialogCloseButtonContentDescription">Autovervollständigen-Dialog schließen</string>
 
@@ -64,5 +64,57 @@
     <string name="credentialManagementViewMenuDelete">Löschen</string>
 
     <string name="credentialManagementSuggestionsLabel">Vorgeschlagen</string>
+    <string name="credentialManagementNoLoginsSavedTitle">Noch keine Anmeldedaten gespeichert</string>
+    <string name="credentialManagementNoLoginsSavedSubtitle">Die Anmeldedaten werden sicher auf deinem Gerät gespeichert.</string>
+
+    <string name="autofillManagementAddLogin">Anmeldedaten hinzufügen</string>
+    <string name="autofillManagementSearchLogins">Anmeldedaten suchen</string>
+    <string name="autofillManagementSearchClearDescription">Sucheingabe löschen</string>
+    <string name="autofillManagementNoSearchResults" instruction="Placeholder is the query the user has searched for. e.g., No results for &apos;kittens&apos;">Keine Ergebnisse für „%1$s“</string>
+
+    <string name="autofillDeleteLoginDialogCancel">Abbrechen</string>
+    <string name="autofillDeleteLoginDialogDelete">Löschen</string>
+    <string name="autofillDeleteLoginDialogTitle">Möchtest du diese Anmeldedaten wirklich löschen?</string>
+
+    <string name="autofillManagementUsernameCopied">Benutzername kopiert</string>
+    <string name="autofillManagementPasswordCopied">Passwort kopiert</string>
+
+    <string name="autofill_password_generation_offer_title">Generiertes Passwort von DuckDuckGo verwenden?</string>
+    <string name="autofill_password_generation_offer_message">Das Passwort wird in den Anmeldedaten gespeichert.</string>
+    <string name="autofill_password_generation_offer_accept">Generiertes Passwort verwenden</string>
+    <string name="autofill_password_generation_offer_decline">Eigenes erstellen</string>
+
+    <string name="deviceNotSupportedTitle">Gerät nicht unterstützt</string>
+    <string name="deviceNotSupportedSubtitle">Um die Anmeldedaten sicher zu speichern, müssen sie auf deinem Gerät verschlüsselt und gespeichert werden. Da dein Gerät keine verschlüsselte Speicherung unterstützt, sind die Anmeldedaten nicht verfügbar.</string>
+
+    <string name="autofillManagementDeletedConfirmation">Anmeldedaten gelöscht</string>
+    <string name="autofillManagementUndoDeletion">Rückgängig machen</string>
+
+    <string name="credentialManagementLinkButtonContentDescription" instruction="Accessibility text for a button that will show next to a text field containing a website address; it will launch the website when tapped">Website öffnen</string>
+
+    <string name="credentialManagementDuckAddressLabel" translatable="false">Duck Address</string>
+
+    <string name="credentialManagementDeactivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to deactivate their private &apos;Duck Address&apos;">Private Duck Address deaktivieren?</string>
+    <string name="credentialManagementDeactivateDuckAddressDialogMessage" instruction="Placeholder is an email address">E-Mails, die an %1$s gesendet werden, werden nicht mehr an deinen Posteingang weitergeleitet.</string>
+    <string name="credentialManagementDeactivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will deactivate their email address, meaning emails sent there will no longer be forwarded to their inbox">Deaktivieren</string>
+    <string name="credentialManagementActivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to reactivate their private &apos;Duck Address&apos;">Private Duck Address reaktivieren?</string>
+    <string name="credentialManagementActivateDuckAddressDialogMessage" instruction="Placeholder is an email address">E-Mails, die an %1$s gesendet werden, werden wieder an deinen Posteingang weitergeleitet.</string>
+    <string name="credentialManagementActivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will reactivate their email address, meaning emails sent there will again be forwarded to their inbox">Reaktivieren</string>
+
+    <string name="credentialManagementDuckAddressActivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is active">Aktiv</string>
+    <string name="credentialManagementDuckAddressActivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from deactivated to active">Aktivieren ...</string>
+
+    <string name="credentialManagementDuckAddressDeactivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is deactivated">Deaktiviert</string>
+    <string name="credentialManagementDuckAddressDeactivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from active to deactivated">Deaktivieren ...</string>
+
+    <string name="credentialManagementDuckAddressManagementTemporarilyUnavailable" instruction="Error message shown when unable to manage this &apos;Duck Address&apos; right now">Die Verwaltung dieser Adresse ist vorübergehend nicht möglich.</string>
+
+    <string name="credentialManagementEnableEmailProtectionPrompt" instruction="&apos;Duck Addresses&apos; is the feature name, and should not be translated."><annotation type="enable_duck_address">Email Protection aktivieren</annotation>, um Duck Address auf diesem Gerät zu verwalten.</string>
+
+    <string name="autofill_email_protection_choose_email_dialog_title">E-Mail-Adresse auswählen</string>
+    <string name="autofillTooltipUseYourAliasDescription">E-Mail-Tracker blockieren</string>
+    <string name="autofillTooltipGenerateAddress" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated.">Private Duck-Adresse generieren</string>
+    <string name="autofillTooltipGenerateAddressDescription" instruction="&apos;hide address&apos; refers to using an alias so your real email address is not used">E-Mail-Tracker blockieren &amp; Adresse verbergen</string>
+
 
 </resources>

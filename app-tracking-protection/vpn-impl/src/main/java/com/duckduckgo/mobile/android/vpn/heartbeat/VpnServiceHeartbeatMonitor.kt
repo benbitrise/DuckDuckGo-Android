@@ -19,22 +19,20 @@ package com.duckduckgo.mobile.android.vpn.heartbeat
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.work.*
 import com.duckduckgo.anvil.annotations.ContributesWorker
 import com.duckduckgo.anvil.annotations.InjectWith
 import com.duckduckgo.app.global.DispatcherProvider
+import com.duckduckgo.app.lifecycle.MainProcessLifecycleObserver
 import com.duckduckgo.di.scopes.AppScope
 import com.duckduckgo.di.scopes.ReceiverScope
 import com.duckduckgo.mobile.android.vpn.dao.HeartBeatEntity
 import com.duckduckgo.mobile.android.vpn.dao.VpnHeartBeatDao
-import com.duckduckgo.mobile.android.vpn.feature.AppTpFeatureConfig
-import com.duckduckgo.mobile.android.vpn.feature.AppTpSetting
+import com.duckduckgo.mobile.android.vpn.dao.VpnServiceStateStatsDao
+import com.duckduckgo.mobile.android.vpn.model.VpnServiceState
 import com.duckduckgo.mobile.android.vpn.pixels.DeviceShieldPixels
 import com.duckduckgo.mobile.android.vpn.service.TrackerBlockingVpnService
-import com.duckduckgo.mobile.android.vpn.stats.AppTrackerBlockingStatsRepository
 import com.duckduckgo.mobile.android.vpn.store.VpnDatabase
 import com.squareup.anvil.annotations.ContributesTo
 import dagger.Module
@@ -52,7 +50,7 @@ import logcat.logcat
 class VpnServiceHeartbeatMonitorModule {
     @Provides
     @IntoSet
-    fun provideVpnServiceHeartbeatMonitor(workManager: WorkManager): LifecycleObserver {
+    fun provideVpnServiceHeartbeatMonitor(workManager: WorkManager): MainProcessLifecycleObserver {
         return VpnServiceHeartbeatMonitor(workManager)
     }
 
@@ -62,7 +60,7 @@ class VpnServiceHeartbeatMonitorModule {
 
 class VpnServiceHeartbeatMonitor(
     private val workManager: WorkManager,
-) : DefaultLifecycleObserver {
+) : MainProcessLifecycleObserver {
 
     override fun onCreate(owner: LifecycleOwner) {
         startHeartbeatMonitor(workManager)
@@ -103,10 +101,7 @@ class VpnServiceHeartbeatMonitorWorker(
     lateinit var dispatcherProvider: DispatcherProvider
 
     @Inject
-    lateinit var trackerBlockingStatsRepository: AppTrackerBlockingStatsRepository
-
-    @Inject
-    lateinit var appTpFeatureConfig: AppTpFeatureConfig
+    lateinit var vpnServiceStateStatsDao: VpnServiceStateStatsDao
 
     override suspend fun doWork(): Result = withContext(dispatcherProvider.io()) {
         val lastHeartBeat = vpnHeartBeatDao.hearBeats().maxByOrNull { it.timestamp }
@@ -115,14 +110,15 @@ class VpnServiceHeartbeatMonitorWorker(
         if (lastHeartBeat?.isAlive() == true && !TrackerBlockingVpnService.isServiceRunning(context)) {
             logcat(LogPriority.WARN) { "HB monitor: VPN stopped, restarting it" }
 
+            // TODO this is for now just in NetP, move it to public repo once tested
+            // Just make sure the internal state is consistent with the actual state before we re-start the VPN service
+            vpnServiceStateStatsDao.getLastStateStats()?.let {
+                vpnServiceStateStatsDao.insert(it.copy(state = VpnServiceState.DISABLED, timestamp = System.currentTimeMillis()))
+            }
+
             deviceShieldPixels.suddenKillBySystem()
             deviceShieldPixels.automaticRestart()
             TrackerBlockingVpnService.startService(context)
-        } else if (didNotBlockRecently()) {
-            deviceShieldPixels.automaticRestart()
-            // we have not blocked anything "recently", assuming something is wrong with the VPN service
-            logcat { "HB monitor: VPN not blocking anything, restarting it" }
-            TrackerBlockingVpnService.restartVpnService(context)
         }
 
         return@withContext Result.success()
@@ -130,19 +126,6 @@ class VpnServiceHeartbeatMonitorWorker(
 
     private fun HeartBeatEntity.isAlive(): Boolean {
         return VpnServiceHeartbeatMonitor.DATA_HEART_BEAT_TYPE_ALIVE == type
-    }
-
-    private suspend fun didNotBlockRecently(): Boolean {
-        fun isFeatureDisabled(): Boolean {
-            return !appTpFeatureConfig.isEnabled(AppTpSetting.CheckBlockingFunction)
-        }
-
-        if (isFeatureDisabled()) return false
-
-        val timeWindow = AppTrackerBlockingStatsRepository.TimeWindow(3, TimeUnit.HOURS)
-        // if we ever blocked trackers, and we have not blocked anything in the last 3 hours, we assume something is wrong
-        return trackerBlockingStatsRepository.containsVpnTrackers() &&
-            trackerBlockingStatsRepository.getVpnTrackersSync({ timeWindow.asString() }).isEmpty()
     }
 }
 

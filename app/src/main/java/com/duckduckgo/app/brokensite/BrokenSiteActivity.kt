@@ -19,8 +19,6 @@ package com.duckduckgo.app.brokensite
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import com.duckduckgo.anvil.annotations.InjectWith
 import com.duckduckgo.app.brokensite.BrokenSiteViewModel.Command
 import com.duckduckgo.app.brokensite.BrokenSiteViewModel.ViewState
@@ -30,7 +28,9 @@ import com.duckduckgo.app.browser.databinding.ActivityBrokenSiteBinding
 import com.duckduckgo.app.global.DuckDuckGoActivity
 import com.duckduckgo.browser.api.brokensite.BrokenSiteData
 import com.duckduckgo.di.scopes.ActivityScope
+import com.duckduckgo.mobile.android.ui.view.dialog.RadioListAlertDialogBuilder
 import com.duckduckgo.mobile.android.ui.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 
 @InjectWith(ActivityScope::class)
@@ -46,6 +46,8 @@ class BrokenSiteActivity : DuckDuckGoActivity() {
 
     private val brokenSites
         get() = binding.contentBrokenSites
+
+    private var submitted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,28 +82,38 @@ class BrokenSiteActivity : DuckDuckGoActivity() {
     }
 
     private fun configureListeners() {
-        val categories = viewModel.categories.map { getString(it.category) }.toTypedArray()
+        val categories = viewModel.shuffledCategories.map { getString(it.category) }.toTypedArray()
 
-        brokenSites.categoriesSelection.setOnClickListener {
-            AlertDialog.Builder(this)
+        brokenSites.categoriesSelection.onAction {
+            RadioListAlertDialogBuilder(this)
                 .setTitle(getString(R.string.brokenSitesCategoriesTitle))
-                .setSingleChoiceItems(categories, viewModel.indexSelected) { _, newIndex ->
-                    viewModel.onCategoryIndexChanged(newIndex)
-                }
-                .setPositiveButton(getString(android.R.string.yes)) { dialog, _ ->
-                    viewModel.onCategoryAccepted()
-                    dialog.dismiss()
-                }
-                .setNegativeButton(getString(android.R.string.no)) { dialog, _ ->
-                    viewModel.onCategorySelectionCancelled()
-                    dialog.dismiss()
-                }
+                .setOptions(categories.toList(), viewModel.indexSelected + 1)
+                .setPositiveButton(android.R.string.yes)
+                .setNegativeButton(android.R.string.no)
+                .addEventListener(
+                    object : RadioListAlertDialogBuilder.EventListener() {
+                        override fun onRadioItemSelected(selectedItem: Int) {
+                            viewModel.onCategoryIndexChanged(selectedItem - 1)
+                        }
+
+                        override fun onPositiveButtonClicked(selectedItem: Int) {
+                            viewModel.onCategoryAccepted()
+                        }
+
+                        override fun onNegativeButtonClicked() {
+                            viewModel.onCategorySelectionCancelled()
+                        }
+                    },
+                )
                 .show()
         }
-
         brokenSites.submitButton.setOnClickListener {
-            val webViewVersion = webViewVersionProvider.getFullVersion()
-            viewModel.onSubmitPressed(webViewVersion)
+            if (!submitted) {
+                val webViewVersion = webViewVersionProvider.getFullVersion()
+                val description = brokenSites.brokenSiteFormFeedbackInput.text
+                viewModel.onSubmitPressed(webViewVersion, description)
+                submitted = true
+            }
         }
     }
 
@@ -121,15 +133,25 @@ class BrokenSiteActivity : DuckDuckGoActivity() {
     }
 
     private fun confirmAndFinish() {
-        Toast.makeText(this, R.string.brokenSiteSubmitted, Toast.LENGTH_LONG).show()
-        finishAfterTransition()
+        val snackbar = Snackbar.make(binding.root, getString(R.string.brokenSiteSubmitted), Snackbar.LENGTH_SHORT)
+        snackbar.addCallback(
+            object : Snackbar.Callback() {
+                override fun onDismissed(
+                    transientBottomBar: Snackbar?,
+                    event: Int,
+                ) {
+                    finish()
+                }
+            },
+        )
+        snackbar.show()
     }
 
     private fun render(viewState: ViewState) {
         val category = viewState.categorySelected?.let {
             getString(viewState.categorySelected.category)
         }.orEmpty()
-        brokenSites.categoriesSelection.setText(category)
+        brokenSites.categoriesSelection.text = category
         brokenSites.submitButton.isEnabled = viewState.submitAllowed
     }
 

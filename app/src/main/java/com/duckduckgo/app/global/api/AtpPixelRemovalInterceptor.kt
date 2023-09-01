@@ -33,7 +33,7 @@ class AtpPixelRemovalInterceptor @Inject constructor() : Interceptor, PixelInter
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
         val pixel = chain.request().url.pathSegments.last()
-        val url = if (pixel.startsWith(PIXEL_PREFIX) && !isInExceptionList(pixel)) {
+        val url = if (pixel.matchesPrefix() && !isInExceptionList(pixel)) {
             chain.request().url.newBuilder()
                 .removeAllQueryParameters(AppUrl.ParamKey.ATB)
                 .build()
@@ -50,8 +50,13 @@ class AtpPixelRemovalInterceptor @Inject constructor() : Interceptor, PixelInter
         return PIXEL_EXCEPTIONS.firstOrNull { pixel.startsWith(it) } != null
     }
 
+    private fun String.matchesPrefix(): Boolean {
+        return (this.startsWith(ATP_PIXEL_PREFIX) || this.startsWith(NETP_PIXEL_PREFIX))
+    }
+
     companion object {
-        private const val PIXEL_PREFIX = "m_atp_"
+        private const val ATP_PIXEL_PREFIX = "m_atp_"
+        private const val NETP_PIXEL_PREFIX = "m_netp_"
 
         // list here the pixels that except from this interceptor
         private val PIXEL_EXCEPTIONS = listOf<String>()

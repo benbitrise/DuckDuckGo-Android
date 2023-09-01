@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Protecția la urmărirea aplicațiilor</string>
     <string name="refresh">Reîncărcare</string>
 
@@ -163,10 +163,10 @@
     <string name="atp_ReportBreakageAppNextCta">Următorul</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Te rugăm să descrii ce se întâmplă, ce te așteptai să se întâmple și pașii care au dus la apariția problemei.</string>
     <string name="atp_ReportBreakageFormInputHint">Spune-ne mai multe despre problema cu care te confrunți</string>
-    <string name="atp_ReportBreakageFormCheckboxText">Făcând clic pe „Trimite”, sunt de acord că DuckDuckGo poate utiliza informațiile din acest raport în scopul îmbunătățirii Protecția împotriva urmăririi de către aplicație.
+    <string name="atp_ReportBreakageFormCheckboxText">Făcând clic pe „Trimitere”, sunt de acord ca DuckDuckGo să utilizeze informațiile din acest raport în scopul îmbunătățirii funcțiilor aplicației.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[În plus față de detaliile introduse în acest formular, raportul cu problemele aplicației tale va conține:<br/>• Numele pachetului aplicației<br/>• O listă a tehnologiilor de urmărire blocate în aplicație<br/>• Dacă Protecția împotriva urmăririi de către aplicații este activată<br/>• Diagnostice agregate ale aplicației DuckDuckGo<br/>]]>
+        <![CDATA[În plus față de detaliile introduse în acest formular, raportul privind problemele aplicației tale va conține:<br/>• denumirea pachetului aplicației<br/>• o listă a tehnologiilor de urmărire blocate în aplicație<br/>• dacă sunt activate funcții specifice DuckDuckGo<br/>• diagnosticele agregate ale aplicației DuckDuckGo<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Raport trimis, mulțumim! Feedbackul tău ne ajută să îmbunătățim Protecția împotriva urmăririi de către aplicație pentru toată lumea.</string>
     <string name="atp_ThanksForTheFeedback">Îți mulțumim pentru feedback!</string>
@@ -214,12 +214,12 @@
     <string name="atp_ActivityPastWeekBlocked">Blocat</string>
     <string name="atp_ActivityPastWeekAcross">Din</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Încercare de urmărire</item>
         <item quantity="few">Încercări de urmărire</item>
         <item quantity="other">Încercări de urmărire</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Aplicație</item>
         <item quantity="few">Aplicații</item>
         <item quantity="other">Aplicații</item>
@@ -231,6 +231,10 @@
     <string name="atp_ActivityAbout">Despre</string>
     <string name="atp_ActivityManage">Gestionează</string>
     <string name="atp_ActivityRemoveFeature">Dezactivează și șterge date</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">DuckDuckGo blochează tehnologiile de urmărire ascunse la nivelul aplicațiilor tale.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Reactivează App Tracking Protection pentru a continua să blochezi tehnologiile de urmărire la nivelul aplicațiilor tale.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">Blocat de DuckDuckGo %1$s</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">Blocat de DuckDuckGo la %1$s</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">ÎNTREBĂRI FRECVENTE</string>
@@ -248,8 +252,6 @@
     <string name="atp_FAQSixthText">Protecția împotriva urmăririi de către aplicație funcționează pe dispozitivul tău și nu trimite datele tale personale de pe dispozitiv către DuckDuckGo.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Protecția la urmărirea aplicațiilor</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Lista de așteptare pentru Protecția împotriva urmăririi de către aplicație</string>
     <string name="atp_WaitlistNotificationTitle">Invitația ta pentru Protecția împotriva urmăririi de către aplicație este aici!</string>
     <string name="atp_WaitlistNotificationDescription">Te-ai alăturat listei de așteptare și ne-ai solicitat să te anunțăm când este rândul tău să încerci funcția noastră de protecție a comunicațiilor prin e-mail. Atinge pentru a vizualiza invitația ta.</string>
     <string name="atp_WaitlistStatusNotJoined">Un pas ușor pentru o mai bună confidențialitate a aplicațiilor!</string>
@@ -268,7 +270,6 @@
     <string name="atp_WaitlistErrorJoining">A apărut o eroare la aderarea la lista de așteptare, încearcă din nou mai târziu</string>
     <string name="atp_WaitlistJoinedWithNotification">Îți vom trimite o notificare când Protecția împotriva urmăririi de către aplicație este pregătită pentru tine.\n\n<annotation type="beta_link"> Află mai multe despre versiunea beta </annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Invitația ta de a încerca Protecția împotriva urmăririi de către aplicație va sosi aici. Revino în curând, sau îți putem trimite o notificare când va fi rândul tău\n\n<annotation type="notify_me_link">Înștiințează-mă</annotation>\n\n<annotation type="beta_link">Află mai multe despre beta</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Introdu codul de invitație</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Succes! Ai intrat!</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -279,9 +280,9 @@
         <item quantity="other">%1$d încercări. Cunoscute pentru a colecta:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">A fost blocată %1$d încercare de urmărire</item>
-        <item quantity="few">Au fost blocate %1$d încercări de urmărire</item>
-        <item quantity="other">Au fost blocate %1$d încercări de urmărire</item>
+        <item quantity="one">DuckDuckGo a blocat %1$d încercare de urmărire</item>
+        <item quantity="few">DuckDuckGo a blocat %1$d încercări de urmărire</item>
+        <item quantity="other">DuckDuckGo a blocat %1$d de încercări de urmărire</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Raportează o problemă cu această aplicație</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">Arată încă %1$d</string>
@@ -368,7 +369,7 @@
     <string name="atp_ManageRecentAppsProtectionEmpty">Aplicațiile cu încercări de urmărire blocate recent vor apărea aici</string>
 
     <!--  App Tracking Protection Remove Feature Dialog -->
-    <string name="atp_RemoveFeatureDialogTitle">Dezactivează și șterge datele?</string>
+    <string name="atp_RemoveFeatureDialogTitle">Dezactivezi și ștergi datele?</string>
     <string name="atp_RemoveFeatureDialogMessage">Protecția împotriva urmăririi de către aplicație va fi dezactivată, iar toate setările și istoricul încercărilor de urmărire vor fi șterse. O poți activa din nou oricând din Setări.</string>
     <string name="atp_RemoveFeatureDialogCancel">Anulează</string>
     <string name="atp_RemoveFeatureDialogRemove">Dezactivează</string>
@@ -418,5 +419,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Această funcție este în versiune beta. Ai probleme cu o aplicație? <annotation type="app_settings_link">Ajută-ne să ne îmbunătățim</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Unele aplicații pot întâmpina probleme atunci când este activată funcția de Protecție împotriva urmăririi de către aplicație.\n<annotation type="learn_why_link">Află motivul</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Protecția este dezactivată pentru aplicațiile cu probleme cunoscute. Poți activa aceste aplicații, dar este posibil ca ele să nu funcționeze conform așteptărilor. <annotation type="learn_why_link">Află motivul</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Fii cu ochii pe tehnologiile de urmărire blocate</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Primește actualizări despre încercările de urmărire blocate, în zona de notificare.</string>
 
 </resources>

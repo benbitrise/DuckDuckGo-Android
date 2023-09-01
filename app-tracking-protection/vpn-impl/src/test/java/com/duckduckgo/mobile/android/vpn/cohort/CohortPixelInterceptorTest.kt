@@ -16,18 +16,35 @@
 
 package com.duckduckgo.mobile.android.vpn.cohort
 
+import com.duckduckgo.app.CoroutineTestRule
 import com.duckduckgo.app.global.api.FakeChain
 import com.duckduckgo.app.global.api.InMemorySharedPreferences
+import com.duckduckgo.appbuildconfig.api.AppBuildConfig
+import com.duckduckgo.appbuildconfig.api.BuildFlavor
+import com.duckduckgo.mobile.android.vpn.VpnFeaturesRegistry
 import com.duckduckgo.mobile.android.vpn.prefs.VpnSharedPreferencesProvider
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.threeten.bp.LocalDate
 
 class CohortPixelInterceptorTest {
+    @get:Rule
+    @Suppress("unused")
+    val coroutineRule = CoroutineTestRule()
+
+    @Mock
+    private lateinit var vpnFeaturesRegistry: VpnFeaturesRegistry
+
+    @Mock
+    private lateinit var appBuildConfig: AppBuildConfig
+
     private lateinit var cohortPixelInterceptor: CohortPixelInterceptor
     private lateinit var cohortStore: CohortStore
     private lateinit var cohortCalculator: CohortCalculator
@@ -36,12 +53,15 @@ class CohortPixelInterceptorTest {
 
     @Before
     fun setup() {
+        MockitoAnnotations.openMocks(this)
         val prefs = InMemorySharedPreferences()
         whenever(
             sharedPreferencesProvider.getSharedPreferences(eq("com.duckduckgo.mobile.atp.cohort.prefs"), eq(true), eq(true)),
         ).thenReturn(prefs)
 
-        cohortStore = RealCohortStore(sharedPreferencesProvider)
+        whenever(appBuildConfig.flavor).thenReturn(BuildFlavor.PLAY)
+
+        cohortStore = RealCohortStore(sharedPreferencesProvider, vpnFeaturesRegistry, coroutineRule.testDispatcherProvider, appBuildConfig)
         cohortCalculator = RealCohortCalculator()
         cohortPixelInterceptor = CohortPixelInterceptor(cohortCalculator, cohortStore)
     }
@@ -50,7 +70,7 @@ class CohortPixelInterceptorTest {
     fun whenCohortNotSetPixelDropped() {
         Assert.assertNull(cohortStore.getCohortStoredLocalDate())
 
-        val pixelUrl = String.format(PIXEL_TEMPLATE, "m_atp_breakage_report")
+        val pixelUrl = String.format(PIXEL_TEMPLATE, "m_atp_ev_restart_c")
         val result = cohortPixelInterceptor.intercept(FakeChain(pixelUrl))
 
         Assert.assertEquals("Dropped ATP pixel because no cohort is assigned", result.message)
@@ -62,7 +82,7 @@ class CohortPixelInterceptorTest {
         val date = LocalDate.now().plusDays(3)
         cohortStore.setCohortLocalDate(date)
 
-        val pixelUrl = String.format(PIXEL_TEMPLATE, "m_atp_breakage_report")
+        val pixelUrl = String.format(PIXEL_TEMPLATE, "m_atp_ev_restart_c")
         val result = cohortPixelInterceptor.intercept(FakeChain(pixelUrl))
         val resultUrl = result.request.url
 

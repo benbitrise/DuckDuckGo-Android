@@ -21,11 +21,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
-import com.duckduckgo.app.bookmarks.model.FavoritesRepository
 import com.duckduckgo.app.browser.BrowserActivity
 import com.duckduckgo.app.browser.R
 import com.duckduckgo.app.browser.favicon.FaviconManager
@@ -33,6 +33,7 @@ import com.duckduckgo.app.global.DuckDuckGoApplication
 import com.duckduckgo.app.global.domain
 import com.duckduckgo.app.global.view.generateDefaultDrawable
 import com.duckduckgo.mobile.android.R as CommonR
+import com.duckduckgo.savedsites.api.SavedSitesRepository
 import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
 
@@ -55,7 +56,7 @@ class FavoritesWidgetService : RemoteViewsService() {
         private val theme = WidgetTheme.getThemeFrom(intent.extras?.getString(THEME_EXTRAS))
 
         @Inject
-        lateinit var favoritesDataRepository: FavoritesRepository
+        lateinit var savedSitesRepository: SavedSitesRepository
 
         @Inject
         lateinit var faviconManager: FaviconManager
@@ -69,7 +70,7 @@ class FavoritesWidgetService : RemoteViewsService() {
         )
 
         private val faviconItemSize = context.resources.getDimension(CommonR.dimen.savedSiteGridItemFavicon).toInt()
-        private val faviconItemCornerRadius = context.resources.getDimension(CommonR.dimen.savedSiteGridItemCornerRadiusFavicon).toInt()
+        private val faviconItemCornerRadius = context.resources.getDimension(CommonR.dimen.mediumShapeCornerRadius).toInt()
 
         private val maxItems: Int
             get() {
@@ -89,7 +90,7 @@ class FavoritesWidgetService : RemoteViewsService() {
         }
 
         override fun onDataSetChanged() {
-            val newList = favoritesDataRepository.favoritesSync().take(maxItems).map {
+            val newList = savedSitesRepository.getFavoritesSync().take(maxItems).map {
                 val bitmap = runBlocking {
                     faviconManager.loadFromDiskWithParams(
                         url = it.url,
@@ -127,10 +128,11 @@ class FavoritesWidgetService : RemoteViewsService() {
                 if (item.bitmap != null) {
                     remoteViews.setImageViewBitmap(R.id.quickAccessFavicon, item.bitmap)
                 }
+                remoteViews.setViewVisibility(R.id.quickAccessTitle, View.VISIBLE)
                 remoteViews.setTextViewText(R.id.quickAccessTitle, item.title)
                 configureClickListener(remoteViews, item.url)
             } else {
-                remoteViews.setTextViewText(R.id.quickAccessTitle, "")
+                remoteViews.setViewVisibility(R.id.quickAccessTitle, View.GONE)
                 remoteViews.setImageViewResource(R.id.quickAccessFavicon, getEmptyBackgroundDrawable())
             }
 

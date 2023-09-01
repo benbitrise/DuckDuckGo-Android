@@ -20,6 +20,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.duckduckgo.app.CoroutineTestRule
 import com.duckduckgo.app.browser.BrowserTabFragment
 import com.duckduckgo.app.browser.autofill.AutofillCredentialsSelectionResultHandler.AutofillCredentialSaver
 import com.duckduckgo.app.browser.autofill.AutofillCredentialsSelectionResultHandler.CredentialInjector
@@ -27,14 +28,17 @@ import com.duckduckgo.app.browser.autofill.AutofillCredentialsSelectionResultHan
 import com.duckduckgo.app.browser.autofill.AutofillCredentialsSelectionResultHandlerTest.FakeAuthenticator.CancelEverything
 import com.duckduckgo.app.browser.autofill.AutofillCredentialsSelectionResultHandlerTest.FakeAuthenticator.FailEverything
 import com.duckduckgo.app.statistics.pixels.Pixel
-import com.duckduckgo.autofill.CredentialAutofillPickerDialog
-import com.duckduckgo.autofill.CredentialSavePickerDialog
-import com.duckduckgo.autofill.CredentialUpdateExistingCredentialsDialog
-import com.duckduckgo.autofill.CredentialUpdateExistingCredentialsDialog.CredentialUpdateType
-import com.duckduckgo.autofill.domain.app.LoginCredentials
-import com.duckduckgo.autofill.pixel.AutofillPixelNames
-import com.duckduckgo.autofill.store.AutofillStore
-import com.duckduckgo.autofill.ui.credential.saving.declines.AutofillDeclineCounter
+import com.duckduckgo.autofill.api.AutofillCapabilityChecker
+import com.duckduckgo.autofill.api.CredentialAutofillPickerDialog
+import com.duckduckgo.autofill.api.CredentialSavePickerDialog
+import com.duckduckgo.autofill.api.CredentialUpdateExistingCredentialsDialog
+import com.duckduckgo.autofill.api.CredentialUpdateExistingCredentialsDialog.CredentialUpdateType
+import com.duckduckgo.autofill.api.ExistingCredentialMatchDetector
+import com.duckduckgo.autofill.api.domain.app.LoginCredentials
+import com.duckduckgo.autofill.api.passwordgeneration.AutomaticSavedLoginsMonitor
+import com.duckduckgo.autofill.api.store.AutofillStore
+import com.duckduckgo.autofill.impl.pixel.AutofillPixelNames
+import com.duckduckgo.autofill.impl.ui.credential.saving.declines.AutofillDeclineCounter
 import com.duckduckgo.deviceauth.api.DeviceAuthenticator
 import com.duckduckgo.deviceauth.api.DeviceAuthenticator.AuthResult
 import com.duckduckgo.deviceauth.api.DeviceAuthenticator.AuthResult.Success
@@ -42,6 +46,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
@@ -50,14 +55,21 @@ import org.mockito.kotlin.*
 @RunWith(AndroidJUnit4::class)
 class AutofillCredentialsSelectionResultHandlerTest {
 
+    @get:Rule
+    val coroutineTestRule: CoroutineTestRule = CoroutineTestRule()
+
     private val credentialsSaver: AutofillCredentialSaver = mock()
     private val credentialsInjector: CredentialInjector = mock()
     private val declineCounter: AutofillDeclineCounter = mock()
     private val autofillStore: AutofillStore = mock()
     private val pixel: Pixel = mock()
     private val dummyFragment = Fragment()
+    private val autofillDialogSuppressor: AutofillFireproofDialogSuppressor = mock()
     private lateinit var deviceAuthenticator: FakeAuthenticator
     private lateinit var testee: AutofillCredentialsSelectionResultHandler
+    private val autoSavedLoginsMonitor: AutomaticSavedLoginsMonitor = mock()
+    private val existingCredentialMatchDetector: ExistingCredentialMatchDetector = mock()
+    private val autofillCapabilityChecker: AutofillCapabilityChecker = mock()
 
     @Test
     fun whenSaveBundleMissingUrlThenNoAttemptToSaveMade() = runTest {
@@ -217,6 +229,101 @@ class AutofillCredentialsSelectionResultHandlerTest {
         verifyAuthenticatorNeverCalled()
     }
 
+    @Test
+    fun whenSaveOrUpdateDialogDismissedThenAutofillDialogSuppressorCalled() = runTest {
+        setupAuthenticatorAlwaysAuth()
+        testee.processSaveOrUpdatePromptDismissed()
+        verify(autofillDialogSuppressor).autofillSaveOrUpdateDialogVisibilityChanged(visible = false)
+    }
+
+    @Test
+    fun whenSaveOrUpdateDialogShownThenAutofillDialogSuppressorCalled() = runTest {
+        setupAuthenticatorAlwaysAuth()
+        testee.processSaveOrUpdatePromptShown()
+        verify(autofillDialogSuppressor).autofillSaveOrUpdateDialogVisibilityChanged(visible = true)
+    }
+
+    @Test
+    fun whenPrivateDuckAddressSelectedButAutoSaveLoginIsFalseThenNoLoginAutomaticallySaved() = runTest {
+        setupAuthenticatorAlwaysAuth()
+        configureSavingPasswordCapabilityEnabled()
+        testee.processPrivateDuckAddressInjectedEvent(
+            duckAddress = "foo@duck.com",
+            tabId = "abc",
+            originalUrl = "example.com",
+            autoSaveLogin = false,
+        )
+        verifySaveNeverCalled()
+    }
+
+    @Test
+    fun whenPrivateDuckAddressSelectedButSavingPasswordsDisabledGeneratedThenNoLoginAutomaticallySaved() = runTest {
+        setupAuthenticatorAlwaysAuth()
+        configureSavingPasswordCapabilityDisabled()
+        testee.processPrivateDuckAddressInjectedEvent(
+            duckAddress = "foo@duck.com",
+            tabId = "abc",
+            originalUrl = "example.com",
+            autoSaveLogin = true,
+        )
+        verifySaveNeverCalled()
+    }
+
+    @Test
+    fun whenPrivateDuckAddressSelectedAndSavingPasswordsEnabledGeneratedThenLoginAutomaticallySaved() = runTest {
+        setupAuthenticatorAlwaysAuth()
+        configureSavingPasswordCapabilityEnabled()
+        testee.processPrivateDuckAddressInjectedEvent(
+            duckAddress = "foo@duck.com",
+            tabId = "abc",
+            originalUrl = "example.com",
+            autoSaveLogin = true,
+        )
+        verify(autofillStore).saveCredentials(any(), any())
+    }
+
+    @Test
+    fun whenPrivateDuckAddressSelectedWithSameUsernameAsAlreadyAutosavedLoginThenLoginNeitherSavedNorUpdated() = runTest {
+        setupAuthenticatorAlwaysAuth()
+        configureSavingPasswordCapabilityEnabled()
+        configurePreviouslyAutosavedLogin()
+        testee.processPrivateDuckAddressInjectedEvent(
+            duckAddress = "foo",
+            tabId = "abc",
+            originalUrl = "example.com",
+            autoSaveLogin = true,
+        )
+        verifySaveNeverCalled()
+        verifyUpdateNeverCalled()
+    }
+
+    @Test
+    fun whenPrivateDuckAddressSelectedWithDifferentUsernameToAlreadyAutosavedLoginThenLoginAutomaticallyUpdated() = runTest {
+        setupAuthenticatorAlwaysAuth()
+        configureSavingPasswordCapabilityEnabled()
+        configurePreviouslyAutosavedLogin()
+        testee.processPrivateDuckAddressInjectedEvent(
+            duckAddress = "foo@duck.com",
+            tabId = "abc",
+            originalUrl = "example.com",
+            autoSaveLogin = true,
+        )
+        verify(autofillStore).updateCredentials(any())
+    }
+
+    private suspend fun configurePreviouslyAutosavedLogin() {
+        whenever(autoSavedLoginsMonitor.getAutoSavedLoginId(any())).thenReturn(1)
+        whenever(autofillStore.getCredentialsWithId(any())).thenReturn(someLoginCredentials())
+    }
+
+    private suspend fun configureSavingPasswordCapabilityEnabled() {
+        whenever(autofillCapabilityChecker.canSaveCredentialsFromWebView(any())).thenReturn(true)
+    }
+
+    private suspend fun configureSavingPasswordCapabilityDisabled() {
+        whenever(autofillCapabilityChecker.canSaveCredentialsFromWebView(any())).thenReturn(false)
+    }
+
     private suspend fun verifySaveNeverCalled() {
         verify(credentialsSaver, never()).saveCredentials(any(), any())
     }
@@ -307,6 +414,12 @@ class AutofillCredentialsSelectionResultHandlerTest {
             autofillStore = autofillStore,
             appCoroutineScope = this,
             pixel = pixel,
+            autofillDialogSuppressor = autofillDialogSuppressor,
+            autoSavedLoginsMonitor = autoSavedLoginsMonitor,
+            existingCredentialMatchDetector = existingCredentialMatchDetector,
+            dispatchers = coroutineTestRule.testDispatcherProvider,
+            autofillCapabilityChecker = autofillCapabilityChecker,
+            appBuildConfig = mock(),
         )
     }
 

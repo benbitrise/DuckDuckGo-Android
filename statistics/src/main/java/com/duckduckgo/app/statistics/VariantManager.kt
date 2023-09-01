@@ -40,8 +40,8 @@ interface VariantManager {
         val ACTIVE_VARIANTS = listOf(
             // SERP variants. "sc" may also be used as a shared control for mobile experiments in
             // the future if we can filter by app version
-            Variant(key = "sc", weight = 1.0, features = emptyList(), filterBy = { isSerpRegionToggleCountry() }),
-            Variant(key = "se", weight = 1.0, features = emptyList(), filterBy = { isSerpRegionToggleCountry() }),
+            Variant(key = "sc", weight = 0.0, features = emptyList(), filterBy = { isSerpRegionToggleCountry() }),
+            Variant(key = "se", weight = 0.0, features = emptyList(), filterBy = { isSerpRegionToggleCountry() }),
         )
 
         val REFERRER_VARIANTS = listOf(
@@ -124,7 +124,7 @@ class ExperimentationVariantManager(
         var newVariant = generateVariant(activeVariants)
         val compliesWithFilters = newVariant.filterBy(appBuildConfig)
 
-        if (!compliesWithFilters) {
+        if (!compliesWithFilters || appBuildConfig.isDefaultVariantForced) {
             newVariant = DEFAULT_VARIANT
         }
         Timber.i("Current variant is null; allocating new one $newVariant")

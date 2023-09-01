@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Uygulama İzleme Koruması</string>
     <string name="refresh">Yenile</string>
 
@@ -159,10 +159,10 @@
     <string name="atp_ReportBreakageAppNextCta">Sonraki</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Lütfen neler olduğunu, ne olmasını beklediğinizi ve soruna yol açan adımları açıklayın.</string>
     <string name="atp_ReportBreakageFormInputHint">Yaşadığınız sorun hakkında daha fazla bilgi verin</string>
-    <string name="atp_ReportBreakageFormCheckboxText">\"Gönder\"e tıklayarak, DuckDuckGo\'nun bu rapordaki bilgileri Uygulama İzlenme Koruması\'nı iyileştirmek amacıyla kullanabileceğini kabul ediyorum.
+    <string name="atp_ReportBreakageFormCheckboxText">\"Gönder\"e tıkladığımda, DuckDuckGo\'nun bu rapordaki bilgileri uygulamanın özelliklerini geliştirmek amacıyla kullanabileceğini kabul etmiş olacağımı anlıyorum.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Bu forma girilen ayrıntılara ek olarak, uygulama sorun raporunuz şunları içerecektir:<br/>• Uygulama paketi adı<br/>• Uygulamada engellenen izleyicilerin bir listesi<br/>• Uygulama İzleme Koruması\'nın etkin olup olmadığı<br/>• Toplu DuckDuckGo uygulama teşhisi<br/>]]>
+        <![CDATA[Bu forma girilen ayrıntılara ek olarak, uygulama sorun raporunuz şunları içerecektir:<br/>• Uygulama paketi adı<br/>• Uygulamada engellenen izleyicilerin bir listesi<br/>• Spesifik DuckDuckGo özelliklerinin etkin olup olmadığı<br/>• Toplu DuckDuckGo uygulama teşhisi<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Rapor gönderildi, teşekkürler! Geri bildiriminiz herkes için Uygulama İzleme Koruması\'nı geliştirmemize yardımcı oluyor.</string>
     <string name="atp_ThanksForTheFeedback">Geri dönüşünüz için teşekkür ederiz!</string>
@@ -210,11 +210,11 @@
     <string name="atp_ActivityPastWeekBlocked">Engellendi</string>
     <string name="atp_ActivityPastWeekAcross">Uygulama Sayısı:</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">İzleme Girişimi</item>
         <item quantity="other">İzleme Girişimi</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Uygulama</item>
         <item quantity="other">Uygulama</item>
     </plurals>
@@ -225,6 +225,10 @@
     <string name="atp_ActivityAbout">Hakkında</string>
     <string name="atp_ActivityManage">Yönet</string>
     <string name="atp_ActivityRemoveFeature">Verileri Devre Dışı Bırak ve Sil</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">DuckDuckGo, uygulamalarınızdaki gizli izleyicileri engelliyor.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Uygulamalarınızda izleyicileri engellemeye devam etmek için App Tracking Protection\'ı yeniden etkinleştirin.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">DuckDuckGo tarafından %1$s engellendi</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">DuckDuckGo tarafından %1$s günü engellendi</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">SSS</string>
@@ -242,8 +246,6 @@
     <string name="atp_FAQSixthText">Uygulama İzleme Koruması, cihazınızda çalışır ve kişisel verilerinizi cihazınızdan DuckDuckGo\'ya göndermez.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Uygulama İzleme Koruması</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Uygulama İzleme Koruması bekleme listesi</string>
     <string name="atp_WaitlistNotificationTitle">Uygulama İzleme Koruması Davetiyeniz Burada!</string>
     <string name="atp_WaitlistNotificationDescription">Bekleme listesine katılarak Uygulama İzleme Koruması özelliğini deneme sırası size geldiğinde sizi bilgilendirmemizi istediniz. Davetiyenizi görüntülemek için dokunun.</string>
     <string name="atp_WaitlistStatusNotJoined">Daha iyi uygulama gizliliği için tek bir kolay adım!</string>
@@ -262,7 +264,6 @@
     <string name="atp_WaitlistErrorJoining">Bekleme listesine katılırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="atp_WaitlistJoinedWithNotification">&lt;br/&gt;Uygulama İzleme Koruması sizin için hazır olduğunda bildirim alacaksınız.\n\n<annotation type="beta_link">Beta hakkında daha fazla bilgi edinin</annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Uygulama İzleme Koruması\'nı denemek için davetiyeniz buraya gelecektir. Yakında tekrar kontrol edin veya sıra size geldiğinde size bir bildirim gönderebiliriz\n\n<annotation type="notify_me_link">Bana bildirim gönder</annotation>\n\n<annotation type="beta_link">Beta hakkında daha fazla bilgi edinin</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Davet Kodunuzu Girin</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Başarılı! Katıldın.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -272,8 +273,8 @@
         <item quantity="other">%1$d girişimi. Şunları topladığı biliniyor:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">%1$d izleme girişimini engelledi</item>
-        <item quantity="other">%1$d izleme girişimini engelledi</item>
+        <item quantity="one">DuckDuckGo, %1$d İzleme Girişimini Engelledi</item>
+        <item quantity="other">DuckDuckGo, %1$d İzleme Girişimini Engelledi</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Bu Uygulamayla İlgili Bir Sorun Bildirin</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">%1$d tane daha göster</string>
@@ -340,8 +341,8 @@
     <!--  App Tracking Protection Disable VPN Dialog -->
     <string name="atp_DisableConfirmationDialogTitle">Uygulama İzleme Koruması devre dışı bırakılsın mı?</string>
     <string name="atp_DisableConfirmationDialogMessage">Belirli bir uygulamayla ilgili bir sorun fark ettiyseniz, bunun yerine o uygulama için korumayı yönetebilirsiniz.</string>
-    <string name="atp_DisableConfirmationDisableApp">Bir uygulama için devre dışı bırak</string>
-    <string name="atp_DisableConfirmationDisableAllApps">Tüm uygulamalar için devre dışı bırak</string>
+    <string name="atp_DisableConfirmationDisableApp">Bir Uygulama için Devre Dışı Bırak</string>
+    <string name="atp_DisableConfirmationDisableAllApps">Tüm Uygulamalar için Devre Dışı Bırak</string>
     <string name="atp_DisableConfirmationCancel">İptal</string>
 
     <!--  App Tracking Protection VPN Conflict Dialog -->
@@ -360,7 +361,7 @@
     <string name="atp_ManageRecentAppsProtectionEmpty">Yakın zamanda izleme girişimleri engellenen uygulamalar burada gösterilir</string>
 
     <!--  App Tracking Protection Remove Feature Dialog -->
-    <string name="atp_RemoveFeatureDialogTitle">Veriler Devre Dışı Bırakılsın ve Silinsin mi?</string>
+    <string name="atp_RemoveFeatureDialogTitle">Veriler devre dışı bırakılsın ve silinsin mi?</string>
     <string name="atp_RemoveFeatureDialogMessage">Uygulama İzleme Koruması devre dışı bırakılacak ve tüm ayarlar ve izleme girişimlerinin geçmişi silinecektir. Ayarlar\'da istediğiniz zaman tekrar etkinleştirebilirsiniz.</string>
     <string name="atp_RemoveFeatureDialogCancel">İptal</string>
     <string name="atp_RemoveFeatureDialogRemove">Devre dışı bırak</string>
@@ -408,5 +409,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Bu özellik beta aşamasındadır. Bir uygulamayla ilgili sorun mu yaşıyorsunuz? <annotation type="app_settings_link">Geliştirmemize Yardımcı Olun</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Uygulama İzleme Koruması etkinleştirildiğinde bazı uygulamalar sorun yaşayabilir. <annotation type="learn_why_link">Nedenini Öğrenin</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Bilinen sorunları olan uygulamalar için koruma devre dışı bırakılır. Bu uygulamaları etkinleştirebilirsiniz, ancak beklendiği gibi çalışmayabilirler. <annotation type="learn_why_link">Nedenini öğrenin</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Engellenen izleyicilerden haberdar olun</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Bildirim çekmecenizde engellenen izleme girişimleri hakkında güncellemeler alın.</string>
 
 </resources>

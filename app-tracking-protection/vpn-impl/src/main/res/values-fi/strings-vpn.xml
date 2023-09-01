@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Sovellusten seurantasuojaus</string>
     <string name="refresh">Päivitä</string>
 
@@ -159,10 +159,10 @@
     <string name="atp_ReportBreakageAppNextCta">Seuraava</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Kuvaile, mitä tapahtuu, mitä odotit tapahtuvan ja vaiheet, jotka johtivat ongelmaan.</string>
     <string name="atp_ReportBreakageFormInputHint">Kerro meille lisää kohtaamasi ongelmasta</string>
-    <string name="atp_ReportBreakageFormCheckboxText">Napsauttamalla \"Lähetä\" hyväksyn, että DuckDuckGo voi käyttää tämän ilmoituksen tietoja App Tracking Protectionin parantamiseen.
+    <string name="atp_ReportBreakageFormCheckboxText">Napsauttamalla \"Lähetä\" hyväksyn, että DuckDuckGo voi käyttää tämän ilmoituksen tietoja sovelluksen ominaisuuksien parantamiseen.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Tässä lomakkeessa annettujen tietojen lisäksi sovellusongelmaraporttisi sisältää:<br/>• Sovelluspaketin nimen<br/>• Luettelon sovelluksessa estetyistä seurantalaitteista<br/>• Tiedon siitä, onko App Tracking Protection käytössä<br/>• DuckDuckGo-sovelluksen koostetun diagnostiikan<br/>]]>
+        <![CDATA[Tässä lomakkeessa annettujen tietojen lisäksi sovellusongelmaraporttisi sisältää:<br/>• Sovelluspaketin nimen<br/>• Luettelon sovelluksessa estetyistä seurantalaitteista<br/>• Tiedon siitä, ovatko tietyt DuckDuckGo-ominaisuudet käytössä<br/>• DuckDuckGo-sovelluksen koostetun diagnostiikan<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Ilmoitus lähetetty, kiitos! Palautteesi auttaa meitä parantamaan App Tracking Protectionia kaikille.</string>
     <string name="atp_ThanksForTheFeedback">Kiitos palautteesta!</string>
@@ -210,11 +210,11 @@
     <string name="atp_ActivityPastWeekBlocked">Estetty</string>
     <string name="atp_ActivityPastWeekAcross">Kaikkiaan</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Seurantayritys</item>
         <item quantity="other">Seurantayritykstä</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Sovellus</item>
         <item quantity="other">Sovellukset</item>
     </plurals>
@@ -225,6 +225,10 @@
     <string name="atp_ActivityAbout">Tietoa meistä</string>
     <string name="atp_ActivityManage">Hallitse</string>
     <string name="atp_ActivityRemoveFeature">Poista käytöstä ja poista tiedot</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">DuckDuckGo estää piilotettuja seurantalaitteita kaikissa sovelluksissasi.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Ota App Tracking Protection uudelleen käyttöön estääksesi seurannan kaikissa sovelluksissasi.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">DuckDuckGo esti %1$s</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">DuckDuckGo esti %1$s</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">Usein kysyttyä</string>
@@ -242,8 +246,6 @@
     <string name="atp_FAQSixthText">App Tracking Protection toimii laitteessasi, eikä lähetä henkilökohtaisia tietojasi laitteeltasi DuckDuckGolle.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Sovellusten seurantasuojaus</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">App Tracking Protection -jonotuslista</string>
     <string name="atp_WaitlistNotificationTitle">App Tracking Protection -kutsusi on täällä!</string>
     <string name="atp_WaitlistNotificationDescription">Liityit odotuslistalle ja pyysit meitä ilmoittamaan, kun on sinun vuorosi kokeilla App Tracking Protection -ominaisuuttamme. Näytä kutsu napauttamalla.</string>
     <string name="atp_WaitlistStatusNotJoined">Yksi helppo askel kohti parempaa sovellusten tietosuojaa!</string>
@@ -262,7 +264,6 @@
     <string name="atp_WaitlistErrorJoining">Odotuslistalle liityttäessä tapahtui virhe, yritä myöhemmin uudelleen</string>
     <string name="atp_WaitlistJoinedWithNotification">Lähetämme sinulle ilmoituksen, kun App Tracking Protection on valmis sinua varten.\n\n<annotation type="beta_link">Lue lisää beetaversiosta</annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Kutsu kokeilla App Tracking Protectionia saapuu tähän osoitteeseen. Palaa pian takaisin, tai voimme lähettää sinulle ilmoituksen, kun on sinun vuorosi\n\n<annotation type="notify_me_link">Ilmoita minulle</annotation>\n\n<annotation type="beta_link">Lue lisää beetaversiosta</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Anna kutsukoodisi</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Onnistui! Pääsit mukaan.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -272,8 +273,8 @@
         <item quantity="other">%1$d yritystä. Tiedetään keräävän:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">Estetty %1$d seurantayritys</item>
-        <item quantity="other">Estetty %1$d seurantayritystä</item>
+        <item quantity="one">DuckDuckGo esti %1$d seurantayrityksen</item>
+        <item quantity="other">DuckDuckGo esti %1$d seurantayritystä</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Ilmoita ongelmasta tässä sovelluksessa</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">Näytä %1$d lisää</string>
@@ -408,5 +409,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Tämä ominaisuus on beetavaiheessa. Onko sinulla ongelmia sovelluksen kanssa? <annotation type="app_settings_link">Auta meitä parantamaan</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Joissakin sovelluksissa voi esiintyä ongelmia, kun App Tracking Protection on käytössä.\n<annotation type="learn_why_link">Lue miksi</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Suojaus on poistettu käytöstä sovelluksissa, joissa on tunnettuja ongelmia. Voit ottaa nämä sovellukset käyttöön, mutta ne eivät välttämättä toimi odotetulla tavalla. <annotation type="learn_why_link">Lue miksi</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Pidä silmällä estettyjä seurantaohjelmia</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Saat päivityksiä estetyistä seurantayrityksistä ilmoituslaatikkoosi.</string>
 
 </resources>

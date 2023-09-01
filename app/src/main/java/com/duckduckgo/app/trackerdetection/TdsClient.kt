@@ -20,22 +20,23 @@ import androidx.core.net.toUri
 import com.duckduckgo.app.global.UriString.Companion.sameOrSubdomain
 import com.duckduckgo.app.trackerdetection.model.Action.BLOCK
 import com.duckduckgo.app.trackerdetection.model.Action.IGNORE
-import com.duckduckgo.app.trackerdetection.model.RuleExceptions
 import com.duckduckgo.app.trackerdetection.model.TdsTracker
 import java.net.URI
 
 class TdsClient(
     override val name: Client.ClientName,
     private val trackers: List<TdsTracker>,
+    private val urlToTypeMapper: UrlToTypeMapper,
 ) : Client {
 
     override fun matches(
         url: String,
         documentUrl: String,
+        requestHeaders: Map<String, String>,
     ): Client.Result {
         val cleanedUrl = removePortFromUrl(url)
         val tracker = trackers.firstOrNull { sameOrSubdomain(cleanedUrl, it.domain) } ?: return Client.Result(matches = false, isATracker = false)
-        val matches = matchesTrackerEntry(tracker, cleanedUrl, documentUrl)
+        val matches = matchesTrackerEntry(tracker, cleanedUrl, documentUrl, requestHeaders)
         return Client.Result(
             matches = matches.shouldBlock,
             entityName = tracker.ownerName,
@@ -49,47 +50,64 @@ class TdsClient(
         tracker: TdsTracker,
         url: String,
         documentUrl: String,
+        requestHeaders: Map<String, String>,
     ): MatchedResult {
         tracker.rules.forEach { rule ->
             val regex = ".*${rule.rule}.*".toRegex()
             if (url.matches(regex)) {
-                if (matchedException(rule.exceptions, documentUrl)) {
-                    return MatchedResult(shouldBlock = false, isATracker = true)
+                val type = urlToTypeMapper.map(url, requestHeaders)
+
+                if (rule.options != null) {
+                    if (!matchedDomainAndTypes(rule.options.domains, rule.options.types, documentUrl, type)) {
+                        // Continue to the next rule instead
+                        return@forEach
+                    }
                 }
+
+                if (rule.exceptions != null) {
+                    if (matchedDomainAndTypes(rule.exceptions.domains, rule.exceptions.types, documentUrl, type)) {
+                        return MatchedResult(shouldBlock = false, isATracker = true)
+                    }
+                }
+
                 if (rule.action == IGNORE) {
                     return MatchedResult(shouldBlock = false, isATracker = true)
                 }
+
                 if (rule.surrogate?.isNotEmpty() == true) {
                     return MatchedResult(shouldBlock = true, surrogate = rule.surrogate, isATracker = true)
                 }
-                return MatchedResult(shouldBlock = true, isATracker = true)
+                // Null means no action which we should default to block
+                if (rule.action == BLOCK || rule.action == null) {
+                    return MatchedResult(shouldBlock = true, isATracker = true)
+                }
             }
         }
 
         return MatchedResult(shouldBlock = (tracker.defaultAction == BLOCK), isATracker = true)
     }
 
-    private fun matchedException(
-        exceptions: RuleExceptions?,
+    private fun matchedDomainAndTypes(
+        ruleDomains: List<String>?,
+        ruleTypes: List<String>?,
         documentUrl: String,
+        type: String?,
     ): Boolean {
-        if (exceptions == null) return false
+        val matchesDomain = ruleDomains?.any { domain -> sameOrSubdomain(documentUrl, domain) }
+        val matchesType = ruleTypes?.contains(type)
 
-        val domains = exceptions.domains
-        val types = exceptions.types
-
-        // We don't support type filtering on android so if the types exist without a domain
-        // we allow the exception through
-        if (domains.isNullOrEmpty() && !types.isNullOrEmpty()) {
-            return true
-        }
-
-        domains?.forEach {
-            if (sameOrSubdomain(documentUrl, it)) {
-                return true
+        return when {
+            ruleTypes.isNullOrEmpty() && matchesDomain == true -> {
+                true
             }
+            ruleDomains.isNullOrEmpty() && matchesType == true -> {
+                true
+            }
+            matchesDomain == true && matchesType == true -> {
+                true
+            }
+            else -> false
         }
-        return false
     }
 
     private fun removePortFromUrl(url: String): String {

@@ -24,12 +24,13 @@ apply from: "$rootProject.projectDir/gradle/android-library.gradle"
 
 dependencies {
     implementation project(':di')
-    implementation project(':common')
+    implementation project(':common-utils')
     implementation project(':content-scope-scripts-api')
     implementation project(':app-store')
     implementation project(':privacy-config-api')
     implementation project(':app-build-config-api')
     implementation project(':fingerprint-protection-api')
+    implementation project(':browser-api')
 
     anvil project(':anvil-compiler')
     implementation project(':anvil-annotations')

@@ -17,33 +17,33 @@
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
 <resources>
-    <string name="managementScreenTitle">Автоматично попълване на данни за вход</string>
-
-    <string name="managementLockedModeText">Отключете автоматичното попълване</string>
+    <string name="autofillManagementScreenTitle">Данни за вход</string>
 
     <string name="managementDisabledModeCta"><b>Настройване в Настройки</b></string>
-    <string name="managementDisabledModeSubtitle">Изисква се шаблон за заключване на устройството, ПИН код или биометрични данни, за да защитите информацията си за вход с автоматично попълване.</string>
-    <string name="managementDisabledModeTitle">Защитете устройството си, за да използвате автоматично попълване</string>
+    <string name="managementDisabledModeSubtitle">За защита на данните за вход е необходимо да зададете модел за заключване, ПИН код или биометрични данни.</string>
+    <string name="managementDisabledModeTitle">Защитете устройството, за да можете да запазвате данни за вход</string>
 
-    <string name="saveLoginDialogTitle">Запазване на данните за вход?</string>
-    <string name="saveLoginMissingUsernameDialogTitle">Запазване на паролата?</string>
     <string name="saveLoginDialogButtonSave">Запазване на данните за вход</string>
     <string name="saveLoginMissingUsernameDialogButtonSave">Запазване на паролата</string>
     <string name="saveLoginDialogNotNow">Не сега</string>
-    <string name="saveLoginDialogOnboardingExplanationSubtitle">Данните за вход се съхраняват защитени само на това устройство и могат да се управляват от менюто за автоматично попълване в настройките.</string>
-    <string name="saveLoginDialogFirstTimeOnboardingExplanationTitle">Искате ли DuckDuckGo да запази данните за вход?</string>
+    <string name="saveLoginDialogSubtitle">Данните за вход са сигурно съхранени само на Вашето устройство и могат да се управляват от менюто Данни за вход в Настройки.</string>
+    <string name="saveLoginDialogTitle">Искате ли DuckDuckGo да запази данните за вход?</string>
     <string name="saveLoginDialogMoreOptionsButtonLabel">Повече опции</string>
 
     <string name="useSavedLoginDialogTitle">Да се използват ли запазените данни за вход?</string>
-    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Вход за %1$s</string>
-    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Вход за сайта</string>
+    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Парола за %1$s</string>
+    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Парола за сайта</string>
+    <string name="useSavedLoginDialogGroupThisWebsite">От този уебсайт</string>
+    <string name="useSavedLoginDialogFromDomainLabel" instruction="Placeholder is the URL of a website">От %1$s</string>
 
-    <string name="updateLoginDialogTitle">Актуализиране на паролата?</string>
     <string name="updateLoginDialogButtonUpdatePassword">Актуализиране на паролата</string>
     <string name="updateLoginDialogButtonNotNow">Не сега</string>
 
     <string name="updateLoginDialogTitleUpdateUsername">Актуализиране на потребителското име?</string>
     <string name="updateLoginDialogButtonUpdateUsername">Актуализиране на потребителското име</string>
+
+    <string name="updateLoginDialogTitleLine" instruction="Placeholder is the user&apos;s username for this site">Актуализиране на паролата за \n%1$s?</string>
+    <string name="updateLoginUpdatePasswordExplanation">DuckDuckGo ще актуализира запазените данни за вход във Вашето устройство.</string>
 
     <string name="autofillDialogCloseButtonContentDescription">Затваряне на диалоговия прозорец за автоматично попълване</string>
 
@@ -64,5 +64,57 @@
     <string name="credentialManagementViewMenuDelete">Изтриване</string>
 
     <string name="credentialManagementSuggestionsLabel">Предложения</string>
+    <string name="credentialManagementNoLoginsSavedTitle">Все още няма запазени данни за вход</string>
+    <string name="credentialManagementNoLoginsSavedSubtitle">Данните за вход се съхраняват сигурно на Вашето устройство.</string>
+
+    <string name="autofillManagementAddLogin">Добавяне на данни за вход</string>
+    <string name="autofillManagementSearchLogins">Търсене на данни за вход</string>
+    <string name="autofillManagementSearchClearDescription">Изчистване на въведеното търсене</string>
+    <string name="autofillManagementNoSearchResults" instruction="Placeholder is the query the user has searched for. e.g., No results for &apos;kittens&apos;">Няма резултати за \'%1$s\'</string>
+
+    <string name="autofillDeleteLoginDialogCancel">Отмени</string>
+    <string name="autofillDeleteLoginDialogDelete">Изтрий</string>
+    <string name="autofillDeleteLoginDialogTitle">Сигурни ли сте, че искате да изтриете тези данни за вход?</string>
+
+    <string name="autofillManagementUsernameCopied">Потребителското име е копирано</string>
+    <string name="autofillManagementPasswordCopied">Паролата е копирана</string>
+
+    <string name="autofill_password_generation_offer_title">Използване на парола, генерирана от DuckDuckGo?</string>
+    <string name="autofill_password_generation_offer_message">Паролата ще бъде запазена в „Данни за вход“.</string>
+    <string name="autofill_password_generation_offer_accept">Използване на генерирана парола</string>
+    <string name="autofill_password_generation_offer_decline">Създаване на собствена</string>
+
+    <string name="deviceNotSupportedTitle">Устройството не се поддържа</string>
+    <string name="deviceNotSupportedSubtitle">За да съхраняваме сигурно данните Ви за вход, трябва да ги криптираме и да ги запазим на Вашето устройство. Тъй като Вашето устройство не поддържа криптирано съхранение, услугата „Данни за вход“ не е достъпна.</string>
+
+    <string name="autofillManagementDeletedConfirmation">Данните за вход са изтрити</string>
+    <string name="autofillManagementUndoDeletion">Отмяна</string>
+
+    <string name="credentialManagementLinkButtonContentDescription" instruction="Accessibility text for a button that will show next to a text field containing a website address; it will launch the website when tapped">Отваряне на уебсайта</string>
+
+    <string name="credentialManagementDuckAddressLabel" translatable="false">Duck Address</string>
+
+    <string name="credentialManagementDeactivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to deactivate their private &apos;Duck Address&apos;">Деактивиране на личен Duck Address?</string>
+    <string name="credentialManagementDeactivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Имейлите, изпратени до %1$s, вече няма да бъдат препращани към пощенската Ви кутия.</string>
+    <string name="credentialManagementDeactivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will deactivate their email address, meaning emails sent there will no longer be forwarded to their inbox">Деактивиране</string>
+    <string name="credentialManagementActivateDuckAddressDialogTitle" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated. We are confirming with the user that they are about to reactivate their private &apos;Duck Address&apos;">Повторно активиране на личен Duck Address?</string>
+    <string name="credentialManagementActivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Имейлите, изпратени до %1$s, отново ще бъдат препращани към пощенската Ви кутия.</string>
+    <string name="credentialManagementActivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will reactivate their email address, meaning emails sent there will again be forwarded to their inbox">Повторно активиране</string>
+
+    <string name="credentialManagementDuckAddressActivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is active">Активен</string>
+    <string name="credentialManagementDuckAddressActivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from deactivated to active">Активиране...</string>
+
+    <string name="credentialManagementDuckAddressDeactivatedLabel" instruction="This indicates that the &apos;status&apos; of their private &apos;Duck Address&apos; is deactivated">Деактивиран</string>
+    <string name="credentialManagementDuckAddressDeactivatingLabel" instruction="This is text shown briefly while changing the status of their &apos;Duck Address&apos;, going from active to deactivated">Деактивиране...</string>
+
+    <string name="credentialManagementDuckAddressManagementTemporarilyUnavailable" instruction="Error message shown when unable to manage this &apos;Duck Address&apos; right now">Управлението на този адрес е временно недостъпно.</string>
+
+    <string name="credentialManagementEnableEmailProtectionPrompt" instruction="&apos;Duck Addresses&apos; is the feature name, and should not be translated."><annotation type="enable_duck_address">Активирайте Email Protection</annotation>, за да управлявате един или няколко Duck Address на това устройство.</string>
+
+    <string name="autofill_email_protection_choose_email_dialog_title">Изберете имейл адрес</string>
+    <string name="autofillTooltipUseYourAliasDescription">Блокиране на имейл тракери</string>
+    <string name="autofillTooltipGenerateAddress" instruction="&apos;Duck Address&apos; is the feature name, and should not be translated.">Генериране на личен Duck Address</string>
+    <string name="autofillTooltipGenerateAddressDescription" instruction="&apos;hide address&apos; refers to using an alias so your real email address is not used">Блокиране на имейл тракерите и скриване на адреса</string>
+
 
 </resources>

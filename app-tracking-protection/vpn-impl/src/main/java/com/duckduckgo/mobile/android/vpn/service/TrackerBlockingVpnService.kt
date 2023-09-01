@@ -16,6 +16,7 @@
 
 package com.duckduckgo.mobile.android.vpn.service
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.Service
 import android.content.ComponentName
@@ -28,53 +29,75 @@ import android.os.*
 import android.system.OsConstants.AF_INET6
 import androidx.core.content.ContextCompat
 import com.duckduckgo.anvil.annotations.InjectWith
-import com.duckduckgo.app.global.extensions.getPrivateDnsServerName
 import com.duckduckgo.app.global.plugins.PluginPoint
+import com.duckduckgo.app.utils.ConflatedJob
+import com.duckduckgo.app.utils.checkMainThread
 import com.duckduckgo.appbuildconfig.api.AppBuildConfig
 import com.duckduckgo.appbuildconfig.api.isInternalBuild
 import com.duckduckgo.di.scopes.VpnScope
+import com.duckduckgo.library.loader.LibraryLoader
 import com.duckduckgo.mobile.android.vpn.dao.VpnServiceStateStatsDao
 import com.duckduckgo.mobile.android.vpn.feature.AppTpFeatureConfig
 import com.duckduckgo.mobile.android.vpn.feature.AppTpSetting
 import com.duckduckgo.mobile.android.vpn.integration.VpnNetworkStackProvider
+import com.duckduckgo.mobile.android.vpn.model.AlwaysOnState
+import com.duckduckgo.mobile.android.vpn.model.VpnServiceState
+import com.duckduckgo.mobile.android.vpn.model.VpnServiceState.ENABLED
 import com.duckduckgo.mobile.android.vpn.model.VpnServiceState.ENABLING
 import com.duckduckgo.mobile.android.vpn.model.VpnServiceStateStats
+import com.duckduckgo.mobile.android.vpn.model.VpnStoppingReason
+import com.duckduckgo.mobile.android.vpn.network.VpnNetworkStack
 import com.duckduckgo.mobile.android.vpn.network.VpnNetworkStack.VpnTunnelConfig
 import com.duckduckgo.mobile.android.vpn.network.util.asRoute
-import com.duckduckgo.mobile.android.vpn.network.util.getActiveNetwork
-import com.duckduckgo.mobile.android.vpn.network.util.getSystemActiveNetworkDefaultDns
-import com.duckduckgo.mobile.android.vpn.network.util.isLocal
+import com.duckduckgo.mobile.android.vpn.network.util.getUnderlyingNetworks
 import com.duckduckgo.mobile.android.vpn.pixels.DeviceShieldPixels
-import com.duckduckgo.mobile.android.vpn.prefs.VpnPreferences
 import com.duckduckgo.mobile.android.vpn.service.state.VpnStateMonitorService
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor.VpnStopReason
-import com.duckduckgo.mobile.android.vpn.ui.notification.DeviceShieldEnabledNotificationBuilder
-import com.duckduckgo.mobile.android.vpn.ui.notification.DeviceShieldNotificationFactory
-import com.duckduckgo.mobile.android.vpn.ui.notification.OngoingNotificationPressedHandler
+import com.duckduckgo.mobile.android.vpn.ui.notification.VpnEnabledNotificationBuilder
+import com.squareup.anvil.annotations.ContributesTo
+import dagger.Binds
+import dagger.Module
 import dagger.android.AndroidInjection
 import java.net.Inet4Address
+import java.net.Inet6Address
 import java.net.InetAddress
+import java.util.concurrent.Executors
 import javax.inject.Inject
+import kotlin.properties.Delegates
+import kotlin.system.exitProcess
 import kotlinx.coroutines.*
-import logcat.LogPriority
+import logcat.LogPriority.ERROR
+import logcat.LogPriority.WARN
 import logcat.asLog
 import logcat.logcat
 
-@Suppress("NoHardcodedCoroutineDispatcher")
 @InjectWith(VpnScope::class)
-class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
+class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope(), VpnSocketProtector {
 
-    @Inject
-    lateinit var vpnPreferences: VpnPreferences
+    private external fun jni_wait_for_tun_up(tunFd: Int): Int
 
-    @Inject
-    lateinit var deviceShieldNotificationFactory: DeviceShieldNotificationFactory
+    private fun ParcelFileDescriptor.waitForTunnelUpOrTimeout(): Boolean {
+        return runCatching {
+            jni_wait_for_tun_up(this.fd) == 0
+        }.getOrElse { e ->
+            if (e is UnsatisfiedLinkError) {
+                logcat(ERROR) { "VPN log: ${e.asLog()}" }
+                // A previous error unloaded the libraries, reload them
+                try {
+                    logcat { "VPN log: Loading native VPN networking library" }
+                    LibraryLoader.loadLibrary(this@TrackerBlockingVpnService, "netguard")
+                } catch (ignored: Throwable) {
+                    logcat(ERROR) { "VPN log: Error loading netguard library: ${ignored.asLog()}" }
+                    exitProcess(1)
+                }
+            }
+            Thread.sleep(100)
+            true
+        }
+    }
 
     @Inject
     lateinit var deviceShieldPixels: DeviceShieldPixels
-
-    @Inject
-    lateinit var ongoingNotificationPressedHandler: OngoingNotificationPressedHandler
 
     @Inject
     lateinit var vpnServiceCallbacksPluginPoint: PluginPoint<VpnServiceCallbacks>
@@ -82,7 +105,21 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
     @Inject
     lateinit var memoryCollectorPluginPoint: PluginPoint<VpnMemoryCollectorPlugin>
 
-    private var tunInterface: ParcelFileDescriptor? = null
+    @Inject
+    lateinit var vpnEnabledNotificationContentPluginPoint: PluginPoint<VpnEnabledNotificationContentPlugin>
+
+    private var activeTun by Delegates.observable<ParcelFileDescriptor?>(null) { _, oldTun, newTun ->
+        fun ParcelFileDescriptor?.safeFd(): Int? {
+            return runCatching { this?.fd }.getOrNull()
+        }
+        runCatching {
+            logcat { "VPN log: New tun ${newTun?.safeFd()}" }
+            logcat { "VPN log: Closing old tun ${oldTun?.safeFd()}" }
+            oldTun?.close()
+        }.onFailure {
+            logcat(ERROR) { "VPN log: Error closing old tun ${oldTun?.safeFd()}" }
+        }
+    }
 
     private val binder: VpnServiceBinder = VpnServiceBinder()
 
@@ -96,33 +133,16 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
 
     @Inject lateinit var vpnServiceStateStatsDao: VpnServiceStateStatsDao
 
-    private var restartRequested = false
+    private val alwaysOnStateJob = ConflatedJob()
 
-    private val startVpnLock = Object()
+    private val serviceDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
-    private val isInterceptDnsTrafficEnabled by lazy {
-        appTpFeatureConfig.isEnabled(AppTpSetting.InterceptDnsTraffic)
-    }
+    private val isAlwaysSetDNSEnabled: Boolean
+        get() = appTpFeatureConfig.isEnabled(AppTpSetting.AlwaysSetDNS)
 
-    private val isIpv6SupportEnabled by lazy {
-        appTpFeatureConfig.isEnabled(AppTpSetting.Ipv6Support)
-    }
-
-    private val isPrivateDnsSupportEnabled by lazy {
-        appTpFeatureConfig.isEnabled(AppTpSetting.PrivateDnsSupport)
-    }
-
-    private val isAlwaysSetDNSEnabled by lazy {
-        appTpFeatureConfig.isEnabled(AppTpSetting.AlwaysSetDNS)
-    }
-
-    private val isStartVpnErrorHandlingEnabled by lazy {
-        appTpFeatureConfig.isEnabled(AppTpSetting.StartVpnErrorHandling)
-    }
-
-    private val vpnNetworkStack by lazy {
-        vpnNetworkStackProvider.provideNetworkStack()
-    }
+    private var vpnNetworkStack: VpnNetworkStack by VpnNetworkStackDelegate(provider = {
+        runBlocking { vpnNetworkStackProvider.provideNetworkStack() }
+    },)
 
     private val vpnStateServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(
@@ -163,32 +183,24 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
         super.onCreate()
         AndroidInjection.inject(this)
 
-        logcat { "VPN log onCreate, creating the ${vpnNetworkStack.name} network stack" }
-        vpnNetworkStack.onCreateVpn().getOrNull()?.let {
-            // report and proceed
-            deviceShieldPixels.reportErrorCreatingVpnNetworkStack()
-        }
+        logcat { "VPN log: onCreate, creating the ${vpnNetworkStack.name} network stack" }
+        vpnNetworkStack.onCreateVpnWithErrorReporting()
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        logcat { "VPN log onBind invoked" }
+        logcat { "VPN log: onBind invoked" }
         return binder
     }
 
     override fun onUnbind(p0: Intent?): Boolean {
-        logcat { "VPN log onUnbind invoked" }
+        logcat { "VPN log: onUnbind invoked" }
         return super.onUnbind(p0)
     }
 
     override fun onDestroy() {
-        logcat { "VPN log onDestroy" }
+        logcat { "VPN log: onDestroy" }
         vpnNetworkStack.onDestroyVpn()
         super.onDestroy()
-
-        if (restartRequested) {
-            restartRequested = false
-            startService(this)
-        }
     }
 
     override fun onStartCommand(
@@ -196,102 +208,183 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
         flags: Int,
         startId: Int,
     ): Int {
-        logcat { "VPN log onStartCommand: ${intent?.action}" }
+        logcat { "VPN log: onStartCommand: ${intent?.action}" }
 
         var returnCode: Int = Service.START_NOT_STICKY
-
-        restartRequested = false
 
         when (val action = intent?.action) {
             ACTION_START_VPN, ACTION_ALWAYS_ON_START -> {
                 notifyVpnStart()
-                launch { startVpn() }
+                synchronized(this) {
+                    launch(serviceDispatcher) {
+                        async {
+                            startVpn()
+                        }.await()
+                    }
+                }
                 returnCode = Service.START_REDELIVER_INTENT
             }
             ACTION_STOP_VPN -> {
-                launch { stopVpn(VpnStopReason.SELF_STOP) }
+                synchronized(this) {
+                    launch(serviceDispatcher) {
+                        async {
+                            stopVpn(VpnStopReason.SELF_STOP)
+                        }.await()
+                    }
+                }
             }
             ACTION_RESTART_VPN -> {
-                restartRequested = true
-                launch { stopVpn(VpnStopReason.RESTART) }
+                synchronized(this) {
+                    launch(serviceDispatcher) {
+                        async {
+                            startVpn()
+                        }.await()
+                    }
+                }
             }
-            else -> logcat(LogPriority.ERROR) { "Unknown intent action: $action" }
+            else -> logcat(ERROR) { "Unknown intent action: $action" }
         }
 
         return returnCode
     }
 
-    private suspend fun startVpn() = withContext(Dispatchers.IO) {
-        logcat { "VPN log: Starting VPN" }
-
-        synchronized(startVpnLock) {
-            val currStateStats = vpnServiceStateStatsDao.getLastStateStats()
-            if (currStateStats?.state == ENABLING) {
-                // Sometimes onStartCommand gets called twice - this is a safety rail against that
-                logcat(LogPriority.WARN) { "VPN is already being started, abort" }
-                return@withContext
-            }
-
-            // We need to rethink how to log this state. This will likely change.
-            vpnServiceStateStatsDao.insert(VpnServiceStateStats(state = ENABLING))
+    internal fun configureUnderlyingNetworks() {
+        val networks = getUnderlyingNetworks()
+        if (networks.isNotEmpty()) {
+            logcat { "VPN log: setting underlying WIFI/mobile networks $networks" }
+            setUnderlyingNetworks(networks.toTypedArray())
         }
+    }
+
+    private suspend fun startVpn() = withContext(serviceDispatcher) {
+        suspend fun updateNetworkStackUponRestart() {
+            logcat { "VPN log: updating the networking stack" }
+            logcat { "VPN log: CURRENT network ${vpnNetworkStack.name}" }
+            // stop the current networking stack
+            vpnNetworkStack.onStopVpn(VpnStopReason.RESTART)
+            vpnNetworkStack.onDestroyVpn()
+            // maybe we have changed the networking stack
+            vpnNetworkStack = vpnNetworkStackProvider.provideNetworkStack()
+            vpnNetworkStack.onCreateVpnWithErrorReporting()
+            logcat { "VPN log: NEW network ${vpnNetworkStack.name}" }
+        }
+
+        vpnServiceStateStatsDao.insert(createVpnState(state = ENABLING))
+
+        logcat { "VPN log: Starting VPN" }
+        val restarting = activeTun != null
+
+        if (!restarting) {
+            vpnServiceCallbacksPluginPoint.getPlugins().forEach {
+                logcat { "VPN log: onVpnStarting ${it.javaClass} callback" }
+                it.onVpnStarting(this)
+            }
+        } else {
+            logcat { "VPN log: skipping service callbacks while restarting" }
+        }
+
+        // Create a null route tunnel so that leaks can't scape
+        val nullTun = createNullRouteTempTunnel()?.let {
+            if (!it.waitForTunnelUpOrTimeout()) {
+                logcat(WARN) { "VPN log: timeout waiting for null tunnel to go up" }
+            }
+            it
+        }
+        activeTun?.let {
+            logcat { "VPN log: restarting the tunnel" }
+            updateNetworkStackUponRestart()
+            it
+        }
+        activeTun = nullTun
 
         vpnNetworkStack.onPrepareVpn().getOrNull().also {
             if (it != null) {
-                createTunnelInterface(it)
+                activeTun = createTunnelInterface(it)
+                activeTun?.let { tun ->
+                    if (!tun.waitForTunnelUpOrTimeout()) {
+                        activeTun = null
+                    }
+                }
             } else {
-                logcat(LogPriority.ERROR) { "Failed to obtain config needed to establish the TUN interface" }
+                logcat(ERROR) { "VPN log: Failed to obtain config needed to establish the TUN interface" }
                 stopVpn(VpnStopReason.ERROR, false)
                 return@withContext
             }
         }
 
-        if (tunInterface == null) {
-            logcat(LogPriority.ERROR) { "Failed to establish the TUN interface" }
+        if (activeTun == null) {
+            logcat(ERROR) { "VPN log: Failed to establish the TUN interface" }
             deviceShieldPixels.vpnEstablishTunInterfaceError()
+            stopVpn(VpnStopReason.ERROR, false)
             return@withContext
         }
 
-        if (isInterceptDnsTrafficEnabled) {
-            applicationContext.getActiveNetwork()?.let { an ->
-                logcat { "Setting underlying network $an" }
-                setUnderlyingNetworks(arrayOf(an))
-            }
-        } else {
-            logcat { "NetworkSwitchHandling disabled...skip setting underlying network" }
-        }
+        // set underlying networks
+        // configureUnderlyingNetworks()
 
-        if (isStartVpnErrorHandlingEnabled) {
-            logcat { "Enable new error handling for onStartVpn" }
-            vpnNetworkStack.onStartVpn(tunInterface!!).getOrElse {
-                logcat(LogPriority.ERROR) { "Failed to start VPN" }
-                stopVpn(VpnStopReason.ERROR, false)
-                return@withContext
-            }
-        } else {
-            logcat { "Reverted error handling for onStartVpn" }
-            vpnNetworkStack.onStartVpn(tunInterface!!).getOrThrow()
+        logcat { "VPN log: Enable new error handling for onStartVpn" }
+        vpnNetworkStack.onStartVpn(activeTun!!).getOrElse {
+            logcat(ERROR) { "VPN log: Failed to start VPN" }
+            stopVpn(VpnStopReason.ERROR, false)
+            return@withContext
         }
 
         vpnServiceCallbacksPluginPoint.getPlugins().forEach {
-            logcat { "VPN log: starting ${it.javaClass} callback" }
-            it.onVpnStarted(this)
+            if (restarting) {
+                logcat { "VPN log: onVpnReconfigured ${it.javaClass} callback" }
+                it.onVpnReconfigured(this)
+            } else {
+                logcat { "VPN log: onVpnStarted ${it.javaClass} callback" }
+                it.onVpnStarted(this)
+            }
         }
 
         Intent(applicationContext, VpnStateMonitorService::class.java).also {
             bindService(it, vpnStateServiceConnection, Context.BIND_AUTO_CREATE)
         }
+
+        // lastly set the VPN state to enabled
+        vpnServiceStateStatsDao.insert(createVpnState(state = ENABLED))
+
+        alwaysOnStateJob += launch { monitorVpnAlwaysOnState() }
     }
 
-    private suspend fun createTunnelInterface(tunnelConfig: VpnTunnelConfig) {
-        tunInterface = Builder().run {
+    private fun createNullRouteTempTunnel(): ParcelFileDescriptor? {
+        checkMainThread()
+
+        return Builder().run {
+            allowFamily(AF_INET6)
+            addAddress(InetAddress.getByName("10.0.0.2"), 32)
+            addAddress(InetAddress.getByName("fd00:1:fd00:1:fd00:1:fd00:1"), 128)
+            // nobody will be listening here we just want to make sure no app has connection
+            addDnsServer("10.0.0.1")
+            // just so that we can connect to our BE
+            // TODO should we protect all comms with our controller BE? other VPNs do that
+            safelyAddDisallowedApps(listOf("com.duckduckgo.mobile.android", "com.duckduckgo.mobile.android.debug"))
+            setBlocking(true)
+            setMtu(1280)
+            prepare(this@TrackerBlockingVpnService)
+            establish()
+        }.also {
+            logcat { "VPN log: Hole TUN created ${it?.fd}" }
+        }
+    }
+
+    private suspend fun createTunnelInterface(
+        tunnelConfig: VpnTunnelConfig,
+    ): ParcelFileDescriptor? {
+        val tunInterface = Builder().run {
             tunnelConfig.addresses.forEach { addAddress(it.key, it.value) }
+            val tunHasIpv6Address = tunnelConfig.addresses.any { it.key is Inet6Address }
 
             // Allow IPv6 to go through the VPN
             // See https://developer.android.com/reference/android/net/VpnService.Builder#allowFamily(int) for more info as to why
-            allowFamily(AF_INET6)
+            if (tunHasIpv6Address) {
+                logcat { "VPN log: Allowing IPv6 traffic through the tun interface" }
+                allowFamily(AF_INET6)
+            }
 
-            val dnsList = getDns(tunnelConfig.dns)
+            val dnsToConfigure = checkAndReturnDns(tunnelConfig.dns)
 
             // TODO: eventually routes will be set by remote config
             if (appBuildConfig.isPerformanceTest && appBuildConfig.isInternalBuild()) {
@@ -299,34 +392,43 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
                 // The address is also isolated to minimize network interference during performance tests
                 VpnRoutes.includedTestRoutes.forEach { addRoute(it.address, it.maskWidth) }
             } else {
-                val vpnRoutes = VpnRoutes.includedRoutes.toMutableSet()
-                if (isInterceptDnsTrafficEnabled) {
-                    // we need to make sure that all DNS traffic goes through the VPN. Specifically when the DNS server is on the local network
-                    dnsList.filterIsInstance<Inet4Address>().forEach { addr ->
-                        addr.asRoute()?.let {
-                            logcat { "Adding DNS address $it to VPN routes" }
-                            vpnRoutes.add(it)
-                        }
+                // If tunnel config has routes use them, else use the defaults.
+                // we're mapping her to a list of pairs because we want to make sure that when we combine them with other defaults, eg. add the DNS
+                // addresses, we don't override any entry in the map
+                val vpnRoutes = tunnelConfig.routes
+                    .map { it.key to it.value }
+                    .ifEmpty { VpnRoutes.includedRoutes.asAddressMaskPair() }.toMutableList()
+
+                // Any DNS shall be added to the routes, to ensure its traffic goes through the VPN, specifically because we can have local DNSes
+                // TODO filtering Ipv6 out for now for simplicity. Once we support IPv6 we'll come back to this
+                dnsToConfigure.filterIsInstance<Inet4Address>().forEach { dns ->
+                    dns.asRoute()?.let {
+                        logcat { "VPN log: Adding tunnel config DNS address $it to VPN routes" }
+                        vpnRoutes.add(it.address to it.maskWidth)
                     }
                 }
-                vpnRoutes.forEach { route ->
-                    // convert to InetAddress to later check if it's loopback
-                    kotlin.runCatching { InetAddress.getByName(route.address) }.getOrNull()?.let {
-                        if (!it.isLoopbackAddress) {
-                            addRoute(route.address, route.maskWidth)
+
+                vpnRoutes.mapNotNull { runCatching { InetAddress.getByName(it.first) to it.second }.getOrNull() }
+                    .filter { (it.first is Inet4Address) || (tunHasIpv6Address && it.first is Inet6Address) }
+                    .forEach { route ->
+                        if (!route.first.isLoopbackAddress) {
+                            logcat { "Adding route $route" }
+                            runCatching {
+                                addRoute(route.first, route.second)
+                            }.onFailure {
+                                logcat(WARN) { "VPN log: Error setting route $route: ${it.asLog()}" }
+                            }
                         } else {
-                            logcat(LogPriority.WARN) { "Tried to add loopback address $it to VPN routes" }
+                            logcat(WARN) { "VPN log: Tried to add loopback address $route to VPN routes" }
                         }
                     }
-                }
             }
 
             // Add the route for all Global Unicast Addresses. This is the IPv6 equivalent to
             // IPv4 public IP addresses. They are addresses that routable in the internet
-            addRoute("2000::", 3)
-
-            tunnelConfig.routes.forEach {
-                addRoute(it.key, it.value)
+            if (tunHasIpv6Address) {
+                logcat { "VPN log: Setting IPv6 address in the tun interface" }
+                addRoute("2000::", 3)
             }
 
             setBlocking(true)
@@ -336,13 +438,14 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
             configureMeteredConnection()
 
             // Set DNS
-            dnsList.forEach { addr ->
-                if (isIpv6SupportEnabled || addr is Inet4Address) {
-                    logcat { "Adding DNS $addr" }
+            dnsToConfigure
+                .filter { (it is Inet4Address) || (tunHasIpv6Address && it is Inet6Address) }
+                .forEach { addr ->
+                    logcat { "VPN log: Adding DNS $addr" }
                     runCatching {
                         addDnsServer(addr)
                     }.onFailure { t ->
-                        logcat(LogPriority.ERROR) { "Error setting DNS $addr: ${t.asLog()}" }
+                        logcat(ERROR) { "VPN log: Error setting DNS $addr: ${t.asLog()}" }
                         if (addr.isLoopbackAddress) {
                             deviceShieldPixels.reportLoopbackDnsError()
                         } else if (addr.isAnyLocalAddress) {
@@ -352,7 +455,6 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
                         }
                     }
                 }
-            }
 
             safelyAddDisallowedApps(tunnelConfig.appExclusionList.toList())
 
@@ -363,12 +465,19 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
         }
 
         if (tunInterface == null) {
-            logcat(LogPriority.ERROR) { "VPN log: Failed to establish VPN tunnel" }
+            logcat(ERROR) { "VPN log: Failed to establish VPN tunnel" }
             stopVpn(VpnStopReason.ERROR, false)
+        } else {
+            logcat { "VPN log: Final TUN interface created ${tunInterface.fd}" }
         }
+
+        return tunInterface
     }
 
-    private fun getDns(configDns: Set<InetAddress>): Set<InetAddress> {
+    /**
+     * @return the DNS configured in the Android System
+     */
+    private fun checkAndReturnDns(originalDns: Set<InetAddress>): Set<InetAddress> {
         // private extension function, this is purposely here to limit visibility
         fun Set<InetAddress>.containsIpv4(): Boolean {
             forEach {
@@ -377,64 +486,28 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
             return false
         }
 
-        val dns = mutableSetOf<InetAddress>()
-
-        // Add DNS specific to VPNetworkStack
-        configDns.forEach { dns.add(it) }
-
-        // System DNS
-        if (isInterceptDnsTrafficEnabled) {
-            kotlin.runCatching {
-                applicationContext.getSystemActiveNetworkDefaultDns()
-                    .map { InetAddress.getByName(it) }
-            }.getOrNull()?.run {
-                for (inetAddress in this) {
-                    if (!dns.contains(inetAddress) && !(inetAddress.isLocal())) {
-                        dns.add(inetAddress)
-                    }
-                }
-            }
-        }
-
-        // Android Private DNS (added by the user)
-        if (isPrivateDnsSupportEnabled && vpnPreferences.isPrivateDnsEnabled) {
-            runCatching {
-                InetAddress.getAllByName(applicationContext.getPrivateDnsServerName())
-            }.getOrNull()?.run { dns.addAll(this) }
+        val dns = mutableSetOf<InetAddress>().apply {
+            addAll(originalDns)
         }
 
         // This is purely internal, never to go to production
         if (appBuildConfig.isInternalBuild() && isAlwaysSetDNSEnabled) {
             if (dns.isEmpty()) {
                 kotlin.runCatching {
-                    logcat { "Adding cloudflare DNS" }
+                    logcat { "VPN log: Adding cloudflare DNS" }
                     dns.add(InetAddress.getByName("1.1.1.1"))
                     dns.add(InetAddress.getByName("1.0.0.1"))
-                    if (isIpv6SupportEnabled) {
-                        dns.add(InetAddress.getByName("2606:4700:4700::1111"))
-                        dns.add(InetAddress.getByName("2606:4700:4700::1001"))
-                    }
+                    dns.add(InetAddress.getByName("2606:4700:4700::1111"))
+                    dns.add(InetAddress.getByName("2606:4700:4700::1001"))
                 }.onFailure {
-                    logcat(LogPriority.WARN) { "Error adding fallback DNS: ${it.asLog()}" }
-                }
-            }
-
-            // always add ipv4 DNS
-            if (!dns.containsIpv4()) {
-                logcat { "DNS set does not contain IPv4, adding cloudflare" }
-                kotlin.runCatching {
-                    dns.add(InetAddress.getByName("1.1.1.1"))
-                    dns.add(InetAddress.getByName("1.0.0.1"))
-                }.onFailure {
-                    logcat(LogPriority.WARN) { "Error adding fallback DNS ${it.asLog()}" }
+                    logcat(WARN) { "VPN log: Error adding fallback DNS: ${it.asLog()}" }
                 }
             }
         }
 
         if (!dns.containsIpv4()) {
             // never allow IPv6-only DNS
-            logcat { "No IPv4 DNS found, return empty DNS list" }
-            return setOf()
+            logcat(WARN) { "VPN log: No IPv4 DNS found" }
         }
 
         return dns.toSet()
@@ -443,30 +516,43 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
     private fun Builder.safelyAddDisallowedApps(apps: List<String>) {
         for (app in apps) {
             try {
-                logcat { "Excluding app from VPN: $app" }
+                logcat { "VPN log: Excluding app from VPN: $app" }
                 addDisallowedApplication(app)
             } catch (e: PackageManager.NameNotFoundException) {
-                logcat(LogPriority.WARN) { "Package name not found: $app" }
+                logcat(WARN) { "VPN log: Package name not found: $app" }
             }
         }
     }
 
-    private suspend fun stopVpn(reason: VpnStopReason, shouldStopCallbacks: Boolean = true) = withContext(Dispatchers.IO) {
+    private suspend fun stopVpn(
+        reason: VpnStopReason,
+        hasVpnAlreadyStarted: Boolean = true,
+    ) = withContext(serviceDispatcher) {
         logcat { "VPN log: Stopping VPN. $reason" }
 
-        vpnNetworkStack.onStopVpn()
+        vpnNetworkStack.onStopVpn(reason)
 
-        tunInterface?.close()
-        tunInterface = null
+        activeTun = null
+
+        alwaysOnStateJob.cancel()
 
         sendStopPixels(reason)
 
-        if (shouldStopCallbacks) {
+        // If VPN has been started, then onVpnStopped must be called. Else, an error might have occurred before start so we call onVpnStartFailed
+        if (hasVpnAlreadyStarted) {
             vpnServiceCallbacksPluginPoint.getPlugins().forEach {
                 logcat { "VPN log: stopping ${it.javaClass} callback" }
                 it.onVpnStopped(this, reason)
             }
+        } else {
+            vpnServiceCallbacksPluginPoint.getPlugins().forEach {
+                logcat { "VPN log: onVpnStartFailed ${it.javaClass} callback" }
+                it.onVpnStartFailed(this)
+            }
         }
+
+        // Set the state to DISABLED here, then call the on stop/failure callbacks
+        vpnServiceStateStatsDao.insert(createVpnState(state = VpnServiceState.DISABLED, stopReason = reason))
 
         vpnStateServiceReference?.let {
             runCatching { unbindService(vpnStateServiceConnection).also { vpnStateServiceReference = null } }
@@ -492,24 +578,24 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
     }
 
     override fun onRevoke() {
-        logcat(LogPriority.WARN) { "VPN log onRevoke called" }
+        logcat(WARN) { "VPN log: onRevoke called" }
         launch { stopVpn(VpnStopReason.REVOKED) }
     }
 
     override fun onLowMemory() {
-        logcat(LogPriority.WARN) { "VPN log onLowMemory called" }
+        logcat(WARN) { "VPN log: onLowMemory called" }
     }
 
     // https://developer.android.com/reference/android/app/Service.html#onTrimMemory(int)
     override fun onTrimMemory(level: Int) {
-        logcat { "VPN log onTrimMemory level $level called" }
+        logcat { "VPN log: onTrimMemory level $level called" }
 
         // Collect memory data info from memory collectors
         val memoryData = mutableMapOf<String, String>()
         memoryCollectorPluginPoint.getPlugins().forEach { memoryData.putAll(it.collectMemoryMetrics()) }
 
         if (memoryData.isEmpty()) {
-            logcat { "VPN log nothing to send from memory collectors" }
+            logcat { "VPN log: nothing to send from memory collectors" }
             return
         }
 
@@ -525,17 +611,78 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
     }
 
     private fun notifyVpnStart() {
-        val deviceShieldNotification = deviceShieldNotificationFactory.createNotificationDeviceShieldEnabled()
+        val vpnNotification =
+            vpnEnabledNotificationContentPluginPoint.getHighestPriorityPlugin()?.getInitialContent()
+                ?: VpnEnabledNotificationContentPlugin.VpnEnabledNotificationContent.EMPTY
+
         startForeground(
             VPN_FOREGROUND_SERVICE_ID,
-            DeviceShieldEnabledNotificationBuilder
-                .buildDeviceShieldEnabledNotification(applicationContext, deviceShieldNotification, ongoingNotificationPressedHandler),
+            VpnEnabledNotificationBuilder.buildVpnEnabledNotification(applicationContext, vpnNotification),
+        )
+    }
+
+    private suspend fun monitorVpnAlwaysOnState() = withContext(Executors.newSingleThreadExecutor().asCoroutineDispatcher()) {
+        suspend fun incrementalPeriodicChecks(
+            times: Int = Int.MAX_VALUE,
+            initialDelay: Long = 500, // 0.5 second
+            maxDelay: Long = 300_000, // 5 minutes
+            factor: Double = 1.05, // 5% increase
+            block: suspend () -> Unit,
+        ) {
+            var currentDelay = initialDelay
+            repeat(times - 1) {
+                try {
+                    if (isActive) block()
+                } catch (t: Throwable) {
+                    // you can log an error here and/or make a more finer-grained
+                    // analysis of the cause to see if retry is needed
+                }
+                delay(currentDelay)
+                currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+            }
+        }
+
+        val vpnState = createVpnState(ENABLED)
+
+        @SuppressLint("NewApi") // IDE doesn't get we use appBuildConfig
+        if (appBuildConfig.sdkInt >= 29) {
+            incrementalPeriodicChecks {
+                if (vpnServiceStateStatsDao.getLastStateStats()?.state == ENABLED) {
+                    if (vpnState.alwaysOnState.alwaysOnEnabled) deviceShieldPixels.reportAlwaysOnEnabledDaily()
+                    if (vpnState.alwaysOnState.alwaysOnLockedDown) deviceShieldPixels.reportAlwaysOnLockdownEnabledDaily()
+
+                    vpnServiceStateStatsDao.insert(vpnState).also { logcat { "state: $vpnState" } }
+                }
+            }
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private fun createVpnState(
+        state: VpnServiceState,
+        stopReason: VpnStopReason = VpnStopReason.UNKNOWN,
+    ): VpnServiceStateStats {
+        fun VpnStopReason.asVpnStoppingReason(): VpnStoppingReason {
+            return when (this) {
+                VpnStopReason.RESTART -> VpnStoppingReason.RESTART
+                VpnStopReason.SELF_STOP -> VpnStoppingReason.SELF_STOP
+                VpnStopReason.REVOKED -> VpnStoppingReason.REVOKED
+                VpnStopReason.ERROR -> VpnStoppingReason.ERROR
+                VpnStopReason.UNKNOWN -> VpnStoppingReason.UNKNOWN
+            }
+        }
+
+        val isAlwaysOnEnabled = if (appBuildConfig.sdkInt >= 29) isAlwaysOn else false
+        val isLockdownEnabled = if (appBuildConfig.sdkInt >= 29) isLockdownEnabled else false
+
+        return VpnServiceStateStats(
+            state = state,
+            alwaysOnState = AlwaysOnState(isAlwaysOnEnabled, isLockdownEnabled),
+            stopReason = stopReason.asVpnStoppingReason(),
         )
     }
 
     companion object {
-        const val ACTION_VPN_REMINDER_RESTART = "com.duckduckgo.vpn.internaltesters.reminder.restart"
-
         const val VPN_REMINDER_NOTIFICATION_ID = 999
         const val VPN_FOREGROUND_SERVICE_ID = 200
 
@@ -640,12 +787,10 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
         ) {
             val applicationContext = context.applicationContext
             if (isServiceRunning(applicationContext)) {
-                logcat { "VPN log: stopping service" }
-
                 restartService(applicationContext)
 
                 if (forceGc) {
-                    logcat { "Forcing a garbage collection to run while VPN is restarting" }
+                    logcat { "VPN log: Forcing a garbage collection to run while VPN is restarting" }
                     System.gc()
                 }
             } else if (forceRestart) {
@@ -659,4 +804,21 @@ class TrackerBlockingVpnService : VpnService(), CoroutineScope by MainScope() {
         private const val ACTION_RESTART_VPN = "ACTION_RESTART_VPN"
         private const val ACTION_ALWAYS_ON_START = "android.net.VpnService"
     }
+
+    private fun VpnNetworkStack.onCreateVpnWithErrorReporting() {
+        if (this.onCreateVpn().isFailure) {
+            logcat { "VPN log: error creating the VPN network ${this.name}" }
+            // report and proceed
+            deviceShieldPixels.reportErrorCreatingVpnNetworkStack()
+        } else {
+            logcat { "VPN log: VPN network ${this.name} created" }
+        }
+    }
+}
+
+@Module
+@ContributesTo(VpnScope::class)
+abstract class VpnSocketProtectorModule {
+    @Binds
+    abstract fun bindVpnSocketProtector(impl: TrackerBlockingVpnService): VpnSocketProtector
 }

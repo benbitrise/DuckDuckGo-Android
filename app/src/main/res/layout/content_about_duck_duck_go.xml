@@ -30,10 +30,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
         android:orientation="vertical"
-        android:paddingBottom="10dp"
+        android:paddingTop="@dimen/keyline_7"
+        android:paddingBottom="@dimen/keyline_5"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
@@ -41,49 +40,66 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"
             android:contentDescription="@string/duckDuckGoLogoDescription"
-            android:src="@drawable/logo_full" />
+            app:srcCompat="@drawable/logo_full" />
 
-        <TextView
+        <com.duckduckgo.mobile.android.ui.view.text.DaxTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/keyline_4"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:fontFamily="sans-serif"
-            android:lineSpacingExtra="6sp"
+            android:layout_marginEnd="@dimen/keyline_4"
+            android:layout_marginBottom="@dimen/keyline_4"
             android:text="@string/duckDuckGoPrivacySimplified"
             android:textAlignment="center"
-            android:textColor="?attr/normalTextColor"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            app:typography="h1" />
 
-        <TextView
+        <com.duckduckgo.mobile.android.ui.view.text.DaxTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="sans-serif-medium"
-            android:lineSpacingExtra="6sp"
+            android:paddingStart="@dimen/keyline_6"
+            android:paddingEnd="@dimen/keyline_6"
             android:text="@string/aboutDescription"
             android:textAlignment="center"
-            android:textColor="?attr/normalTextColor"
-            android:textSize="16sp"
-            android:textStyle="normal"
+            app:textType="secondary"
+            app:typography="body1"
             tools:text="Long description would go here\n\nLots and lots of words" />
 
-        <TextView
+        <com.duckduckgo.mobile.android.ui.view.text.DaxTextView
             android:id="@+id/learnMoreLink"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/keyline_4"
             android:layout_marginTop="10dp"
+            android:layout_marginEnd="@dimen/keyline_4"
             android:layout_marginBottom="10dp"
-            android:fontFamily="sans-serif"
-            android:lineSpacingExtra="6sp"
             android:text="@string/aboutMoreLink"
             android:textAlignment="center"
-            android:textColor="@color/powderBlue"
-            android:textSize="16sp"
-            android:textStyle="normal" />
+            android:textColor="?attr/daxColorAccentBlue"
+            app:typography="body1_bold" />
+
+        <com.duckduckgo.mobile.android.ui.view.divider.HorizontalDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.duckduckgo.mobile.android.ui.view.listitem.OneLineListItem
+            android:id="@+id/aboutPrivacyPolicy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="@string/settingsPrivacyPolicyDuckduckgo" />
+
+        <com.duckduckgo.mobile.android.ui.view.listitem.TwoLineListItem
+            android:id="@+id/aboutVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="@string/settingsVersion"
+            tools:secondaryText="123.43.5456" />
+
+        <com.duckduckgo.mobile.android.ui.view.listitem.OneLineListItem
+            android:id="@+id/aboutProvideFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="@string/leaveFeedback" />
 
     </LinearLayout>
 

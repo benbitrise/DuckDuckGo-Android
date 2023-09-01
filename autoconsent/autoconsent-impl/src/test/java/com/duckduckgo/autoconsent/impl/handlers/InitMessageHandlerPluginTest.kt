@@ -49,7 +49,12 @@ class InitMessageHandlerPluginTest {
     private val webView: WebView = WebView(InstrumentationRegistry.getInstrumentation().targetContext)
     private val settingsRepository = FakeSettingsRepository()
 
-    private val initHandlerPlugin = InitMessageHandlerPlugin(TestScope(), coroutineRule.testDispatcherProvider, settingsRepository, repository)
+    private val initHandlerPlugin = InitMessageHandlerPlugin(
+        TestScope(),
+        coroutineRule.testDispatcherProvider,
+        settingsRepository,
+        repository,
+    )
 
     @Test
     fun whenProcessIfMessageTypeIsNotInitThenDoNothing() {
@@ -138,7 +143,7 @@ class InitMessageHandlerPluginTest {
 
         initHandlerPlugin.process(initHandlerPlugin.supportedTypes.first(), message(), webView, mockCallback)
 
-        verify(mockCallback).onResultReceived(consentManaged = false, optOutFailed = false, selfTestFailed = false)
+        verify(mockCallback).onResultReceived(consentManaged = false, optOutFailed = false, selfTestFailed = false, isCosmetic = false)
     }
 
     private fun message(): String {

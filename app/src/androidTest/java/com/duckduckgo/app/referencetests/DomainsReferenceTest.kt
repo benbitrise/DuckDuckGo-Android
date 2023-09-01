@@ -35,15 +35,16 @@ import com.duckduckgo.app.fakes.FeatureToggleFake
 import com.duckduckgo.app.fakes.UserAgentFake
 import com.duckduckgo.app.fakes.UserAllowListRepositoryFake
 import com.duckduckgo.app.global.db.AppDatabase
-import com.duckduckgo.app.httpsupgrade.HttpsUpgrader
 import com.duckduckgo.app.privacy.db.PrivacyProtectionCountDao
-import com.duckduckgo.app.privacy.db.UserWhitelistDao
+import com.duckduckgo.app.privacy.db.UserAllowListDao
+import com.duckduckgo.app.privacy.db.UserAllowListRepository
 import com.duckduckgo.app.surrogates.ResourceSurrogateLoader
 import com.duckduckgo.app.surrogates.ResourceSurrogatesImpl
 import com.duckduckgo.app.surrogates.store.ResourceSurrogateDataStore
 import com.duckduckgo.app.trackerdetection.Client
 import com.duckduckgo.app.trackerdetection.CloakedCnameDetectorImpl
 import com.duckduckgo.app.trackerdetection.EntityLookup
+import com.duckduckgo.app.trackerdetection.RealUrlToTypeMapper
 import com.duckduckgo.app.trackerdetection.TdsClient
 import com.duckduckgo.app.trackerdetection.TdsEntityLookup
 import com.duckduckgo.app.trackerdetection.TrackerDetector
@@ -55,10 +56,12 @@ import com.duckduckgo.app.trackerdetection.db.TdsDomainEntityDao
 import com.duckduckgo.app.trackerdetection.db.TdsEntityDao
 import com.duckduckgo.app.trackerdetection.db.WebTrackersBlockedDao
 import com.duckduckgo.feature.toggles.api.FeatureToggle
+import com.duckduckgo.httpsupgrade.api.HttpsUpgrader
 import com.duckduckgo.privacy.config.api.ContentBlocking
 import com.duckduckgo.privacy.config.api.Gpc
 import com.duckduckgo.privacy.config.api.TrackerAllowlist
 import com.duckduckgo.privacy.config.api.UserAgent
+import com.duckduckgo.request.filterer.api.RequestFilterer
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -94,13 +97,15 @@ class DomainsReferenceTest(private val testCase: TestCase) {
     private val resourceSurrogates = ResourceSurrogatesImpl()
 
     private var webView: WebView = mock()
-    private val mockUserWhitelistDao: UserWhitelistDao = mock()
+    private val mockUserAllowListDao: UserAllowListDao = mock()
     private val mockContentBlocking: ContentBlocking = mock()
     private val mockTrackerAllowlist: TrackerAllowlist = mock()
     private var mockWebTrackersBlockedDao: WebTrackersBlockedDao = mock()
     private var mockHttpsUpgrader: HttpsUpgrader = mock()
     private var mockRequest: WebResourceRequest = mock()
     private val mockPrivacyProtectionCountDao: PrivacyProtectionCountDao = mock()
+    private val mockRequestFilterer: RequestFilterer = mock()
+    private val mockUserAllowListRepository: UserAllowListRepository = mock()
     private val fakeUserAgent: UserAgent = UserAgentFake()
     private val fakeToggle: FeatureToggle = FeatureToggleFake()
     private val fakeUserAllowListRepository = UserAllowListRepositoryFake()
@@ -168,13 +173,26 @@ class DomainsReferenceTest(private val testCase: TestCase) {
             gpc = mockGpc,
             userAgentProvider = userAgentProvider,
             adClickManager = mockAdClickManager,
-            cloakedCnameDetector = CloakedCnameDetectorImpl(tdsCnameEntityDao),
+            cloakedCnameDetector = CloakedCnameDetectorImpl(tdsCnameEntityDao, mockTrackerAllowlist, mockUserAllowListRepository),
+            requestFilterer = mockRequestFilterer,
         )
     }
 
     @Test
     fun whenReferenceTestRunsItReturnsTheExpectedResult() = runBlocking<Unit> {
         whenever(mockRequest.url).thenReturn(testCase.requestURL.toUri())
+
+        if (testCase.requestType == "script") {
+            whenever(mockRequest.requestHeaders).thenReturn(mapOf(Pair("Accept", "application/javascript")))
+        }
+
+        if (testCase.requestType == "image") {
+            whenever(mockRequest.requestHeaders).thenReturn(mapOf(Pair("Accept", "image/*")))
+        }
+
+        if (testCase.requestType == "stylesheet") {
+            whenever(mockRequest.requestHeaders).thenReturn(mapOf(Pair("Accept", "text/css")))
+        }
 
         val response = testee.shouldIntercept(
             request = mockRequest,
@@ -209,7 +227,7 @@ class DomainsReferenceTest(private val testCase: TestCase) {
         trackerDetector =
             TrackerDetectorImpl(
                 entityLookup,
-                mockUserWhitelistDao,
+                mockUserAllowListDao,
                 mockContentBlocking,
                 mockTrackerAllowlist,
                 mockWebTrackersBlockedDao,
@@ -223,7 +241,7 @@ class DomainsReferenceTest(private val testCase: TestCase) {
         val entities = tdsJson.jsonToEntities()
         val domainEntities = tdsJson.jsonToDomainEntities()
         val cnameEntities = tdsJson.jsonToCnameEntities()
-        val client = TdsClient(Client.ClientName.TDS, trackers)
+        val client = TdsClient(Client.ClientName.TDS, trackers, RealUrlToTypeMapper())
 
         tdsEntityDao.insertAll(entities)
         tdsDomainEntityDao.insertAll(domainEntities)

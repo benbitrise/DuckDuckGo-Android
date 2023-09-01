@@ -17,7 +17,6 @@
 package com.duckduckgo.mobile.android.vpn.ui.tracker_activity
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,11 +24,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.duckduckgo.mobile.android.ui.TextDrawable
+import com.duckduckgo.mobile.android.ui.view.getColorFromAttr
 import com.duckduckgo.mobile.android.ui.view.hide
 import com.duckduckgo.mobile.android.ui.view.show
 import com.duckduckgo.mobile.android.vpn.R
 import com.duckduckgo.mobile.android.vpn.ui.tracker_activity.model.TrackerCompanyBadge
+import com.duckduckgo.mobile.android.vpn.ui.util.TextDrawable
 import java.util.*
 
 class TrackerBadgeAdapter : RecyclerView.Adapter<TrackerBadgeAdapter.TrackerBadgeViewHolder>() {
@@ -63,9 +63,9 @@ class TrackerBadgeAdapter : RecyclerView.Adapter<TrackerBadgeAdapter.TrackerBadg
 
     class TrackerBadgeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        var iconBadge: ImageView = view.findViewById(R.id.tracker_company_badge_icon)
-        var textBadge: TextView = view.findViewById(R.id.tracker_company_badge_text)
-        var largeTextBadge: TextView = view.findViewById(R.id.tracker_company_large_badge_text)
+        private var iconBadge: ImageView = view.findViewById(R.id.tracker_company_badge_icon)
+        private var textBadge: TextView = view.findViewById(R.id.tracker_company_badge_text)
+        private var largeTextBadge: TextView = view.findViewById(R.id.tracker_company_large_badge_text)
 
         companion object {
             fun create(parent: ViewGroup): TrackerBadgeViewHolder {
@@ -84,13 +84,14 @@ class TrackerBadgeAdapter : RecyclerView.Adapter<TrackerBadgeAdapter.TrackerBadg
 
         private fun displayTrackerCompany(trackerInfo: TrackerCompanyBadge.Company) {
             val badge = badgeIcon(iconBadge.context, trackerInfo.companyName)
+            val textColor = iconBadge.context.getColorFromAttr(com.duckduckgo.mobile.android.R.attr.daxColorPrimaryText)
             if (badge == null) {
                 iconBadge.setImageDrawable(
                     TextDrawable.builder()
                         .beginConfig()
                         .fontSize(50)
                         .endConfig()
-                        .buildRound(trackerInfo.companyName.take(1), Color.DKGRAY),
+                        .buildRound(trackerInfo.companyName.take(1)),
                 )
             } else {
                 iconBadge.setImageResource(badge)
@@ -136,10 +137,10 @@ class TrackerBadgeAdapter : RecyclerView.Adapter<TrackerBadgeAdapter.TrackerBadg
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
-            if (oldItem is TrackerCompanyBadge.Company && newItem is TrackerCompanyBadge.Company) {
-                return oldItem.companyName == newItem.companyName
+            return if (oldItem is TrackerCompanyBadge.Company && newItem is TrackerCompanyBadge.Company) {
+                oldItem.companyName == newItem.companyName
             } else {
-                return false
+                false
             }
         }
 

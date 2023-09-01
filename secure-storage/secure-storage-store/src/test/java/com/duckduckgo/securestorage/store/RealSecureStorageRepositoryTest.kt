@@ -18,6 +18,7 @@ package com.duckduckgo.securestorage.store
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.duckduckgo.app.CoroutineTestRule
 import com.duckduckgo.securestorage.store.db.SecureStorageDatabase
 import com.duckduckgo.securestorage.store.db.WebsiteLoginCredentialsDao
@@ -35,11 +36,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
-import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 @ExperimentalCoroutinesApi
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class RealSecureStorageRepositoryTest {
 
     @get:Rule
@@ -88,6 +88,22 @@ class RealSecureStorageRepositoryTest {
         val testEntity = entity()
         dao.insert(testEntity)
         val result: List<WebsiteLoginCredentialsEntity> = testee.websiteLoginCredentialsForDomain("test.com").first()
+        assertEquals(testEntity, result[0])
+    }
+
+    @Test
+    fun whenRetrievingLoginCredentialByEmptyDomainThenReturnedIfDirectMatch() = runTest {
+        val testEntity = entity().copy(domain = "")
+        dao.insert(testEntity)
+        val result: List<WebsiteLoginCredentialsEntity> = testee.websiteLoginCredentialsForDomain("").first()
+        assertEquals(testEntity, result[0])
+    }
+
+    @Test
+    fun whenRetrievingLoginCredentialByNullDomainThenReturnedIfDirectMatch() = runTest {
+        val testEntity = entity().copy(domain = null)
+        dao.insert(testEntity)
+        val result: List<WebsiteLoginCredentialsEntity> = testee.websiteLoginCredentialsForDomain("").first()
         assertEquals(testEntity, result[0])
     }
 

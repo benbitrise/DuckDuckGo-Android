@@ -17,6 +17,7 @@
 package com.duckduckgo.app.browser.favicon
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import java.io.File
 
@@ -31,25 +32,16 @@ interface FaviconManager {
         url: String,
     ): File?
 
-    suspend fun saveFaviconForUrl(
-        url: String,
-    )
-
     suspend fun persistCachedFavicon(
         tabId: String,
         url: String,
-    )
-
-    suspend fun loadToViewFromLocalOrFallback(
-        tabId: String? = null,
-        url: String,
-        view: ImageView,
     )
 
     suspend fun loadToViewFromLocalWithPlaceholder(
         tabId: String? = null,
         url: String,
         view: ImageView,
+        placeholder: String? = null,
     )
 
     suspend fun loadFromDisk(
@@ -72,6 +64,16 @@ interface FaviconManager {
     )
 
     suspend fun deleteAllTemp()
+
+    /**
+     * Generates a drawable which can be used as a placeholder for a favicon when a real one cannot be found
+     * @param placeholder the placeholder text to be used. if null, the placeholder letter will be extracted from the domain
+     * @param domain the domain of the site for which the favicon is being generated, used to generate background color
+     */
+    fun generateDefaultFavicon(
+        placeholder: String?,
+        domain: String,
+    ): Drawable
 }
 
 sealed class FaviconSource {

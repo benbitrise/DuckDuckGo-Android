@@ -18,8 +18,6 @@ package com.duckduckgo.privacy.dashboard.impl.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -28,6 +26,7 @@ import android.webkit.WebViewClient
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.duckduckgo.anvil.annotations.ContributeToActivityStarter
 import com.duckduckgo.anvil.annotations.InjectWith
 import com.duckduckgo.app.browser.webview.enableDarkMode
 import com.duckduckgo.app.browser.webview.enableLightMode
@@ -35,20 +34,25 @@ import com.duckduckgo.app.global.DuckDuckGoActivity
 import com.duckduckgo.app.statistics.pixels.Pixel
 import com.duckduckgo.app.tabs.BrowserNav
 import com.duckduckgo.app.tabs.model.TabRepository
-import com.duckduckgo.app.tabs.tabId
+import com.duckduckgo.autoconsent.api.AutoconsentNav
 import com.duckduckgo.browser.api.brokensite.BrokenSiteNav
 import com.duckduckgo.di.scopes.ActivityScope
 import com.duckduckgo.mobile.android.ui.store.AppTheme
 import com.duckduckgo.mobile.android.ui.viewbinding.viewBinding
+import com.duckduckgo.navigation.api.getActivityParams
+import com.duckduckgo.privacy.dashboard.api.ui.PrivacyDashboardHybridScreen.Companion.RELOAD_RESULT_CODE
+import com.duckduckgo.privacy.dashboard.api.ui.PrivacyDashboardHybridScreen.PrivacyDashboardHybridWithTabIdParam
 import com.duckduckgo.privacy.dashboard.impl.databinding.ActivityPrivacyHybridDashboardBinding
 import com.duckduckgo.privacy.dashboard.impl.ui.PrivacyDashboardHybridViewModel.Command
 import com.duckduckgo.privacy.dashboard.impl.ui.PrivacyDashboardHybridViewModel.Command.LaunchReportBrokenSite
+import com.duckduckgo.privacy.dashboard.impl.ui.PrivacyDashboardHybridViewModel.Command.OpenSettings
 import com.duckduckgo.privacy.dashboard.impl.ui.PrivacyDashboardHybridViewModel.Command.OpenURL
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @InjectWith(ActivityScope::class)
+@ContributeToActivityStarter(PrivacyDashboardHybridWithTabIdParam::class)
 class PrivacyDashboardHybridActivity : DuckDuckGoActivity() {
 
     @Inject
@@ -59,6 +63,9 @@ class PrivacyDashboardHybridActivity : DuckDuckGoActivity() {
 
     @Inject
     lateinit var rendererFactory: PrivacyDashboardRendererFactory
+
+    @Inject
+    lateinit var autoconsentNav: AutoconsentNav
 
     @Inject
     lateinit var brokenSiteNav: BrokenSiteNav
@@ -85,6 +92,9 @@ class PrivacyDashboardHybridActivity : DuckDuckGoActivity() {
                 onUrlClicked = { payload ->
                     viewModel.onUrlClicked(payload)
                 },
+                onOpenSettings = { payload ->
+                    viewModel.onOpenSettings(payload)
+                },
                 onBrokenSiteClicked = { viewModel.onReportBrokenSiteSelected() },
                 onClose = { this@PrivacyDashboardHybridActivity.finish() },
             ),
@@ -102,7 +112,8 @@ class PrivacyDashboardHybridActivity : DuckDuckGoActivity() {
     }
 
     private fun configureObservers() {
-        repository.retrieveSiteData(intent.tabId!!).observe(
+        val tabIdParam = intent.getActivityParams(PrivacyDashboardHybridWithTabIdParam::class.java)!!.tabId
+        repository.retrieveSiteData(tabIdParam).observe(
             this,
         ) {
             viewModel.onSiteChanged(it)
@@ -121,12 +132,21 @@ class PrivacyDashboardHybridActivity : DuckDuckGoActivity() {
                 startActivity(brokenSiteNav.navigate(this, it.data))
             }
             is OpenURL -> openUrl(it.url)
+            is OpenSettings -> openSettings(it.target)
         }
     }
 
     private fun openUrl(url: String) {
         startActivity(browserNav.openInNewTab(this, url))
         finish()
+    }
+
+    private fun openSettings(target: String) {
+        if (target == "cpm") {
+            startActivity(autoconsentNav.openAutoconsentSettings(this))
+        } else {
+            finish()
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -196,19 +216,6 @@ class PrivacyDashboardHybridActivity : DuckDuckGoActivity() {
             webView.goBack()
         } else {
             super.onBackPressed()
-        }
-    }
-
-    companion object {
-        const val RELOAD_RESULT_CODE = 100
-
-        fun intent(
-            context: Context,
-            tabId: String,
-        ): Intent {
-            val intent = Intent(context, PrivacyDashboardHybridActivity::class.java)
-            intent.tabId = tabId
-            return intent
         }
     }
 }

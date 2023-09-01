@@ -21,6 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:clipChildren="false"
     tools:context="com.duckduckgo.app.browser.BrowserActivity"
     tools:showIn="@layout/fragment_browser_tab">
 
@@ -60,7 +61,7 @@
                     android:contentDescription="@string/duckDuckGoLogoDescription"
                     android:maxWidth="180dp"
                     android:maxHeight="180dp"
-                    android:src="@drawable/logo_full"
+                    app:srcCompat="@drawable/logo_full"
                     android:visibility="gone" />
 
                 <com.duckduckgo.mobile.android.ui.view.MessageCta
@@ -74,6 +75,7 @@
         </LinearLayout>
 
         <include
+            android:id="@+id/includeDaxDialogCta"
             layout="@layout/include_dax_dialog_cta"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

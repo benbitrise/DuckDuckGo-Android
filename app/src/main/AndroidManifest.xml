@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
@@ -316,6 +317,7 @@
             android:name="com.duckduckgo.app.brokensite.BrokenSiteActivity"
             android:exported="false"
             android:label="@string/brokenSiteHeading"
+            android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".BrowserActivity" />
         <activity
             android:name="com.duckduckgo.app.survey.ui.SurveyActivity"
@@ -364,9 +366,9 @@
             android:label="@string/changeIconActivityTitle"
             android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
         <activity
-            android:name="com.duckduckgo.app.privacy.ui.WhitelistActivity"
+            android:name="com.duckduckgo.app.privacy.ui.AllowListActivity"
             android:exported="false"
-            android:label="@string/whitelistActivityTitle"
+            android:label="@string/allowlistActivityTitle"
             android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
         <activity
             android:name="com.duckduckgo.app.globalprivacycontrol.ui.GlobalPrivacyControlActivity"
@@ -391,18 +393,33 @@
             android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity"
             android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" />
         <activity
-            android:name="com.duckduckgo.app.waitlist.trackerprotection.ui.AppTPWaitlistActivity"
-            android:exported="false"
-            android:label="@string/atp_WaitlistActivityTitle"
-            android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
-        <activity
-            android:name="com.duckduckgo.app.waitlist.trackerprotection.ui.AppTPWaitlistRedeemCodeActivity"
-            android:exported="false"
-            android:label="@string/atp_WaitlistRedeemCodeActivityTitle"
-            android:parentActivityName="com.duckduckgo.app.waitlist.trackerprotection.ui.AppTPWaitlistActivity" />
-        <activity
             android:name="com.duckduckgo.app.browser.webview.WebViewActivity"
             android:exported="false"
+            android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
+        <activity
+            android:name="com.duckduckgo.app.privatesearch.PrivateSearchActivity"
+            android:exported="false"
+            android:label="@string/privateSearchActivityTitle"
+            android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
+        <activity
+            android:name="com.duckduckgo.app.webtrackingprotection.WebTrackingProtectionActivity"
+            android:exported="false"
+            android:label="@string/webTrackingProtectionActivityTitle"
+            android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
+        <activity
+            android:name="com.duckduckgo.app.firebutton.FireButtonActivity"
+            android:exported="false"
+            android:label="@string/fireButtonActivityTitle"
+            android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
+        <activity
+            android:name="com.duckduckgo.app.permissions.PermissionsActivity"
+            android:exported="false"
+            android:label="@string/permissionsActivityTitle"
+            android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
+        <activity
+            android:name="com.duckduckgo.app.appearance.AppearanceActivity"
+            android:exported="false"
+            android:label="@string/appearanceActivityTitle"
             android:parentActivityName="com.duckduckgo.app.settings.SettingsActivity" />
         <activity
             android:name="com.duckduckgo.app.WidgetThemeConfiguration"
@@ -494,6 +511,10 @@
                 <action android:name="android.intent.action.LOCALE_CHANGED" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".remotemessage.SharePromoLinkRMFBroadCastReceiver"
+            android:exported="false" />
 
     </application>
 

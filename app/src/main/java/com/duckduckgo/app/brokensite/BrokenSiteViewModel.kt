@@ -43,7 +43,7 @@ class BrokenSiteViewModel @Inject constructor(
     data class ViewState(
         val indexSelected: Int = -1,
         val categorySelected: BrokenSiteCategory? = null,
-        val submitAllowed: Boolean = false,
+        var submitAllowed: Boolean = true,
     )
 
     sealed class Command {
@@ -74,7 +74,10 @@ class BrokenSiteViewModel @Inject constructor(
     private var consentOptOutFailed: Boolean = false
     private var consentSelfTestFailed: Boolean = false
 
+    var shuffledCategories = mutableListOf<BrokenSiteCategory>()
+
     init {
+        shuffledCategories = setCategories(categories)
         viewState.value = ViewState()
     }
 
@@ -98,6 +101,13 @@ class BrokenSiteViewModel @Inject constructor(
         this.consentSelfTestFailed = consentSelfTestFailed
     }
 
+    fun setCategories(categoryList: List<BrokenSiteCategory>): MutableList<BrokenSiteCategory> {
+        val categories = categoryList.map { it }.toMutableList()
+        val shuffledCategories = categories.slice(0..7).shuffled().toMutableList()
+        shuffledCategories.add(categories[8])
+        return shuffledCategories
+    }
+
     fun onCategoryIndexChanged(newIndex: Int) {
         indexSelected = newIndex
     }
@@ -110,18 +120,18 @@ class BrokenSiteViewModel @Inject constructor(
         viewState.value = viewState.value?.copy(
             indexSelected = indexSelected,
             categorySelected = categories.elementAtOrNull(indexSelected),
-            submitAllowed = canSubmit(),
         )
     }
 
-    fun onSubmitPressed(webViewVersion: String) {
+    fun onSubmitPressed(webViewVersion: String, description: String?) {
+        viewState.value?.submitAllowed = false
         if (url.isNotEmpty()) {
             val lastAmpLinkInfo = ampLinks.lastAmpLinkInfo
 
             val brokenSite = if (lastAmpLinkInfo?.destinationUrl == url) {
-                getBrokenSite(lastAmpLinkInfo.ampLink, webViewVersion)
+                getBrokenSite(lastAmpLinkInfo.ampLink, webViewVersion, description)
             } else {
-                getBrokenSite(url, webViewVersion)
+                getBrokenSite(url, webViewVersion, description)
             }
 
             brokenSiteSender.submitBrokenSiteFeedback(brokenSite)
@@ -137,10 +147,12 @@ class BrokenSiteViewModel @Inject constructor(
     fun getBrokenSite(
         urlString: String,
         webViewVersion: String,
+        description: String?,
     ): BrokenSite {
-        val category = categories[viewValue.indexSelected]
+        val category = categories.elementAtOrNull(viewValue.indexSelected)
         return BrokenSite(
-            category = category.key,
+            category = category?.key,
+            description = description,
             siteUrl = urlString,
             upgradeHttps = upgradedHttps,
             blockedTrackers = blockedTrackers,
@@ -153,8 +165,6 @@ class BrokenSiteViewModel @Inject constructor(
             consentSelfTestFailed = consentSelfTestFailed,
         )
     }
-
-    private fun canSubmit(): Boolean = categories.elementAtOrNull(indexSelected) != null
 
     companion object {
         const val MOBILE_SITE = "mobile"

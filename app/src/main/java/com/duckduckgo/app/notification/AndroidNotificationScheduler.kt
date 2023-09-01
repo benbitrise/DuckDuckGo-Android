@@ -19,11 +19,15 @@ package com.duckduckgo.app.notification
 import android.content.Context
 import androidx.annotation.WorkerThread
 import androidx.work.*
+import androidx.work.WorkInfo.State.ENQUEUED
+import androidx.work.WorkInfo.State.RUNNING
 import com.duckduckgo.anvil.annotations.ContributesWorker
 import com.duckduckgo.app.notification.model.ClearDataNotification
 import com.duckduckgo.app.notification.model.PrivacyProtectionNotification
 import com.duckduckgo.app.notification.model.SchedulableNotification
+import com.duckduckgo.app.statistics.VariantManager
 import com.duckduckgo.di.scopes.AppScope
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import timber.log.Timber
@@ -39,6 +43,7 @@ class NotificationScheduler(
     private val workManager: WorkManager,
     private val clearDataNotification: SchedulableNotification,
     private val privacyNotification: SchedulableNotification,
+    private val variantManager: VariantManager,
 ) : AndroidNotificationScheduler {
 
     override suspend fun scheduleNextNotification() {
@@ -48,24 +53,31 @@ class NotificationScheduler(
     private suspend fun scheduleInactiveUserNotifications() {
         workManager.cancelAllWorkByTag(UNUSED_APP_WORK_REQUEST_TAG)
 
-        when {
-            privacyNotification.canShow() -> {
-                scheduleNotification(
-                    OneTimeWorkRequestBuilder<PrivacyNotificationWorker>(),
-                    PRIVACY_DELAY_DURATION_IN_DAYS,
-                    TimeUnit.DAYS,
-                    UNUSED_APP_WORK_REQUEST_TAG,
-                )
-            }
-            clearDataNotification.canShow() -> {
-                scheduleNotification(
-                    OneTimeWorkRequestBuilder<ClearDataNotificationWorker>(),
-                    CLEAR_DATA_DELAY_DURATION_IN_DAYS,
-                    TimeUnit.DAYS,
-                    UNUSED_APP_WORK_REQUEST_TAG,
-                )
-            }
-            else -> Timber.v("Notifications not enabled for this variant")
+        scheduleUnusedAppNotifications(
+            PRIVACY_DELAY_DURATION_IN_DAYS to TimeUnit.DAYS,
+            CLEAR_DATA_DELAY_DURATION_IN_DAYS to TimeUnit.DAYS,
+        )
+    }
+
+    private suspend fun scheduleUnusedAppNotifications(
+        privacyDelayTime: Pair<Long, TimeUnit>,
+        clearDataDelayTime: Pair<Long, TimeUnit>,
+    ) {
+        if (privacyNotification.canShow()) {
+            scheduleNotification(
+                OneTimeWorkRequestBuilder<PrivacyNotificationWorker>(),
+                privacyDelayTime.first,
+                privacyDelayTime.second,
+                UNUSED_APP_WORK_REQUEST_TAG,
+            )
+        }
+        if (clearDataNotification.canShow()) {
+            scheduleNotification(
+                OneTimeWorkRequestBuilder<ClearDataNotificationWorker>(),
+                clearDataDelayTime.first,
+                clearDataDelayTime.second,
+                UNUSED_APP_WORK_REQUEST_TAG,
+            )
         }
     }
 
@@ -82,6 +94,25 @@ class NotificationScheduler(
             .build()
 
         workManager.enqueue(request)
+    }
+
+    private fun isWorkScheduled(tag: String): Boolean {
+        val statuses = workManager.getWorkInfosByTag(tag)
+        return try {
+            var running = false
+            val workInfoList: List<WorkInfo> = statuses.get()
+            for (workInfo in workInfoList) {
+                val state = workInfo.state
+                running = (state == RUNNING) or (state == ENQUEUED)
+            }
+            running
+        } catch (e: ExecutionException) {
+            e.printStackTrace()
+            false
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+            false
+        }
     }
 
     companion object {
@@ -129,12 +160,12 @@ class PrivacyNotificationWorker(
     override lateinit var notification: PrivacyProtectionNotification
 }
 
-open class SchedulableNotificationWorker<T : SchedulableNotification>(
+abstract class SchedulableNotificationWorker<T : SchedulableNotification>(
     val context: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(context, params) {
-    open lateinit var notificationSender: NotificationSender
-    open lateinit var notification: T
+    abstract var notificationSender: NotificationSender
+    abstract var notification: T
 
     override suspend fun doWork(): Result {
         notificationSender.sendNotification(notification)

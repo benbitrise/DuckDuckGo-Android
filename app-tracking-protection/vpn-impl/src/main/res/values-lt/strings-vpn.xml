@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Programų sekimo apsauga</string>
     <string name="refresh">Atnaujinti</string>
 
@@ -167,10 +167,10 @@
     <string name="atp_ReportBreakageAppNextCta">Kitas</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Aprašykite, kas vyksta, ko tikėjotės, kad įvyks, ir veiksmus, dėl kurių iškilo problema.</string>
     <string name="atp_ReportBreakageFormInputHint">Papasakokite daugiau apie problemą, su kuria susiduriate</string>
-    <string name="atp_ReportBreakageFormCheckboxText">Spausdamas „Pateikti“ sutinku, kad „DuckDuckGo“ gali naudoti šioje ataskaitoje pateiktą informaciją apsaugos nuo programėlių sekimo gerinimo tikslais.
+    <string name="atp_ReportBreakageFormCheckboxText">Spausdamas (-a) „Pateikti“ sutinku, kad „DuckDuckGo“ gali naudoti šioje ataskaitoje pateiktą informaciją programėlės funkcijų gerinimo tikslais.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Be šioje formoje įvestos informacijos, jūsų programėlės problemos ataskaitoje bus pateikta:<br/>• Programėlės pakuotės pavadinimas<br/>• Programėlėje blokuojamų sekimo įrenginių sąrašas<br/>• Ar įjungta apsauga nuo programėlių sekimo<br/>• Suvestinė „DuckDuckGo“ programėlės diagnostika.<br/>]]>
+        <![CDATA[Be šioje formoje įvestos informacijos, jūsų programėlės problemos ataskaitoje bus pateikta:<br/>• Programėlės paketo pavadinimas<br/>• Programėlėje blokuojamų sekiklių sąrašas<br/>• Ar įjungtos konkrečios „DuckDuckGo“ funkcijos<br/>• Suvestinė „DuckDuckGo“ programėlės diagnostika<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Ataskaita išsiųsta, ačiū! Jūsų atsiliepimai padeda mums tobulinti apsaugą nuo programėlių sekimo visiems.</string>
     <string name="atp_ThanksForTheFeedback">Dėkojame už atsiliepimą!</string>
@@ -218,13 +218,13 @@
     <string name="atp_ActivityPastWeekBlocked">Užblokuota</string>
     <string name="atp_ActivityPastWeekAcross">Per</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Bandymas sekti</item>
         <item quantity="few">Bandymai sekti</item>
         <item quantity="many">Bandymų sekti</item>
         <item quantity="other">Bandymų sekti</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Programa</item>
         <item quantity="few">Programos</item>
         <item quantity="many">Programų</item>
@@ -237,6 +237,10 @@
     <string name="atp_ActivityAbout">Apie</string>
     <string name="atp_ActivityManage">Tvarkyti</string>
     <string name="atp_ActivityRemoveFeature">Duomenų išjungimas ir ištrynimas</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">„DuckDuckGo“ blokuoja paslėptas sekimo priemones visose programėlėse.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Vėl įjunkite programėlių sekimo apsaugą, kad ir toliau blokuotumėte sekimo priemones visose programėlėse.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">Užblokavo „DuckDuckGo“ %1$s</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">Užblokavo „DuckDuckGo“ %1$s</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">DUK</string>
@@ -254,8 +258,6 @@
     <string name="atp_FAQSixthText">Apsauga nuo programėlių sekimo veikia jūsų prietaise ir nesiunčia jūsų asmeninių duomenų iš prietaiso į „DuckDuckGo“.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Programų sekimo apsauga</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Apsaugos nuo programėlių sekimo laukiančiųjų sąrašas</string>
     <string name="atp_WaitlistNotificationTitle">Jūsų apsaugos nuo programėlių sekimo kvietimas yra čia!</string>
     <string name="atp_WaitlistNotificationDescription">Jūs prisijungėte prie laukimo sąrašo ir paprašėte mūsų informuoti jus, kai ateis eilė išbandyti mūsų el. pašto apsaugos funkciją. Bakstelėkite norėdami peržiūrėti savo kvietimą.</string>
     <string name="atp_WaitlistStatusNotJoined">Vienas paprastas žingsnis siekiant geresnio programos privatumo!</string>
@@ -274,7 +276,6 @@
     <string name="atp_WaitlistErrorJoining">Prisijungiant prie laukimo sąrašo įvyko klaida, bandykite dar kartą vėliau</string>
     <string name="atp_WaitlistJoinedWithNotification">Atsiųsime jums pranešimą, kai&lt;br/&gt; el. pašto apsauga bus parengta.<annotation type="beta_link"> Sužinokite daugiau apie beta versiją </annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Jūsų kviečiama išbandyti apsauga nuo programėlių sekimo pasirodys čia. Netrukus sugrįžkite arba galime atsiųsti jums pranešimą, kai ateis jūsų eilė\n\n<annotation type="notify_me_link">Pranešti man</annotation>\n\n<annotation type="beta_link">Sužinoti daugiau apie beta versiją</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Įveskite kvietimo kodą</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Pavyko! Jūs prisijungėte.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -286,10 +287,10 @@
         <item quantity="other">%1$d bandymų. Žinoma, kad renka:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">Užblokuotas %1$d stebėjimo bandymas</item>
-        <item quantity="few">Užblokuoti %1$d stebėjimo bandymai</item>
-        <item quantity="many">Užblokuoti %1$d stebėjimo bandymai</item>
-        <item quantity="other">Užblokuota %1$d stebėjimo bandymų</item>
+        <item quantity="one">„DuckDuckGo“ užblokavo %1$d sekimo bandymą</item>
+        <item quantity="few">„DuckDuckGo“ užblokavo %1$d sekimo bandymus</item>
+        <item quantity="many">„DuckDuckGo“ užblokavo %1$d sekimo bandymo</item>
+        <item quantity="other">„DuckDuckGo“ užblokavo %1$d sekimo bandymų</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Praneškite apie problemą, susijusią su šia programa</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">Rodyti dar %1$d</string>
@@ -428,5 +429,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Ši funkcija yra beta versijos. Kyla problemų dėl programėlės? <annotation type="app_settings_link">Padėkite mums tobulėti</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Kai kuriose programėlėse gali kilti problemų, kai įjungta programėlės sekimo apsauga.\n<annotation type="learn_why_link">Sužinokite, kodėl</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Programėlių, kuriose yra žinomų problemų, apsauga išjungta. Galite įjungti šias programėles, tačiau jos gali neveikti taip, kaip tikėtasi. <annotation type="learn_why_link">Sužinokite, kodėl</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Stebėkite užblokuotas stebėjimo priemones</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Gaukite naujienas apie užblokuotus stebėjimo bandymus pranešimų skiltyje.</string>
 
 </resources>

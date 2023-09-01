@@ -20,12 +20,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import com.duckduckgo.privacy.config.api.AmpLinkException
-import com.duckduckgo.privacy.config.api.AutofillException
 import com.duckduckgo.privacy.config.api.ContentBlockingException
 import com.duckduckgo.privacy.config.api.DrmException
 import com.duckduckgo.privacy.config.api.GpcException
 import com.duckduckgo.privacy.config.api.GpcHeaderEnabledSite
 import com.duckduckgo.privacy.config.api.HttpsException
+import com.duckduckgo.privacy.config.api.PrivacyConfigData
 import com.duckduckgo.privacy.config.api.TrackingParameterException
 import com.duckduckgo.privacy.config.api.UnprotectedTemporaryException
 import com.duckduckgo.privacy.config.api.UserAgentException
@@ -84,16 +84,6 @@ fun HttpsExceptionEntity.toHttpsException(): HttpsException {
     return HttpsException(domain = this.domain, reason = this.reason)
 }
 
-@Entity(tableName = "autofill_exceptions")
-data class AutofillExceptionEntity(
-    @PrimaryKey val domain: String,
-    val reason: String,
-)
-
-fun AutofillExceptionEntity.toAutofillException(): AutofillException {
-    return AutofillException(domain = this.domain, reason = this.reason)
-}
-
 @Entity(tableName = "gpc_header_enabled_sites")
 data class GpcHeaderEnabledSiteEntity(@PrimaryKey val domain: String)
 
@@ -141,7 +131,12 @@ data class PrivacyConfig(
     @PrimaryKey val id: Int = 1,
     val version: Long,
     val readme: String,
+    val eTag: String?,
 )
+
+fun PrivacyConfig.toPrivacyConfigData(): PrivacyConfigData {
+    return PrivacyConfigData(version = this.version.toString(), eTag = this.eTag)
+}
 
 @Entity(tableName = "amp_link_formats")
 data class AmpLinkFormatEntity(

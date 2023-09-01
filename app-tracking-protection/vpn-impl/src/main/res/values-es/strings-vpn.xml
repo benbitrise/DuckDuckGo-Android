@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Protección frente al rastreo de aplicaciones</string>
     <string name="refresh">Actualizar</string>
 
@@ -159,10 +159,10 @@
     <string name="atp_ReportBreakageAppNextCta">Siguiente</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Describe lo que está pasando, lo que esperabas que ocurriera y los pasos que han llevado al problema.</string>
     <string name="atp_ReportBreakageFormInputHint">Cuéntanos más sobre el problema que tienes</string>
-    <string name="atp_ReportBreakageFormCheckboxText">Al hacer clic en \"Enviar\", acepto que DuckDuckGo pueda usar la información de este informe para mejorar App Tracking Protection.
+    <string name="atp_ReportBreakageFormCheckboxText">Al hacer clic en \"Enviar\", acepto que DuckDuckGo pueda utilizar la información de este informe para mejorar las funciones de la aplicación.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Además de los datos introducidos en este formulario, el informe de problemas con la aplicación contendrá:<br/>• El nombre del paquete de aplicaciones<br/>• Una lista de rastreadores bloqueados en la aplicación<br/>• Si App Tracking Protection está activada<br/>• El diagnóstico agregado de la aplicación DuckDuckGo<br/>]]>
+        <![CDATA[Además de los datos introducidos en este formulario, el informe de incidencias con la aplicación contendrá:<br/>• El nombre del paquete de aplicaciones<br/>• Una lista de rastreadores bloqueados en la aplicación<br/>• Si se han habilitado funciones específicas de DuckDuckGo<br/>• El diagnóstico agregado de la aplicación DuckDuckGo<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Informe enviado, ¡gracias! Tus comentarios nos ayudan a mejorar App Tracking Protection para todos.</string>
     <string name="atp_ThanksForTheFeedback">Gracias por compartir tu opinión.</string>
@@ -210,11 +210,11 @@
     <string name="atp_ActivityPastWeekBlocked">Bloqueado</string>
     <string name="atp_ActivityPastWeekAcross">En</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Intento de rastreo</item>
         <item quantity="other">Intentos de rastreo</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Aplicación</item>
         <item quantity="other">Aplicaciones</item>
     </plurals>
@@ -225,6 +225,10 @@
     <string name="atp_ActivityAbout">Sobre</string>
     <string name="atp_ActivityManage">Gestionar</string>
     <string name="atp_ActivityRemoveFeature">Desactivar y borrar datos</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">DuckDuckGo bloquea los rastreadores ocultos en tus aplicaciones.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Vuelve a activar App Tracking Protection para seguir bloqueando rastreadores en tus aplicaciones.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">Bloqueado por DuckDuckGo %1$s</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">Bloqueado por DuckDuckGo el %1$s</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">PREGUNTAS FRECUENTES</string>
@@ -242,8 +246,6 @@
     <string name="atp_FAQSixthText">App Tracking Protection funciona en tu dispositivo y no envía los datos personales de tu dispositivo a DuckDuckGo.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Protección frente al rastreo de aplicaciones</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Lista de espera de App Tracking Protection</string>
     <string name="atp_WaitlistNotificationTitle">¡Tu invitación a App Tracking Protection ya está aquí!</string>
     <string name="atp_WaitlistNotificationDescription">Te has unido a la lista de espera y nos has pedido que te avisemos cuando te toque probar nuestra función App Tracking Protection. Toca para ver tu invitación.</string>
     <string name="atp_WaitlistStatusNotJoined">¡Un sencillo paso para mejorar la privacidad de las aplicaciones!</string>
@@ -262,7 +264,6 @@
     <string name="atp_WaitlistErrorJoining">Se ha producido un error al unirte a la lista de espera, inténtalo de nuevo más tarde</string>
     <string name="atp_WaitlistJoinedWithNotification">Te enviaremos una notificación cuando App Tracking Protection esté lista para ti.\n\n<annotation type="beta_link">Más información acerca de la versión beta</annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Tu invitación para probar App Tracking Protection llegará aquí. Vuelve pronto, o podemos enviarte una notificación cuando sea tu turno\n\n<annotation type="notify_me_link">Notificadme</annotation>\n\n<annotation type="beta_link">Más información acerca de la versión beta</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Introduce tu código de invitación</string>
     <string name="atp_WaitlistRedeemedCodeStatus">¡Todo listo! Ya estás dentro.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -272,8 +273,8 @@
         <item quantity="other">%1$d intentos. Conocido por compilar:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">Se ha bloqueado %1$d intento de rastreo</item>
-        <item quantity="other">Se han bloqueado %1$d intentos de rastreo</item>
+        <item quantity="one">DuckDuckGo ha bloqueado %1$d intento de rastreo</item>
+        <item quantity="other">DuckDuckGo ha bloqueado %1$d intentos de rastreo</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Informar de un problema con esta aplicación</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">Mostrar %1$d más</string>
@@ -408,5 +409,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Esta función está en versión beta. ¿Tienes problemas con una aplicación? <annotation type="app_settings_link">Ayúdanos a mejorar</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Algunas aplicaciones pueden tener problemas cuando App Tracking Protection está activada.\n<annotation type="learn_why_link">Averigua por qué</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">La protección está desactivada para aplicaciones con problemas conocidos. Puedes activar estas aplicaciones, pero es posible que no funcionen como deberían. <annotation type="learn_why_link">Averigua por qué</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Vigila los rastreadores bloqueados</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Recibe actualizaciones sobre intentos de rastreo bloqueados en tu cajón de notificaciones.</string>
 
 </resources>

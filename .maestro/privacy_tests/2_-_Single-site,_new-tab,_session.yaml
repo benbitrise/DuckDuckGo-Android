@@ -1,14 +1,11 @@
 appId: com.duckduckgo.mobile.android
+tags:
+    - privacyTest
 ---
 - launchApp:
     clearState: true
-- assertVisible:
-    text: ".*Not to worry! Searching and browsing privately.*"
-- tapOn: "let's do it!"
-- tapOn: "cancel"
-- assertVisible:
-    text: ".*I'll also upgrade the security of your connection if possible.*"
-- inputText: "https://www.search-company.site/"
+- runFlow: ../shared/onboarding.yaml
+- inputText: "https://www.search-company.site/#ad-id-5"
 - pressKey: Enter
 - assertVisible:
     text: ".*Got It.*"
@@ -18,9 +15,6 @@ appId: com.duckduckgo.mobile.android
     text: "HIDE TIPS FOREVER"
 - tapOn:
     text: "HIDE TIPS FOREVER"
-- swipe:
-    start: 100,1000
-    end: 100,200
 - assertVisible:
     id: "ad-id-5"
 - longPressOn:

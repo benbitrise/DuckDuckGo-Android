@@ -26,13 +26,16 @@ import com.duckduckgo.app.browser.R
 import com.duckduckgo.app.browser.R.layout
 import com.duckduckgo.app.browser.databinding.ViewItemDownloadsEmptyBinding
 import com.duckduckgo.app.browser.databinding.ViewItemDownloadsHeaderBinding
+import com.duckduckgo.app.browser.databinding.ViewItemDownloadsNotifyMeBinding
 import com.duckduckgo.app.downloads.DownloadViewItem.Empty
 import com.duckduckgo.app.downloads.DownloadViewItem.Header
 import com.duckduckgo.app.downloads.DownloadViewItem.Item
+import com.duckduckgo.app.downloads.DownloadViewItem.NotifyMe
 import com.duckduckgo.app.global.formatters.data.DataSizeFormatter
 import com.duckduckgo.downloads.store.DownloadStatus.FINISHED
 import com.duckduckgo.mobile.android.databinding.RowTwoLineItemBinding
 import com.duckduckgo.mobile.android.ui.menu.PopupMenu
+import com.duckduckgo.mobile.android.ui.notifyme.NotifyMeView
 import com.duckduckgo.mobile.android.ui.view.gone
 import com.duckduckgo.mobile.android.ui.view.show
 import javax.inject.Inject
@@ -58,6 +61,10 @@ class DownloadsAdapter @Inject constructor(
                 listener = downloadsItemListener,
                 formatter = dataSizeFormatter,
             )
+            VIEW_TYPE_NOTIFY_ME -> NotifyMeViewHolder(
+                binding = ViewItemDownloadsNotifyMeBinding.inflate(inflater, parent, false),
+                listener = downloadsItemListener,
+            )
 
             else -> throw IllegalArgumentException()
         }
@@ -71,6 +78,7 @@ class DownloadsAdapter @Inject constructor(
             VIEW_TYPE_EMPTY -> (holder as EmptyViewHolder)
             VIEW_TYPE_HEADER -> (holder as HeaderViewHolder).bind(items[position] as Header)
             VIEW_TYPE_ITEM -> (holder as ItemViewHolder).bind(items[position] as Item)
+            VIEW_TYPE_NOTIFY_ME -> (holder as NotifyMeViewHolder)
         }
     }
 
@@ -79,6 +87,7 @@ class DownloadsAdapter @Inject constructor(
             is Empty -> VIEW_TYPE_EMPTY
             is Header -> VIEW_TYPE_HEADER
             is Item -> VIEW_TYPE_ITEM
+            is NotifyMe -> VIEW_TYPE_NOTIFY_ME
         }
     }
 
@@ -103,7 +112,7 @@ class DownloadsAdapter @Inject constructor(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Header) {
-            binding.downloadsHeaderTextView.text = item.text
+            binding.downloadsHeaderTextView.primaryText = item.text
         }
     }
 
@@ -131,7 +140,7 @@ class DownloadsAdapter @Inject constructor(
                 else -> context.getString(R.string.downloadsStateInProgress)
             }
             twoListItem.setSecondaryText(subtitle)
-            twoListItem.setLeadingIcon(R.drawable.ic_file)
+            twoListItem.setLeadingIconResource(R.drawable.ic_document_24)
 
             twoListItem.setClickListener {
                 if (item.downloadItem.contentLength > 0) {
@@ -139,7 +148,7 @@ class DownloadsAdapter @Inject constructor(
                 }
             }
 
-            twoListItem.setTrailingIcon(R.drawable.ic_overflow)
+            twoListItem.setTrailingIconResource(com.duckduckgo.mobile.android.R.drawable.ic_menu_vertical_24)
             twoListItem.setTrailingIconClickListener { view ->
                 showPopupMenu(view, item)
             }
@@ -166,6 +175,23 @@ class DownloadsAdapter @Inject constructor(
                 onMenuItemClicked(cancelItemView) { listener.onCancelItemClicked(item.downloadItem) }
             }
             popupMenu.show(binding.root, anchor)
+        }
+    }
+
+    class NotifyMeViewHolder(
+        val binding: ViewItemDownloadsNotifyMeBinding,
+        val listener: DownloadsItemListener,
+    ) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnVisibilityChange(
+                object : NotifyMeView.OnVisibilityChangedListener {
+                    override fun onVisibilityChange(v: View?, isVisible: Boolean) {
+                        listener.onItemVisibilityChanged(isVisible)
+                    }
+                },
+            )
         }
     }
 
@@ -201,5 +227,6 @@ class DownloadsAdapter @Inject constructor(
         const val VIEW_TYPE_EMPTY = 0
         const val VIEW_TYPE_HEADER = 1
         const val VIEW_TYPE_ITEM = 2
+        const val VIEW_TYPE_NOTIFY_ME = 3
     }
 }

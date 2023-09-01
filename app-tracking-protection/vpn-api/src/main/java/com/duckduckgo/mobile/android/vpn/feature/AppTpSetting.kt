@@ -17,17 +17,11 @@
 package com.duckduckgo.mobile.android.vpn.feature
 
 enum class AppTpSetting(override val value: String, override val defaultValue: Boolean = false) : SettingName {
-    BadHealthMitigation("badHealthMitigation", defaultValue = true),
-    Ipv6Support("ipv6Support"),
-    PrivateDnsSupport("privateDnsSupport"),
-    InterceptDnsTraffic("interceptDnsTraffic"),
-    ConnectivityChecks("connectivityChecks"),
     AlwaysSetDNS("alwaysSetDNS"),
     CPUMonitoring("cpuMonitoring"),
     ProtectGames("protectGames"),
-    OpenBeta("openBeta"),
-    CheckBlockingFunction("checkBlockingFunction"),
-    StartVpnErrorHandling("startVpnErrorHandling", defaultValue = true),
+    ExceptionLists("exceptionLists", defaultValue = true),
+    RestartOnConnectivityLoss("restartOnConnectivityLoss", defaultValue = true),
 }
 
 interface SettingName {

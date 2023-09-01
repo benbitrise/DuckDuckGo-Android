@@ -24,13 +24,10 @@ import com.duckduckgo.remote.messaging.api.Content.Placeholder.ANNOUNCE
 import com.duckduckgo.remote.messaging.api.Content.Placeholder.APP_UPDATE
 import com.duckduckgo.remote.messaging.api.Content.Placeholder.CRITICAL_UPDATE
 import com.duckduckgo.remote.messaging.api.RemoteMessage
+import com.duckduckgo.remote.messaging.fixtures.messageActionPlugins
 import com.duckduckgo.remote.messaging.impl.mappers.RemoteMessagingConfigJsonMapper
+import com.duckduckgo.remote.messaging.impl.models.*
 import com.duckduckgo.remote.messaging.impl.models.JsonRemoteMessagingConfig
-import com.duckduckgo.remote.messaging.impl.models.MatchingAttribute.Api
-import com.duckduckgo.remote.messaging.impl.models.MatchingAttribute.DefaultBrowser
-import com.duckduckgo.remote.messaging.impl.models.MatchingAttribute.Locale
-import com.duckduckgo.remote.messaging.impl.models.MatchingAttribute.Unknown
-import com.duckduckgo.remote.messaging.impl.models.MatchingAttribute.WebView
 import com.squareup.moshi.Moshi
 import java.io.BufferedReader
 import java.util.Locale.US
@@ -57,7 +54,7 @@ class RemoteMessagingConfigJsonMapperTest {
     fun whenValidJsonParsedThenMessagesMappedIntoRemoteConfig() = runTest {
         val result = getConfigFromJson("json/remote_messaging_config.json")
 
-        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig)
+        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig, messageActionPlugins)
 
         val config = testee.map(result)
 
@@ -112,7 +109,7 @@ class RemoteMessagingConfigJsonMapperTest {
                     value = "com.duckduckgo.mobile.android",
                 ),
                 secondaryActionText = "Cancel",
-                secondaryAction = Action.Dismiss(),
+                secondaryAction = Action.Dismiss,
             ),
             matchingRules = emptyList(),
             exclusionRules = emptyList(),
@@ -124,7 +121,7 @@ class RemoteMessagingConfigJsonMapperTest {
     fun whenValidJsonParsedThenRulesMappedIntoRemoteConfig() = runTest {
         val result = getConfigFromJson("json/remote_messaging_config.json")
 
-        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig)
+        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig, messageActionPlugins)
 
         val config = testee.map(result)
 
@@ -148,7 +145,7 @@ class RemoteMessagingConfigJsonMapperTest {
     fun whenJsonMessagesHaveUnknownTypesThenMessagesNotMappedIntoConfig() = runTest {
         val result = getConfigFromJson("json/remote_messaging_config_unsupported_items.json")
 
-        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig)
+        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig, messageActionPlugins)
 
         val config = testee.map(result)
 
@@ -159,7 +156,7 @@ class RemoteMessagingConfigJsonMapperTest {
     fun whenJsonMessagesHaveUnknownTypesThenRulesMappedIntoConfig() = runTest {
         val result = getConfigFromJson("json/remote_messaging_config_unsupported_items.json")
 
-        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig)
+        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig, messageActionPlugins)
 
         val config = testee.map(result)
 
@@ -176,7 +173,7 @@ class RemoteMessagingConfigJsonMapperTest {
     fun whenJsonMessagesMalformedOrMissingInformationThenMessagesNotParsedIntoConfig() = runTest {
         val result = getConfigFromJson("json/remote_messaging_config_malformed.json")
 
-        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig)
+        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig, messageActionPlugins)
 
         val config = testee.map(result)
 
@@ -197,7 +194,7 @@ class RemoteMessagingConfigJsonMapperTest {
     fun whenJsonMatchingAttributesMalformedThenParsedAsUnknownIntoConfig() = runTest {
         val result = getConfigFromJson("json/remote_messaging_config_malformed.json")
 
-        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig)
+        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig, messageActionPlugins)
 
         val config = testee.map(result)
 
@@ -212,7 +209,7 @@ class RemoteMessagingConfigJsonMapperTest {
     fun whenUnknownMatchingAttributeDoesNotProvideFallbackThenFallbackIsNull() = runTest {
         val result = getConfigFromJson("json/remote_messaging_config_malformed.json")
 
-        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig)
+        val testee = RemoteMessagingConfigJsonMapper(appBuildConfig, messageActionPlugins)
 
         val config = testee.map(result)
 

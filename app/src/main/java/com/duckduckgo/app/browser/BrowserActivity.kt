@@ -27,7 +27,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
-import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
 import androidx.webkit.ServiceWorkerClientCompat
 import androidx.webkit.ServiceWorkerControllerCompat
 import androidx.webkit.WebViewFeature
@@ -38,9 +38,6 @@ import com.duckduckgo.app.browser.BrowserViewModel.Command.Query
 import com.duckduckgo.app.browser.BrowserViewModel.Command.Refresh
 import com.duckduckgo.app.browser.databinding.ActivityBrowserBinding
 import com.duckduckgo.app.browser.databinding.IncludeOmnibarToolbarMockupBinding
-import com.duckduckgo.app.browser.rating.ui.AppEnjoymentDialogFragment
-import com.duckduckgo.app.browser.rating.ui.GiveFeedbackDialogFragment
-import com.duckduckgo.app.browser.rating.ui.RateAppDialogFragment
 import com.duckduckgo.app.browser.shortcut.ShortcutBuilder
 import com.duckduckgo.app.cta.ui.CtaViewModel
 import com.duckduckgo.app.di.AppCoroutineScope
@@ -52,6 +49,7 @@ import com.duckduckgo.app.global.ApplicationClearDataState
 import com.duckduckgo.app.global.DuckDuckGoActivity
 import com.duckduckgo.app.global.events.db.UserEventsStore
 import com.duckduckgo.app.global.intentText
+import com.duckduckgo.app.global.rating.PromptCount
 import com.duckduckgo.app.global.sanitize
 import com.duckduckgo.app.global.view.ClearDataAction
 import com.duckduckgo.app.global.view.FireDialog
@@ -68,21 +66,21 @@ import com.duckduckgo.app.statistics.VariantManager
 import com.duckduckgo.app.statistics.pixels.Pixel
 import com.duckduckgo.app.tabs.model.TabEntity
 import com.duckduckgo.di.scopes.ActivityScope
+import com.duckduckgo.mobile.android.ui.view.dialog.TextAlertDialogBuilder
 import com.duckduckgo.mobile.android.ui.view.gone
 import com.duckduckgo.mobile.android.ui.view.show
 import com.duckduckgo.mobile.android.ui.viewbinding.viewBinding
-import com.duckduckgo.privacy.dashboard.impl.ui.PrivacyDashboardHybridActivity
+import com.duckduckgo.navigation.api.GlobalActivityStarter
+import com.duckduckgo.privacy.dashboard.api.ui.PrivacyDashboardHybridScreen.PrivacyDashboardHybridWithTabIdParam
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 // open class so that we can test BrowserApplicationStateInfo
 @InjectWith(ActivityScope::class)
-open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope() {
+open class BrowserActivity : DuckDuckGoActivity() {
 
     @Inject
     lateinit var settingsDataStore: SettingsDataStore
@@ -113,6 +111,9 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
 
     @Inject
     lateinit var serviceWorkerClientCompat: ServiceWorkerClientCompat
+
+    @Inject
+    lateinit var globalActivityStarter: GlobalActivityStarter
 
     @Inject
     @AppCoroutineScope
@@ -157,6 +158,10 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
         }
         viewModel.awaitClearDataFinishedNotification()
         initializeServiceWorker()
+
+        intent?.getStringExtra(LAUNCH_FROM_NOTIFICATION_PIXEL_NAME)?.let {
+            viewModel.onLaunchedFromNotification(it)
+        }
     }
 
     override fun onStop() {
@@ -184,6 +189,8 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
             Timber.i("Automatic data clearer not yet finished, so deferring processing of intent")
             lastIntent = intent
         }
+
+        viewModel.launchFromThirdParty()
     }
 
     private fun initializeServiceWorker() {
@@ -302,7 +309,7 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
         }
 
         if (intent.getBooleanExtra(FAVORITES_ONBOARDING_EXTRA, false)) {
-            launch {
+            lifecycleScope.launch {
                 val tabId = viewModel.onNewTabRequested()
                 openFavoritesOnboardingNewTab(tabId)
             }
@@ -311,7 +318,7 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
 
         if (launchNewSearch(intent)) {
             Timber.w("new tab requested")
-            launch { viewModel.onNewTabRequested() }
+            lifecycleScope.launch { viewModel.onNewTabRequested() }
             return
         }
 
@@ -319,14 +326,14 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
         if (sharedText != null) {
             if (intent.getBooleanExtra(ShortcutBuilder.SHORTCUT_EXTRA_ARG, false)) {
                 Timber.d("Shortcut opened with url $sharedText")
-                launch { viewModel.onOpenShortcut(sharedText) }
+                lifecycleScope.launch { viewModel.onOpenShortcut(sharedText) }
             } else if (intent.getBooleanExtra(LAUNCH_FROM_FAVORITES_WIDGET, false)) {
                 Timber.d("Favorite clicked from widget $sharedText")
-                launch { viewModel.onOpenFavoriteFromWidget(query = sharedText) }
+                lifecycleScope.launch { viewModel.onOpenFavoriteFromWidget(query = sharedText) }
                 return
             } else {
                 Timber.w("opening in new tab requested for $sharedText")
-                launch { viewModel.onOpenInNewTabRequested(query = sharedText, skipHome = true) }
+                lifecycleScope.launch { viewModel.onOpenInNewTabRequested(query = sharedText, skipHome = true) }
                 return
             }
         }
@@ -344,7 +351,7 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
         viewModel.tabs.observe(this) {
             clearStaleTabs(it)
             removeOldTabs()
-            launch { viewModel.onTabsUpdated(it) }
+            lifecycleScope.launch { viewModel.onTabsUpdated(it) }
         }
     }
 
@@ -387,9 +394,9 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
             is Query -> currentTab?.submitQuery(command.query)
             is Refresh -> currentTab?.onRefreshRequested()
             is Command.LaunchPlayStore -> launchPlayStore()
-            is Command.ShowAppEnjoymentPrompt -> showAppEnjoymentPrompt(AppEnjoymentDialogFragment.create(command.promptCount, viewModel))
-            is Command.ShowAppRatingPrompt -> showAppEnjoymentPrompt(RateAppDialogFragment.create(command.promptCount, viewModel))
-            is Command.ShowAppFeedbackPrompt -> showAppEnjoymentPrompt(GiveFeedbackDialogFragment.create(command.promptCount, viewModel))
+            is Command.ShowAppEnjoymentPrompt -> showAppEnjoymentDialog(command.promptCount)
+            is Command.ShowAppRatingPrompt -> showAppRatingDialog(command.promptCount)
+            is Command.ShowAppFeedbackPrompt -> showGiveFeedbackDialog(command.promptCount)
             is Command.LaunchFeedbackView -> startActivity(FeedbackActivity.intent(this))
         }
     }
@@ -400,7 +407,9 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
 
     fun launchPrivacyDashboard() {
         currentTab?.tabId?.let {
-            startActivityForResult(PrivacyDashboardHybridActivity.intent(this, it), DASHBOARD_REQUEST_CODE)
+            val params = PrivacyDashboardHybridWithTabIdParam(it)
+            val intent = globalActivityStarter.startIntent(this, params)
+            startActivityForResult(intent, DASHBOARD_REQUEST_CODE)
         }
     }
 
@@ -427,14 +436,14 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
     }
 
     fun launchNewTab() {
-        launch { viewModel.onNewTabRequested() }
+        lifecycleScope.launch { viewModel.onNewTabRequested() }
     }
 
     fun openInNewTab(
         query: String,
         sourceTabId: String?,
     ) {
-        launch {
+        lifecycleScope.launch {
             viewModel.onOpenInNewTabRequested(query = query, sourceTabId = sourceTabId)
         }
     }
@@ -443,7 +452,7 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
         message: Message,
         sourceTabId: String?,
     ) {
-        openMessageInNewTabJob = launch {
+        openMessageInNewTabJob = lifecycleScope.launch {
             val tabId = viewModel.onNewTabRequested(sourceTabId = sourceTabId)
             val fragment = openNewTab(tabId, null, false)
             fragment.messageFromPreviousTab = message
@@ -525,6 +534,7 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
         const val NOTIFY_DATA_CLEARED_EXTRA = "NOTIFY_DATA_CLEARED_EXTRA"
         const val LAUNCH_FROM_DEFAULT_BROWSER_DIALOG = "LAUNCH_FROM_DEFAULT_BROWSER_DIALOG"
         const val LAUNCH_FROM_FAVORITES_WIDGET = "LAUNCH_FROM_FAVORITES_WIDGET"
+        const val LAUNCH_FROM_NOTIFICATION_PIXEL_NAME = "LAUNCH_FROM_NOTIFICATION_PIXEL_NAME"
 
         private const val APP_ENJOYMENT_DIALOG_TAG = "AppEnjoyment"
 
@@ -572,9 +582,89 @@ open class BrowserActivity : DuckDuckGoActivity(), CoroutineScope by MainScope()
     private val Intent.launchedFromRecents: Boolean
         get() = (flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
 
-    private fun showAppEnjoymentPrompt(prompt: DialogFragment) {
-        (supportFragmentManager.findFragmentByTag(APP_ENJOYMENT_DIALOG_TAG) as? DialogFragment)?.dismissNow()
-        prompt.show(supportFragmentManager, APP_ENJOYMENT_DIALOG_TAG)
+    private fun showAppEnjoymentDialog(promptCount: PromptCount) {
+        TextAlertDialogBuilder(this)
+            .setTitle(R.string.appEnjoymentDialogTitle)
+            .setMessage(R.string.appEnjoymentDialogMessage)
+            .setCancellable(true)
+            .setPositiveButton(R.string.appEnjoymentDialogPositiveButton)
+            .setNegativeButton(R.string.appEnjoymentDialogNegativeButton)
+            .addEventListener(
+                object : TextAlertDialogBuilder.EventListener() {
+                    override fun onPositiveButtonClicked() {
+                        viewModel.onUserSelectedAppIsEnjoyed(promptCount)
+                    }
+
+                    override fun onNegativeButtonClicked() {
+                        viewModel.onUserSelectedAppIsNotEnjoyed(promptCount)
+                    }
+
+                    override fun onDialogShown() {
+                        viewModel.onAppEnjoymentDialogShown(promptCount)
+                    }
+
+                    override fun onDialogCancelled() {
+                        viewModel.onUserCancelledAppEnjoymentDialog(promptCount)
+                    }
+                },
+            )
+            .show()
+    }
+
+    private fun showAppRatingDialog(promptCount: PromptCount) {
+        TextAlertDialogBuilder(this)
+            .setTitle(R.string.rateAppDialogTitle)
+            .setMessage(R.string.rateAppDialogMessage)
+            .setCancellable(true)
+            .setPositiveButton(R.string.rateAppDialogPositiveButton)
+            .setNegativeButton(R.string.rateAppDialogNegativeButton)
+            .addEventListener(
+                object : TextAlertDialogBuilder.EventListener() {
+                    override fun onPositiveButtonClicked() {
+                        viewModel.onUserSelectedToRateApp(promptCount)
+                    }
+
+                    override fun onNegativeButtonClicked() {
+                        viewModel.onUserDeclinedToRateApp(promptCount)
+                    }
+
+                    override fun onDialogShown() {
+                        viewModel.onAppRatingDialogShown(promptCount)
+                    }
+                    override fun onDialogCancelled() {
+                        viewModel.onUserCancelledRateAppDialog(promptCount)
+                    }
+                },
+            )
+            .show()
+    }
+
+    private fun showGiveFeedbackDialog(promptCount: PromptCount) {
+        TextAlertDialogBuilder(this)
+            .setTitle(R.string.giveFeedbackDialogTitle)
+            .setMessage(R.string.giveFeedbackDialogMessage)
+            .setCancellable(true)
+            .setPositiveButton(R.string.giveFeedbackDialogPositiveButton)
+            .setNegativeButton(R.string.giveFeedbackDialogNegativeButton)
+            .addEventListener(
+                object : TextAlertDialogBuilder.EventListener() {
+                    override fun onPositiveButtonClicked() {
+                        viewModel.onUserSelectedToGiveFeedback(promptCount)
+                    }
+
+                    override fun onNegativeButtonClicked() {
+                        viewModel.onUserDeclinedToGiveFeedback(promptCount)
+                    }
+
+                    override fun onDialogShown() {
+                        viewModel.onGiveFeedbackDialogShown(promptCount)
+                    }
+                    override fun onDialogCancelled() {
+                        viewModel.onUserCancelledGiveFeedbackDialog(promptCount)
+                    }
+                },
+            )
+            .show()
     }
 
     private fun hideWebContent() {

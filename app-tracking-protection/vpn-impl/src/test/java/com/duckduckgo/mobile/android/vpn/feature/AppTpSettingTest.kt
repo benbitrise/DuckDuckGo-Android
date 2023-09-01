@@ -26,17 +26,11 @@ class AppTpSettingTest {
     fun whenAppTpSettingThenShouldHaveCorrectValues() {
         AppTpSetting.values().forEach { setting ->
             when (setting) {
-                AppTpSetting.BadHealthMitigation -> assertTrue(setting.defaultValue)
-                AppTpSetting.Ipv6Support -> assertFalse(setting.defaultValue)
-                AppTpSetting.PrivateDnsSupport -> assertFalse(setting.defaultValue)
-                AppTpSetting.InterceptDnsTraffic -> assertFalse(setting.defaultValue)
                 AppTpSetting.AlwaysSetDNS -> assertFalse(setting.defaultValue)
                 AppTpSetting.CPUMonitoring -> assertFalse(setting.defaultValue)
-                AppTpSetting.ConnectivityChecks -> assertFalse(setting.defaultValue)
                 AppTpSetting.ProtectGames -> assertFalse(setting.defaultValue)
-                AppTpSetting.OpenBeta -> assertFalse(setting.defaultValue)
-                AppTpSetting.CheckBlockingFunction -> assertFalse(setting.defaultValue)
-                AppTpSetting.StartVpnErrorHandling -> assertTrue(setting.defaultValue)
+                AppTpSetting.ExceptionLists -> assertTrue(setting.defaultValue)
+                AppTpSetting.RestartOnConnectivityLoss -> assertTrue(setting.defaultValue)
                 else -> throw java.lang.IllegalStateException("Missing AppTpSetting default checks")
             }
         }

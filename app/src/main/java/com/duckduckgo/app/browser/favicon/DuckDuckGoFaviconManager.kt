@@ -16,35 +16,39 @@
 
 package com.duckduckgo.app.browser.favicon
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
 import androidx.core.net.toUri
-import com.duckduckgo.app.bookmarks.db.BookmarksDao
-import com.duckduckgo.app.bookmarks.model.FavoritesRepository
 import com.duckduckgo.app.browser.favicon.FileBasedFaviconPersister.Companion.FAVICON_PERSISTED_DIR
 import com.duckduckgo.app.browser.favicon.FileBasedFaviconPersister.Companion.FAVICON_TEMP_DIR
 import com.duckduckgo.app.browser.favicon.FileBasedFaviconPersister.Companion.NO_SUBFOLDER
 import com.duckduckgo.app.fire.fireproofwebsite.data.FireproofWebsiteRepository
 import com.duckduckgo.app.global.DispatcherProvider
-import com.duckduckgo.app.global.domain
+import com.duckduckgo.app.global.baseHost
 import com.duckduckgo.app.global.faviconLocation
 import com.duckduckgo.app.global.touchFaviconLocation
+import com.duckduckgo.app.global.view.generateDefaultDrawable
 import com.duckduckgo.app.global.view.loadFavicon
 import com.duckduckgo.app.location.data.LocationPermissionsRepository
-import com.duckduckgo.autofill.store.AutofillStore
+import com.duckduckgo.autofill.api.store.AutofillStore
+import com.duckduckgo.savedsites.api.SavedSitesRepository
+import com.duckduckgo.savedsites.store.SavedSitesEntitiesDao
 import java.io.File
 import kotlinx.coroutines.withContext
 
 class DuckDuckGoFaviconManager constructor(
     private val faviconPersister: FaviconPersister,
-    private val bookmarksDao: BookmarksDao,
+    private val savedSitesDao: SavedSitesEntitiesDao,
     private val fireproofWebsiteRepository: FireproofWebsiteRepository,
     private val locationPermissionsRepository: LocationPermissionsRepository,
-    private val favoritesRepository: FavoritesRepository,
+    private val savedSitesRepository: SavedSitesRepository,
     private val faviconDownloader: FaviconDownloader,
     private val dispatcherProvider: DispatcherProvider,
     private val autofillStore: AutofillStore,
+    private val context: Context,
 ) : FaviconManager {
 
     private val tempFaviconCache: HashMap<String, Pair<String, MutableList<String>>> = hashMapOf()
@@ -87,20 +91,6 @@ class DuckDuckGoFaviconManager constructor(
         }
     }
 
-    override suspend fun saveFaviconForUrl(url: String) {
-        val domain = url.extractDomain() ?: return
-
-        val cachedFavicon = faviconPersister.faviconFile(FAVICON_PERSISTED_DIR, NO_SUBFOLDER, domain)
-        if (cachedFavicon != null) {
-            return
-        }
-
-        val favicon = downloadFaviconFor(domain)
-        if (favicon != null) {
-            saveFavicon("", favicon, domain)
-        }
-    }
-
     override suspend fun loadFromDisk(
         tabId: String?,
         url: String,
@@ -132,7 +122,6 @@ class DuckDuckGoFaviconManager constructor(
         height: Int,
     ): Bitmap? {
         val domain = url.extractDomain() ?: return null
-
         return withContext(dispatcherProvider.io()) {
             var cachedFavicon: File? = null
             if (tabId != null) {
@@ -145,32 +134,14 @@ class DuckDuckGoFaviconManager constructor(
             return@withContext if (cachedFavicon != null) {
                 faviconDownloader.getFaviconFromDisk(cachedFavicon, cornerRadius, width, height)
             } else {
-                null
+                cachedFavicon
             }
         }
     }
 
-    override suspend fun loadToViewFromLocalOrFallback(
-        tabId: String?,
-        url: String,
-        view: ImageView,
-    ) {
+    override suspend fun loadToViewFromLocalWithPlaceholder(tabId: String?, url: String, view: ImageView, placeholder: String?) {
         val bitmap = loadFromDisk(tabId, url)
-
-        if (bitmap == null) {
-            view.loadFavicon(bitmap, url)
-            val domain = url.extractDomain() ?: return
-            tryRemoteFallbackFavicon(subFolder = tabId, domain)?.let {
-                view.loadFavicon(it, url)
-            }
-        } else {
-            view.loadFavicon(bitmap, url)
-        }
-    }
-
-    override suspend fun loadToViewFromLocalWithPlaceholder(tabId: String?, url: String, view: ImageView) {
-        val bitmap = loadFromDisk(tabId, url)
-        view.loadFavicon(bitmap, url)
+        view.loadFavicon(bitmap, url, placeholder)
     }
 
     override suspend fun persistCachedFavicon(
@@ -202,6 +173,13 @@ class DuckDuckGoFaviconManager constructor(
 
     override suspend fun deleteAllTemp() {
         faviconPersister.deleteAll(FAVICON_TEMP_DIR)
+    }
+
+    override fun generateDefaultFavicon(
+        placeholder: String?,
+        domain: String,
+    ): Drawable {
+        return generateDefaultDrawable(context, domain, placeholder)
     }
 
     private suspend fun saveFavicon(
@@ -246,33 +224,21 @@ class DuckDuckGoFaviconManager constructor(
         }
     }
 
-    private suspend fun tryRemoteFallbackFavicon(
-        subFolder: String?,
-        domain: String,
-    ): File? {
-        val favicon = downloadFaviconFor(domain)
-        return if (favicon != null) {
-            saveFavicon(subFolder, favicon, domain)
-        } else {
-            null
-        }
-    }
-
     private suspend fun persistedFaviconsForDomain(domain: String): Int {
         val query = "%$domain%"
 
         return withContext(dispatcherProvider.io()) {
-            bookmarksDao.bookmarksCountByUrl(query) +
+            savedSitesDao.countEntitiesByUrl(query) +
                 locationPermissionsRepository.permissionEntitiesCountByDomain(query) +
                 fireproofWebsiteRepository.fireproofWebsitesCountByDomain(domain) +
-                favoritesRepository.favoritesCountByDomain(query) +
+                savedSitesRepository.getFavoritesCountByDomain(query) +
                 autofillStore.getCredentials(domain).size
         }
     }
 
     private fun String.extractDomain(): String? {
         return if (this.startsWith("http")) {
-            this.toUri().domain()
+            this.toUri().baseHost
         } else {
             "https://$this".extractDomain()
         }

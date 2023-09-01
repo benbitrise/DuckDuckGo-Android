@@ -17,33 +17,33 @@
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
 <resources>
-    <string name="managementScreenTitle">Autofill Logins</string>
-
-    <string name="managementLockedModeText">Unlock Autofill</string>
+    <string name="autofillManagementScreenTitle">Logins</string>
 
     <string name="managementDisabledModeCta"><b>Set up in Settings</b></string>
-    <string name="managementDisabledModeSubtitle">A device lock pattern, PIN, or biometrics is required to protect your Autofill Login details.</string>
-    <string name="managementDisabledModeTitle">Secure your device to use Autofill</string>
+    <string name="managementDisabledModeSubtitle">A device lock pattern, PIN, or biometrics is required to protect your Logins.</string>
+    <string name="managementDisabledModeTitle">Secure your device to save Logins</string>
 
-    <string name="saveLoginDialogTitle">Save Login?</string>
-    <string name="saveLoginMissingUsernameDialogTitle">Save Password?</string>
     <string name="saveLoginDialogButtonSave">Save Login</string>
     <string name="saveLoginMissingUsernameDialogButtonSave">Save Password</string>
     <string name="saveLoginDialogNotNow">Not Now</string>
-    <string name="saveLoginDialogOnboardingExplanationSubtitle">Logins are stored securely on this device only, and can be managed from the Autofill menu in Settings.</string>
-    <string name="saveLoginDialogFirstTimeOnboardingExplanationTitle">Do you want DuckDuckGo to save your Login?</string>
+    <string name="saveLoginDialogSubtitle">Logins are stored securely on your device, and can be managed from the Logins menu in Settings.</string>
+    <string name="saveLoginDialogTitle">Do you want DuckDuckGo to save your Login?</string>
     <string name="saveLoginDialogMoreOptionsButtonLabel">More Options</string>
 
-    <string name="useSavedLoginDialogTitle">Use Saved Login?</string>
-    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Login for %1$s</string>
-    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Login for site</string>
+    <string name="useSavedLoginDialogTitle">Use a saved Login?</string>
+    <string name="useSavedLoginDialogMissingUsernameButtonText" instruction="Placeholder is the name of a website">Password for %1$s</string>
+    <string name="useSavedLoginDialogMissingUsernameMissingDomainButtonText">Password for site</string>
+    <string name="useSavedLoginDialogGroupThisWebsite">From This Website</string>
+    <string name="useSavedLoginDialogFromDomainLabel" instruction="Placeholder is the URL of a website">From %1$s</string>
 
-    <string name="updateLoginDialogTitle">Update Password?</string>
     <string name="updateLoginDialogButtonUpdatePassword">Update Password</string>
     <string name="updateLoginDialogButtonNotNow">Not Now</string>
 
-    <string name="updateLoginDialogTitleUpdateUsername">Update Username?</string>
+    <string name="updateLoginDialogTitleUpdateUsername">Update username?</string>
     <string name="updateLoginDialogButtonUpdateUsername">Update Username</string>
+
+    <string name="updateLoginDialogTitleLine" instruction="Placeholder is the user's username for this site">Update password for \n%1$s?</string>
+    <string name="updateLoginUpdatePasswordExplanation" >DuckDuckGo will update this stored Login on your device.</string>
 
     <string name="autofillDialogCloseButtonContentDescription">Close Autofill Dialog</string>
 
@@ -64,5 +64,57 @@
     <string name="credentialManagementViewMenuDelete">Delete</string>
 
     <string name="credentialManagementSuggestionsLabel">Suggested</string>
+    <string name="credentialManagementNoLoginsSavedTitle">No Logins saved yet</string>
+    <string name="credentialManagementNoLoginsSavedSubtitle">Logins are stored securely on your device.</string>
+
+    <string name="autofillManagementAddLogin">Add Login</string>
+    <string name="autofillManagementSearchLogins">Search logins</string>
+    <string name="autofillManagementSearchClearDescription">Clear search input</string>
+    <string name="autofillManagementNoSearchResults" instruction="Placeholder is the query the user has searched for. e.g., No results for 'kittens'">No results for \'%1$s\'</string>
+
+    <string name="autofillDeleteLoginDialogCancel">Cancel</string>
+    <string name="autofillDeleteLoginDialogDelete">Delete</string>
+    <string name="autofillDeleteLoginDialogTitle">Are you sure you want to delete this Login?</string>
+
+    <string name="autofillManagementUsernameCopied">Username copied</string>
+    <string name="autofillManagementPasswordCopied">Password copied</string>
+
+    <string name="autofill_password_generation_offer_title">Use generated password from DuckDuckGo?</string>
+    <string name="autofill_password_generation_offer_message">Password will be saved in Logins.</string>
+    <string name="autofill_password_generation_offer_accept">Use Generated Password</string>
+    <string name="autofill_password_generation_offer_decline">Create My Own</string>
+
+    <string name="deviceNotSupportedTitle">Device not supported</string>
+    <string name="deviceNotSupportedSubtitle">To store Logins securely, we need to encrypt and store them on your device. Because your device does not support encrypted storage, Logins is unavailable.</string>
+
+    <string name="autofillManagementDeletedConfirmation">Login deleted</string>
+    <string name="autofillManagementUndoDeletion">Undo</string>
+
+    <string name="credentialManagementLinkButtonContentDescription" instruction="Accessibility text for a button that will show next to a text field containing a website address; it will launch the website when tapped">Open website</string>
+
+    <string name="credentialManagementDuckAddressLabel" translatable="false">Duck Address</string>
+
+    <string name="credentialManagementDeactivateDuckAddressDialogTitle" instruction="'Duck Address' is the feature name, and should not be translated. We are confirming with the user that they are about to deactivate their private 'Duck Address'">Deactivate Private Duck Address?</string>
+    <string name="credentialManagementDeactivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Emails sent to %1$s will no longer be forwarded to your inbox.</string>
+    <string name="credentialManagementDeactivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will deactivate their email address, meaning emails sent there will no longer be forwarded to their inbox">Deactivate</string>
+    <string name="credentialManagementActivateDuckAddressDialogTitle" instruction="'Duck Address' is the feature name, and should not be translated. We are confirming with the user that they are about to reactivate their private 'Duck Address'">Reactivate Private Duck Address?</string>
+    <string name="credentialManagementActivateDuckAddressDialogMessage" instruction="Placeholder is an email address">Emails sent to %1$s will again be forwarded to your inbox.</string>
+    <string name="credentialManagementActivateDuckAddressPositiveButton" instruction="This is the text shown on a button. When pressed, it will reactivate their email address, meaning emails sent there will again be forwarded to their inbox">Reactivate</string>
+
+    <string name="credentialManagementDuckAddressActivatedLabel" instruction="This indicates that the 'status' of their private 'Duck Address' is active">Active</string>
+    <string name="credentialManagementDuckAddressActivatingLabel" instruction="This is text shown briefly while changing the status of their 'Duck Address', going from deactivated to active">Activating…</string>
+
+    <string name="credentialManagementDuckAddressDeactivatedLabel" instruction="This indicates that the 'status' of their private 'Duck Address' is deactivated">Deactivated</string>
+    <string name="credentialManagementDuckAddressDeactivatingLabel" instruction="This is text shown briefly while changing the status of their 'Duck Address', going from active to deactivated">Deactivating…</string>
+
+    <string name="credentialManagementDuckAddressManagementTemporarilyUnavailable" instruction="Error message shown when unable to manage this 'Duck Address' right now">Management of this address is temporarily unavailable.</string>
+
+    <string name="credentialManagementEnableEmailProtectionPrompt" instruction="'Duck Addresses' is the feature name, and should not be translated."><annotation type="enable_duck_address">Enable Email Protection</annotation> to manage Duck Addresses on this device.</string>
+
+    <string name="autofill_email_protection_choose_email_dialog_title">Select email address</string>
+    <string name="autofillTooltipUseYourAliasDescription">Block email trackers</string>
+    <string name="autofillTooltipGenerateAddress" instruction="'Duck Address' is the feature name, and should not be translated.">Generate Private Duck Address</string>
+    <string name="autofillTooltipGenerateAddressDescription" instruction="'hide address' refers to using an alias so your real email address is not used">Block email trackers &amp; hide address</string>
+
 
 </resources>

@@ -127,7 +127,7 @@
     <string name="leaveFeedback">Visszajelzés megosztása</string>
     <string name="settingsEmailProtectionTitle">E-mail védelem</string>
     <string name="settingsEmailProtectionSubtitle">E-mail nyomkövetők letiltása, és a cím elrejtése</string>
-    <string name="settingsHeadingMore">Továbbiak a DuckDuckGo-tól</string>
+    <string name="settingsHeadingMore">Továbbiak a DuckDuckGótól</string>
     <string name="settingsLightTheme">Világos</string>
     <string name="settingsTheme">Kinézet</string>
     <string name="settingsDarkTheme">Sötét</string>
@@ -138,6 +138,51 @@
     <string name="settingsAppLinksAskEveryTime">Kérdezzen rá minden alkalommal</string>
     <string name="settingsAppLinksAlways">Mindig</string>
     <string name="settingsAppLinksNever">Soha</string>
+    <string name="settingsTitleNotifications">Értesítések</string>
+    <string name="settingsSubtitleNotificationsDisabled">Letiltva</string>
+    <string name="settingsSubtitleNotificationsEnabled">Engedélyezve</string>
+    <string name="settingsDefaultBrowserTitle">Alapértelmezett böngésző</string>
+    <string name="settingsDefaultBrowserSetDescription">A DuckDuckGo az alapértelmezett böngésző</string>
+    <string name="settingsDefaultBrowserNotSetDescription">Legyen a DuckDuckGo az alapértelmezett böngésző</string>
+    <string name="settingsPrivateSearchTitle">privát keresés</string>
+    <string name="settingsPrivateSearchDescription">Alapértelmezés szerint engedélyezve</string>
+    <string name="settingsWebTrackingProtectionTitle">Webes követés elleni védelem</string>
+    <string name="settingsWebTrackingProtectionDescription">Alapértelmezés szerint engedélyezve</string>
+    <string name="settingsHeadingSettings">Beállítások</string>
+    <string name="settingsPermissionsSetting">Engedélyek</string>
+    <string name="settingsAutofillLoginsSetting">Bejelentkezési adatok automatikus kitöltése</string>
+    <string name="settingsSyncSetting">Szinkronizálás</string>
+    <string name="settingsFireButton">Tűz gomb</string>
+
+    <!-- Private Search -->
+    <string name="privateSearchActivityTitle">privát keresés</string>
+    <string name="privateSearchTitle">A Private Search engedélyezve van</string>
+    <string name="privateSearchDescription">A DuckDuckGo Private Search az alapértelmezett keresőmotor, így nyomon követés nélkül kereshetsz az interneten.</string>
+    <string name="privateSearchHeadingSearchSettings">Keresési beállítások</string>
+    <string name="privateSearchAutocompleteToggle">Automatikus kiegészítési javaslatok megjelenítése</string>
+    <string name="privateSearchMoreSearchSettingsPrimaryText">További keresési beállítások</string>
+    <string name="privateSearchMoreSearchSettingsSecondaryText">Szabd személyre a keresési nyelvet, a régiót és egyebeket</string>
+    <string name="privateSearchMoreSearchSettingsTitle">További keresési beállítások</string>
+
+    <!-- Web Tracking Protection -->
+    <string name="webTrackingProtectionActivityTitle">Webes követés elleni védelem</string>
+    <string name="webTrackingProtectionLearnMoreTitle">Webes követés elleni védelem</string>
+    <string name="webTrackingProtectionTitle">A webes követés elleni védelem engedélyezve van</string>
+    <string name="webTrackingProtectionDescription"><![CDATA[A DuckDuckGo soha nem követ, és igyekszünk a lehető legjobban védeni az adataid. Folyamatosan karbantartjuk és fejlesztjük a védelmi rétegeket, hogy lépést tartsunk az új követési módszerekkel, és számos olyan védelmet biztosítsunk, amelyet más böngészők nem kínálnak alapértelmezés szerint. <u><a href=\"\">További részletek</a><u/>]]></string>
+
+    <!-- Cookie Pop-Up Protection -->
+    <string name="cookiePopupProtectionTitle">Felugró sütiablak elleni védelem</string>
+    <string name="cookiePopupProtectionDescription">Szabadulj meg ezektől a felugró ablakoktól és minimalizáld a sütiket</string>
+    <string name="cookiePopupProtectionEnabled">Engedélyezve</string>
+
+    <!-- Fire Button -->
+    <string name="fireButtonActivityTitle">Tűz gomb</string>
+
+    <!-- Permissions -->
+    <string name="permissionsActivityTitle">Engedélyek</string>
+
+    <!-- Appearance -->
+    <string name="appearanceActivityTitle">Megjelenés</string>
 
     <!-- Settings - Automatically clearing data -->
     <string name="settingsAutomaticallyClearingDialogSave">Mentés</string>
@@ -182,6 +227,7 @@
     <string name="brokenSiteCategoryLogin">Nem tudok bejelentkezni</string>
     <string name="brokenSiteCategoryUnsupported">A böngésző nem kompatibilis</string>
     <string name="brokenSiteCategoryOther">Valami más</string>
+    <string name="brokenSiteDescriptionTextInputHint">További részletek megosztása (nem kötelező)</string>
 
     <!-- Bookmarks Activity -->
     <string name="bookmarksMenuTitle">Könyvjelzők</string>
@@ -242,7 +288,7 @@
     <string name="surveyCtaLaunchButton">Kérdőív kitöltése</string>
     <string name="surveyCtaDismissButton">Nem, köszönöm</string>
     <string name="surveyActivityTitle">Felhasználói kérdőív</string>
-    <string name="surveyTitle">DUCKDUCKGO FELHASZNÁLÓI KÉRDŐÍV</string>
+    <string name="surveyTitle">DuckDuckGo kérdőív</string>
     <string name="surveyDismissContentDescription">Kérdőív elutasítása</string>
     <string name="surveyLoadingErrorTitle">Jaj, ne!</string>
     <string name="surveyLoadingErrorText">A kérdőívünk jelenleg nem töltődik be.\nKérjük, próbáld meg később.</string>
@@ -358,7 +404,7 @@
     <string name="otherMainReasonTitleShort">Egyéb problémák</string>
 
     <string name="openEndedInputHint">Kérjük, a lehető legpontosabban írj meg mindent</string>
-    <string name="submitFeedback">KÜLDÉS</string>
+    <string name="submitFeedback">Küldés</string>
 
     <string name="tellUsHowToImprove">Kérjük, mondd el, min tudunk még javítani.</string>
     <string name="thanksForTheFeedback">Köszönjük a visszajelzést!</string>
@@ -369,8 +415,8 @@
     <string name="whatHaveYouBeenEnjoying">Mi tetszett?</string>
     <string name="awesomeToHear">Örömmel halljuk!</string>
     <string name="shareTheLoveWithARating">Ha tetszik az alkalmazás, kérjük, oszd meg véleményed a Play Áruházban.</string>
-    <string name="rateTheApp">ALKALMAZÁS ÉRTÉKELÉSE</string>
-    <string name="declineFurtherFeedback">NEM, KÖSZÖNÖM, VÉGEZTEM.</string>
+    <string name="rateTheApp">Alkalmazás értékelése</string>
+    <string name="declineFurtherFeedback">Nem, köszönöm, végeztem</string>
     <string name="whichBrokenSites">Hol látod ezeket a problémákat?</string>
     <string name="whichBrokenSitesHint">Melyik weboldalon vannak problémák?</string>
     <string name="feedbackSpecificAsPossible">Kérjük, a lehető legpontosabban írj meg mindent</string>
@@ -386,7 +432,6 @@
 
     <!-- System Search-->
     <string name="systemSearchDeviceAppLabel">Ebből az eszközből</string>
-    <string name="systemSearchOmnibarInputHint"><font size="13">Keresés vagy URL beírása</font></string>
     <string name="systemSearchAppNotFound">Az alkalmazás nem található</string>
     <string name="systemSearchOnboardingText">Köszönjük, hogy a DuckDuckGo-t választottad!\nMost, amikor a mi keresésünket vagy az alkalmazásunkat használod, a kereséseid védettek.</string>
     <string name="systemSearchOnboardingFeaturesIntroText">A DuckDuckGo alkalmazás is:</string>
@@ -398,14 +443,19 @@
     <string name="systemSearchOnboardingButtonOk">Értem</string>
 
     <!-- Dax Dialog -->
-    <string name="daxDialogHideButton">ELREJTÉS</string>
+    <string name="daxDialogHideButton">Elrejtés</string>
     <string name="daxDialogPhew">Hűűű!</string>
     <string name="daxDialogNext">Következő</string>
     <string name="daxDialogHighFive">Pacsi!</string>
     <string name="daxDialogGotIt">Megvan</string>
     <string name="hideTipsTitle">Elrejted a többi tippet?</string>
     <string name="hideTipsText">Csak néhány van, és megpróbáltuk őket informatívvá tenni.</string>
-    <string name="hideTipsButton">Ötletek elrejtése örökre</string>
+    <string name="hideTipsButton">Tippek elrejtése örökre</string>
+
+    <!-- AppTP Retention Experiment Dax Dialog -->
+    <string name="daxDialogAppTpRetentionText"><![CDATA[Mostantól a teljes weben blokkolod a nyomkövetőket 🎉<br/><br/>A többi alkalmazásba rejtett nyomkövetőket is blokkolhatom, még akkor is, amikor nem használod a telefont.]]></string>
+    <string name="daxDialogAppTpRetentionPrimaryButtonText">App Tracking Protection bekapcsolása</string>
+    <string name="daxDialogAppTpRetentionSecondaryButtonText">Most nem</string>
 
     <!-- New Onboarding Experience -->
     <string name="onboardingWelcomeTitle">"Üdvözlünk a DuckDuckGo-ban!"</string>
@@ -418,13 +468,30 @@
         <item quantity="one"><![CDATA[ és <b>%1$d másik</b> itt próbált meg követni. <br/><br/>Blokkoltam őket!<br/><br/> ☝️Ellenőrizheted a címsort, hogy megtudd, ki próbál meg követni, amikor új webhelyre látogatsz.]]></item>
         <item quantity="other"><![CDATA[ és <b>%1$d másik</b> itt próbált meg követni. <br/><br/>Blokkoltam őket!<br/><br/> ☝️Ellenőrizheted a címsort, hogy megtudd, ki próbál meg követni, amikor új webhelyre látogatsz.]]></item>
     </plurals>
-    <plurals name="daxTrackersBlockedCtaZeroText">
+    <plurals name="daxTrackersBlockedCtaZeroText" tools:ignore="ImpliedQuantity">
         <item quantity="one"><![CDATA[ itt próbált meg követni. <br/><br/>Blokkoltam!<br/><br/> ☝️Ellenőrizheted az URL-sávot, hogy megtudd, ki próbál meg követni, amikor új webhelyre látogatsz.]]></item>
         <item quantity="other"><![CDATA[ itt próbált meg követni. <br/><br/>Blokkoltam!<br/><br/> ☝️Ellenőrizheted az URL-sávot, hogy megtudd, ki próbál meg követni, amikor új webhelyre látogatsz.]]></item>
     </plurals>
     <string name="daxNonSerpCtaText"><![CDATA[Ahogy megérinted és görgeted, én blokkolni fogom a bosszantó nyomkövetőket. <br/><br/>Menj tovább - folytasd a böngészést!]]></string>
     <string name="daxMainNetworkCtaText" instruction="%1$s is the name of a company, %2$s is the website where the tracking is happening, %3$s is the name of the company showing in %1$s">Figyelem! Nem tudom megakadályozni, hogy %1$s láthassa a tevékenységedet itt: %2$s &lt;br/&gt;&lt;br/&gt;Ha azonban velem böngészel, a sok más weboldalon is használt nyomkövetőjük blokkolásával korlátozni tudom azt, amit %3$s megtudhat rólad.</string>
     <string name="daxMainNetworkOwnedCtaText" instruction="%1$s is the name of a company, %2$s is the website where the tracking is happening, %3$s is the name of the company showing in %1$s">Figyelem! Mivel %1$s tulajdonában van a(z) %2$s, nem tudom megakadályozni, hogy lássák az itteni tevékenységedet.&lt;br/&gt;&lt;br/&gt;Ha azonban velem böngészel, a sok más weboldalon is használt nyomkövetőjük blokkolásával korlátozni tudom azt, amit %3$s tud rólad.</string>
+
+    <!-- Onboarding DDG Feature Options -->
+    <string name="onboardingFeatureOptionsTitle">Miért a DuckDuckGót választottad?</string>
+    <string name="onboardingFeatureOptionsContinue">Folytatás</string>
+    <string name="onboardingFeatureOptionsSkip">Lépés kihagyása</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionPrivateSearch">Privát keresés</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionTrackerBlocking">Követésvédelem</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionSmallerDigitalFootprint">Kisebb digitális lábnyom</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionFasterPageLoads">Gyorsabb oldalbetöltés</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionFewerAds">Kevesebb hirdetés</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionOneClickDataClearing">Egykattintásos adattörlés</string>
 
     <!-- Download Confirmation -->
     <string name="downloadConfirmationContinue">Mentés a Letöltések közé</string>
@@ -444,7 +511,7 @@
     <string name="changeIconDialogMessage">A módosítások végrehajtásához az alkalmazás bezárulhat. Térj vissza, miután megcsodáltad a csinos új ikonodat.</string>
 
     <!-- New dashboard / menu buttons -->
-    <string name="manageWhitelist">Védelem nélküli weboldalak</string>
+    <string name="manageAllowlist">Védelem nélküli weboldalak</string>
     <string name="reportBrokenSite">Hibás weboldal jelentése</string>
 
     <!-- Dialogs -->
@@ -452,19 +519,19 @@
     <string name="dialogEditTitle">Szerkesztés</string>
     <string name="dialogSaveAction">Mentés</string>
 
-    <!-- Whitelist -->
-    <string name="whitelistActivityTitle">Védelem nélküli weboldalak</string>
+    <!-- Allowlist -->
+    <string name="allowlistActivityTitle">Védelem nélküli weboldalak</string>
     <string name="enablePrivacyProtection">Adatvédelem engedélyezése</string>
     <string name="disablePrivacyProtection">Adatvédelem letiltása</string>
-    <string name="whitelistEntryOverflowContentDescription" instruction="Placeholder is a website">További lehetőségek az %1$s védelem nélküli weboldalhoz</string>
-    <string name="whitelistEntryDeleteConfirmMessage" instruction="Placeholder is a website">Biztosan eltávolítod az &lt;b&gt;%1$s&lt;/b&gt; elemet a védelem nélküli weboldalak közül?</string>
-    <string name="whitelistExplanation">Ezeket az oldalakat nem erősíti adatvédelem.</string>
-    <string name="whitelistNoEntries">Adatvédelem engedélyezve minden weboldalhoz</string>
-    <string name="whitelistDomainHint">www.example.com</string>
-    <string name="whitelistFormatError">Írj be egy tartománynevet, például <b>example.com</b>, és próbáld újra.</string>
+    <string name="allowlistEntryOverflowContentDescription" instruction="Placeholder is a website">További lehetőségek az %1$s védelem nélküli weboldalhoz</string>
+    <string name="allowlistEntryDeleteConfirmMessage" instruction="Placeholder is a website">Biztosan eltávolítod az &lt;b&gt;%1$s&lt;/b&gt; elemet a védelem nélküli weboldalak közül?</string>
+    <string name="allowlistExplanation">Ezeket az oldalakat nem erősíti adatvédelem.</string>
+    <string name="allowlistNoEntries">Adatvédelem engedélyezve minden weboldalhoz</string>
+    <string name="allowlistDomainHint">www.example.com</string>
+    <string name="allowlistFormatError">Írj be egy tartománynevet, például <b>example.com</b>, és próbáld újra.</string>
 
     <!-- Settings -->
-    <string name="settingsPrivacyProtectionWhitelist">Védelem nélküli weboldalak</string>
+    <string name="settingsPrivacyProtectionAllowlist">Védelem nélküli weboldalak</string>
 
     <!-- Fireproof websites -->
     <string name="fireproofWebsitesActivityTitle">Tűzálló weboldalak</string>
@@ -489,8 +556,8 @@
     <string name="fireproofWebsiteSettingsSelectionDialogNever">Soha</string>
     <string name="disableLoginDetectionDialogTitle">Letiltod a tűzálló emlékeztetőt a weboldalakra történő bejelentkezéskor?</string>
     <string name="disableLoginDetectionDialogDescription">Ezt a beállítást bármikor megváltoztathatod a Beállításokban.</string>
-    <string name="disableLoginDetectionDialogPositive">LETILT</string>
-    <string name="disableLoginDetectionDialogNegative">MÉGSEM</string>
+    <string name="disableLoginDetectionDialogPositive">Letiltás</string>
+    <string name="disableLoginDetectionDialogNegative">Mégse</string>
     <string name="automaticFireproofWebsiteLoginDialogTitle">Bejelentkezéskor automatikusan legyenek tűzállók a weboldalak?</string>
     <string name="automaticFireproofWebsiteLoginDialogDescription">Ha tűzállóvá teszel egy weboldalt, a Fire gomb használata után is bejelentkezve maradsz. Ezt a beállításokban később bármikor módosíthatod. </string>
     <string name="automaticFireproofWebsiteLoginDialogFirstOption">Mindig tűzálló</string>
@@ -539,9 +606,7 @@
 
     <!--  Global Privacy Control-->
     <string name="globalPrivacyControlActivityTitle">Nemzetközi adatvédelmi szabályozás (Global Privacy Control, GPC)</string>
-    <string name="globalPrivacyControlDescription">
-        <![CDATA[A DuckDuckGo számos nyomkövetőt automatikusan blokkol. A Global Privacy Control (GPC, Globális Adatvédelmi Ellenőrzés) segítségével arra is megkérheted a részt vevő webhelyeket, hogy korlátozzák személyes adataid eladását vagy megosztását más vállalatokkal. <u><a href=\"\">További részletek</a><u/>]]>
-    </string>
+    <string name="globalPrivacyControlDescription"><![CDATA[A DuckDuckGo számos nyomkövetőt automatikusan blokkol. A Global Privacy Control (GPC, Globális Adatvédelmi Ellenőrzés) segítségével arra is megkérheted a részt vevő webhelyeket, hogy korlátozzák személyes adataid eladását vagy megosztását más vállalatokkal. <u><a href=\"\">További részletek</a><u/>]]></string>
     <string name="globalPrivacyControlSetting">Nemzetközi adatvédelmi szabályozás (Global Privacy Control, GPC)</string>
     <string name="globalPrivacyControlToggle">Nemzetközi adatvédelmi szabályozás (Global Privacy Control, GPC)</string>
     <string name="disabled">Letiltva</string>
@@ -560,11 +625,16 @@
 
     <!-- Email Autofill -->
     <string name="aliasToClipboardMessage">Új cím a vágólapra másolva</string>
-    <string name="autofillTooltipUseYourAlias" instruction="Placeholder is an alias previously saved by the user">%1$s használata</string>
-    <string name="autofillTooltipUseYourAliasDescription">Blokkolja az e-mail nyomkövetőket</string>
-    <string name="autofillTooltipGenerateAddress">Privát Duck-cím létrehozása</string>
-    <string name="autofillTooltipGenerateAddressDescription">Letiltja az e-mail nyomkövetőket, és elrejti a címedet</string>
     <string name="newEmailAliasMenuTitle">Duck-cím létrehozása</string>
+
+    <!-- Autofill -->
+    <string name="autofillSnackbarAction" instruction="Label for a button that lets the user view the details for a login credential">Megtekintés</string>
+    <string name="autofillLoginSavedSnackbarMessage">Bejelentkezés mentve</string>
+    <string name="autofillLoginUpdatedSnackbarMessage">Bejelentkezés frissítve</string>
+    <string name="autofillDisableAutofillPromptTitle">Továbbra is el szeretnéd menteni a bejelentkezéseket?</string>
+    <string name="autofillDisableAutofillPromptMessage">Ez bármikor kikapcsolható a beállításokban.</string>
+    <string name="autofillDisableAutofillPromptPositiveButton">Mentés folytatása</string>
+    <string name="autofillDisableAutofillPromptNegativeButton">Letiltás</string>
 
     <!-- Waitlist Notification -->
     <string name="waitlistNotificationDialogDescription">Szeretnéd, hogy értesítést küldjünk neked, amikor rád kerül a sor?</string>
@@ -583,6 +653,7 @@
     <string name="folderLocationTitle">Hely kiválasztása</string>
     <string name="addFolder">Mappa hozzáadása</string>
     <string name="editFolder">Mappa szerkesztése</string>
+    <string name="bookmarkFolderDeleteDialogTitle" instruction="Dialog title for deleting a folder with bookmarks">"Törlöd a mappát a tartalmával együtt?"</string>
     <string name="bookmarkFolderDeleteDialogMessage">"Biztosan törlöd a(z) "</string>
     <string name="bookmarkFolderEmpty">Üres</string>
 
@@ -615,7 +686,7 @@
 
     <!-- MacOs Settings -->
     <string name="macos_settings_description">Privát böngészés Maces alkalmazásunkkal</string>
-    <string name="macos_settings_title">DuckDuckGo asztali alkalmazás</string>
+    <string name="macos_settings_title">DuckDuckGo Mac alkalmazás</string>
 
     <!-- Downloads -->
     <string name="downloadsMenuItem">Letöltések</string>
@@ -643,16 +714,17 @@
 
     <!-- Autoconsent -->
     <!-- smartling.character_limit = 82 -->
-    <string name="autoconsentDialogTitle">Úgy tűnik, hogy az oldalon sütik elfogadására szolgáló felugró ablak van👇</string>
+    <string name="autoconsentDialogTitle"><![CDATA[<b>Kezeljem a felugró sütiablakokat?</b>]]></string>
     <!-- smartling.character_limit = 160 -->
-    <string name="autoconsentDialogDescription">Elintézzem helyetted? Megpróbálhatom minimalizálni a sütiket, maximalizálni az adatvédelmet, illetve elrejteni az ilyen felugró ablakokat.</string>
+    <string name="autoconsentDialogDescription">Megpróbálhatom kiválasztani a rendelkezésre álló leginkább privát beállításokat, és elrejteni az ilyen felugró ablakokat.</string>
     <!-- smartling.character_limit = 42 -->
-    <string name="autoconsentPrimaryCta">Felugró sütiablakok kezelése</string>
+    <string name="autoconsentPrimaryCta">Kezeld a felugró ablakokat</string>
     <!-- smartling.character_limit = 42 -->
-    <string name="autoconsentSecondaryCta">Nem, köszönöm</string>
+    <string name="autoconsentSecondaryCta">Ne, majd kezelem én magam</string>
 
     <string name="autoconsentSetting">Felugró sütiablakok kezelése</string>
-    <string name="autoconsentAnimationText">Kezelt sütik</string>
+    <string name="autoconsentCosmeticNoticeAnimationText">Felugró ablak elrejtve</string>
+    <string name="autoconsentManagedNoticeAnimationText">Kezelt sütik</string>
 
     <!-- Site Permissions Settings -->
     <string name="settingsSitePermissions">Webhelyengedélyek</string>
@@ -671,6 +743,32 @@
     <string name="permissionsPerWebsiteAskDisabledSetting">A „Rákérdezés” minden webhelyen letiltva</string>
     <string name="permissionsPerWebsiteSelectorDialogTitle" instruction="%1$s is the name of a permissions and %2$s is the name of a website, i.e. Camera permission for example.com">%1$s engedély a(z) %2$s számára</string>
 
-    <!-- Autofill -->
-    <string name="autofillSettingsDisplayName">Automatikus kitöltés</string>
+    <!-- Notify Me View on Downloads -->
+    <string name="downloadsNotifyMeTitle">Készen álló letöltések jelzése</string>
+    <string name="downloadsNotifyMeSubtitle">Értesítés a letöltések befejeződésekor.</string>
+
+    <!-- Windows Settings -->
+    <string name="windows_settings_title">DuckDuckGo Windows alkalmazás</string>
+    <string name="windows_settings_description">Privát böngészés windowsos alkalmazásunkkal</string>
+    <string name="windows_settings_description_ready">Letöltés elérhető</string>
+    <string name="windows_settings_description_list">Rajta vagy a listán!</string>
+
+    <!-- Full screen message-->
+    <string name="fullScreenMessage">A teljes képernyőről való kilépéshez végezz felülről lefelé húzást, és koppints a vissza gombra</string>
+
+    <!-- Tab Switcher 'Close All Tabs' confirmation prompt -->
+    <string name="closeAppTabsConfirmationDialogTitle" instruction="Dialog title for deleting all open tabs">Összes lap bezárása?</string>
+    <string name="closeAppTabsConfirmationDialogDescription">Biztosan bezárod az összes lapot?</string>
+    <string name="closeAppTabsConfirmationDialogCancel">Mégsem</string>
+    <string name="closeAppTabsConfirmationDialogClose">Bezárás</string>
+
+    <!-- Edit Saved Site screen, "Delete Saved Site" confirmation prompt -->
+    <string name="deleteBookmarkConfirmationDialogTitle" instruction="Dialog title for deleting a bookmark">Törölöd ezt a könyvjelzőt?</string>
+    <string name="deleteBookmarkConfirmationDialogDescription" instruction="Placeholder is the name of the bookmark">Ez törli a(z) &lt;b&gt;%1$s&lt;/b&gt; könyvjelzőt.</string>
+    <string name="deleteFavoriteConfirmationDialogTitle" instruction="Dialog title for deleting a favorite site">Törölöd ezt a kedvencet?</string>
+    <string name="deleteFavoriteConfirmationDialogDescription" instruction="Placeholder is the name of the favorite site">Ez törli a(z) &lt;b&gt;%1$s&lt;/b&gt; kedvencet.</string>
+    <string name="deleteBookmarkFolderConfirmationDialogTitle" instruction="Dialog title for deleting a bookmark folder">Törölöd ezt a könyvjelzőmappát?</string>
+    <string name="deleteBookmarkFolderConfirmationDialogDescription" instruction="Placeholder is the name of the favorite site">Ez törli a(z) &lt;b&gt;%1$s&lt;/b&gt; könyvjelzőmappát.</string>
+    <string name="deleteSavedSiteConfirmationDialogCancel">Mégsem</string>
+    <string name="deleteSavedSiteConfirmationDialogDelete">Törlés</string>
 </resources>

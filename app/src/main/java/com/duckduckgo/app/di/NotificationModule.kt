@@ -16,35 +16,28 @@
 
 package com.duckduckgo.app.di
 
-import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkManager
 import com.duckduckgo.app.global.plugins.PluginPoint
 import com.duckduckgo.app.notification.*
+import com.duckduckgo.app.notification.AndroidNotificationScheduler
+import com.duckduckgo.app.notification.NotificationScheduler
 import com.duckduckgo.app.notification.db.NotificationDao
-import com.duckduckgo.app.notification.model.AppTPWaitlistCodeNotification
 import com.duckduckgo.app.notification.model.ClearDataNotification
 import com.duckduckgo.app.notification.model.PrivacyProtectionNotification
 import com.duckduckgo.app.notification.model.SchedulableNotificationPlugin
 import com.duckduckgo.app.privacy.db.PrivacyProtectionCountDao
 import com.duckduckgo.app.settings.db.SettingsDataStore
-import com.duckduckgo.app.statistics.pixels.Pixel
+import com.duckduckgo.app.statistics.VariantManager
 import com.duckduckgo.di.scopes.AppScope
-import com.duckduckgo.mobile.android.vpn.waitlist.AppTrackingProtectionWaitlistDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.SingleInstanceIn
 
 @Module(includes = [DaoModule::class])
 object NotificationModule {
-
-    @Provides
-    @SingleInstanceIn(AppScope::class)
-    fun provideNotificationManager(context: Context): NotificationManager {
-        return context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    }
 
     @Provides
     @SingleInstanceIn(AppScope::class)
@@ -82,11 +75,13 @@ object NotificationModule {
         workManager: WorkManager,
         clearDataNotification: ClearDataNotification,
         privacyProtectionNotification: PrivacyProtectionNotification,
+        variantManager: VariantManager,
     ): AndroidNotificationScheduler {
         return NotificationScheduler(
             workManager,
             clearDataNotification,
             privacyProtectionNotification,
+            variantManager,
         )
     }
 
@@ -103,21 +98,11 @@ object NotificationModule {
     @SingleInstanceIn(AppScope::class)
     fun providesNotificationSender(
         context: Context,
-        pixel: Pixel,
         manager: NotificationManagerCompat,
         factory: NotificationFactory,
         notificationDao: NotificationDao,
         pluginPoint: PluginPoint<SchedulableNotificationPlugin>,
     ): NotificationSender {
-        return AppNotificationSender(context, pixel, manager, factory, notificationDao, pluginPoint)
-    }
-
-    @Provides
-    fun provideAppTpWaitlistCodeNotification(
-        context: Context,
-        notificationDao: NotificationDao,
-        dataStore: AppTrackingProtectionWaitlistDataStore,
-    ): AppTPWaitlistCodeNotification {
-        return AppTPWaitlistCodeNotification(context, notificationDao, dataStore)
+        return AppNotificationSender(context, manager, factory, notificationDao, pluginPoint)
     }
 }

@@ -48,6 +48,7 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.robolectric.RuntimeEnvironment
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -62,6 +63,8 @@ class RealPrivacyConfigPersisterTest {
     private lateinit var unprotectedTemporaryRepository: UnprotectedTemporaryRepository
     private val pluginPoint = FakePrivacyFeaturePluginPoint(listOf(FakePrivacyFeaturePlugin()))
     private lateinit var sharedPreferences: SharedPreferences
+
+    private val context = RuntimeEnvironment.getApplication()
 
     @Before
     fun before() {
@@ -90,7 +93,7 @@ class RealPrivacyConfigPersisterTest {
 
     private fun prepareDb() {
         db =
-            Room.inMemoryDatabaseBuilder(mock(), PrivacyConfigDatabase::class.java)
+            Room.inMemoryDatabaseBuilder(context, PrivacyConfigDatabase::class.java)
                 .allowMainThreadQueries()
                 .build()
         privacyRepository = RealPrivacyConfigRepository(db)
@@ -143,7 +146,7 @@ class RealPrivacyConfigPersisterTest {
     @Test
     fun whenPersistPrivacyConfigAndVersionIsLowerThanPreviousOneStoredThenDoNothing() =
         runTest {
-            privacyRepository.insert(PrivacyConfig(version = 3, readme = "readme"))
+            privacyRepository.insert(PrivacyConfig(version = 3, readme = "readme", eTag = "eTag"))
 
             testee.persistPrivacyConfig(getJsonPrivacyConfig())
 
@@ -155,7 +158,7 @@ class RealPrivacyConfigPersisterTest {
     fun whenPersistPrivacyConfigAndVersionIsLowerThanPreviousOneAndDifferentPluginsThenStoreNewConfig() =
         runTest {
             sharedPreferences.edit().putInt("plugin_signature", 0)
-            privacyRepository.insert(PrivacyConfig(version = 3, readme = "readme"))
+            privacyRepository.insert(PrivacyConfig(version = 3, readme = "readme", eTag = "eTag"))
 
             testee.persistPrivacyConfig(getJsonPrivacyConfig())
 
@@ -166,7 +169,7 @@ class RealPrivacyConfigPersisterTest {
     @Test
     fun whenPersistPrivacyConfigAndVersionIsEqualsThanPreviousOneStoredThenDoNothing() =
         runTest {
-            privacyRepository.insert(PrivacyConfig(version = 2, readme = "readme"))
+            privacyRepository.insert(PrivacyConfig(version = 2, readme = "readme", eTag = "eTag"))
 
             testee.persistPrivacyConfig(getJsonPrivacyConfig())
 
@@ -178,7 +181,7 @@ class RealPrivacyConfigPersisterTest {
     fun whenPersistPrivacyConfigAndVersionIsEqualsThanPreviousOneStoredAndDifferentPluginsThenUpdateConfig() =
         runTest {
             sharedPreferences.edit().putInt("plugin_signature", 0)
-            privacyRepository.insert(PrivacyConfig(version = 2, readme = "readme"))
+            privacyRepository.insert(PrivacyConfig(version = 2, readme = "readme", eTag = "eTag"))
 
             testee.persistPrivacyConfig(getJsonPrivacyConfig())
 
@@ -189,7 +192,7 @@ class RealPrivacyConfigPersisterTest {
     @Test
     fun whenPersistPrivacyConfigAndVersionIsHigherThanPreviousOneStoredThenStoreNewConfig() =
         runTest {
-            privacyRepository.insert(PrivacyConfig(version = 1, readme = "readme"))
+            privacyRepository.insert(PrivacyConfig(version = 1, readme = "readme", eTag = "eTag"))
 
             testee.persistPrivacyConfig(getJsonPrivacyConfig())
 
@@ -200,7 +203,7 @@ class RealPrivacyConfigPersisterTest {
     fun whenPersistPrivacyConfigAndVersionIsHigherThanPreviousOneStoredAndDifferentPluginsThenStoreNewConfig() =
         runTest {
             sharedPreferences.edit().putInt("plugin_signature", 0)
-            privacyRepository.insert(PrivacyConfig(version = 1, readme = "readme"))
+            privacyRepository.insert(PrivacyConfig(version = 1, readme = "readme", eTag = "eTag"))
 
             testee.persistPrivacyConfig(getJsonPrivacyConfig())
 

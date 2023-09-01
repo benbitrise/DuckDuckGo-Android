@@ -19,10 +19,12 @@ package com.duckduckgo.mobile.android.vpn
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.duckduckgo.app.global.DispatcherProvider
 import com.duckduckgo.mobile.android.vpn.prefs.VpnSharedPreferencesProvider
 import com.duckduckgo.mobile.android.vpn.service.TrackerBlockingVpnService
 import java.util.UUID
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import logcat.logcat
 
 private const val PREFS_FILENAME = "com.duckduckgo.mobile.android.vpn.feature.registry.v1"
@@ -31,68 +33,71 @@ private const val IS_INITIALIZED = "IS_INITIALIZED"
 internal class VpnFeaturesRegistryImpl(
     private val vpnServiceWrapper: VpnServiceWrapper,
     private val sharedPreferencesProvider: VpnSharedPreferencesProvider,
-) : VpnFeaturesRegistry, SharedPreferences.OnSharedPreferenceChangeListener {
+    private val dispatcherProvider: DispatcherProvider,
+) : VpnFeaturesRegistry {
 
-    private val preferences: SharedPreferences
-        get() = sharedPreferencesProvider.getSharedPreferences(PREFS_FILENAME, multiprocess = true, migrate = false)
+    private val mutex = Mutex()
 
-    private val registryInitialValue = Pair("", false)
-    private val _registry = MutableStateFlow(registryInitialValue)
-
-    init {
-        // we don't need to unregister the listener
-        preferences.registerOnSharedPreferenceChangeListener(this)
+    private val preferences: SharedPreferences by lazy {
+        sharedPreferencesProvider.getSharedPreferences(PREFS_FILENAME, multiprocess = true, migrate = false)
     }
 
-    @Synchronized
-    override fun registerFeature(feature: VpnFeature) {
-        logcat { "registerFeature: $feature" }
-        preferences.edit(commit = true) {
-            // we use random UUID to force change listener to be called
-            putString(feature.featureName, UUID.randomUUID().toString())
-        }
-        vpnServiceWrapper.restartVpnService(forceRestart = true)
-    }
-
-    @Synchronized
-    override fun unregisterFeature(feature: VpnFeature) {
-        if (!preferences.contains(feature.featureName)) return
-
-        preferences.edit(commit = true) {
-            remove(feature.featureName)
-        }
-
-        logcat { "unregisterFeature: $feature" }
-        if (registeredFeatures().isNotEmpty()) {
+    override suspend fun registerFeature(feature: VpnFeature) = withContext(dispatcherProvider.io()) {
+        mutex.lock()
+        try {
+            logcat { "registerFeature: $feature" }
+            preferences.edit(commit = true) {
+                // we use random UUID to force change listener to be called
+                putString(feature.featureName, UUID.randomUUID().toString())
+            }
             vpnServiceWrapper.restartVpnService(forceRestart = true)
-        } else {
-            vpnServiceWrapper.stopService()
+        } finally {
+            mutex.unlock()
         }
     }
 
-    override fun isFeatureRegistered(feature: VpnFeature): Boolean {
-        return registeredFeatures().contains(feature.featureName) && vpnServiceWrapper.isServiceRunning()
+    override suspend fun unregisterFeature(feature: VpnFeature) = withContext(dispatcherProvider.io()) {
+        mutex.lock()
+        try {
+            if (preferences.contains(feature.featureName)) {
+                preferences.edit(commit = true) {
+                    remove(feature.featureName)
+                }
+
+                logcat { "unregisterFeature: $feature" }
+                if (registeredFeatures().isNotEmpty()) {
+                    vpnServiceWrapper.restartVpnService(forceRestart = true)
+                } else {
+                    vpnServiceWrapper.stopService()
+                }
+            }
+        } finally {
+            mutex.unlock()
+        }
     }
 
-    override suspend fun refreshFeature(feature: VpnFeature) {
+    override suspend fun isFeatureRunning(feature: VpnFeature): Boolean = withContext(dispatcherProvider.io()) {
+        return@withContext isFeatureRegistered(feature) && vpnServiceWrapper.isServiceRunning()
+    }
+
+    override suspend fun isFeatureRegistered(feature: VpnFeature): Boolean = withContext(dispatcherProvider.io()) {
+        return@withContext registeredFeatures().contains(feature.featureName)
+    }
+
+    override suspend fun isAnyFeatureRunning(): Boolean = withContext(dispatcherProvider.io()) {
+        return@withContext isAnyFeatureRegistered() && vpnServiceWrapper.isServiceRunning()
+    }
+
+    override suspend fun isAnyFeatureRegistered(): Boolean = withContext(dispatcherProvider.io()) {
+        return@withContext registeredFeatures().isNotEmpty()
+    }
+
+    override suspend fun refreshFeature(feature: VpnFeature) = withContext(dispatcherProvider.io()) {
         vpnServiceWrapper.restartVpnService(forceRestart = false)
     }
 
-    override fun registryChanges(): Flow<Pair<String, Boolean>> {
-        return _registry.asStateFlow()
-            .filter {
-                logcat { "change $it" }
-                it != registryInitialValue && it.first != IS_INITIALIZED
-            }
-    }
-
-    override fun getRegisteredFeatures(): List<VpnFeature> {
-        return registeredFeatures().keys.map { VpnFeature { it } }
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        logcat { "onSharedPreferenceChanged($key)" }
-        _registry.update { Pair(key, sharedPreferences.contains(key)) }
+    override suspend fun getRegisteredFeatures(): List<VpnFeature> = withContext(dispatcherProvider.io()) {
+        return@withContext registeredFeatures().keys.map { VpnFeature { it } }
     }
 
     private fun registeredFeatures(): Map<String, Any?> {

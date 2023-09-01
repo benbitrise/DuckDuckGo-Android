@@ -27,8 +27,10 @@ import androidx.work.impl.utils.SynchronousExecutor
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.duckduckgo.app.CoroutineTestRule
 import com.duckduckgo.app.notification.model.SchedulableNotification
+import com.duckduckgo.app.statistics.VariantManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -45,6 +47,7 @@ class AndroidNotificationSchedulerTest {
 
     private val clearNotification: SchedulableNotification = mock()
     private val privacyNotification: SchedulableNotification = mock()
+    private val mockVariantManager: VariantManager = mock()
 
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private lateinit var workManager: WorkManager
@@ -53,11 +56,13 @@ class AndroidNotificationSchedulerTest {
     @Before
     fun before() {
         initializeWorkManager()
+        whenever(mockVariantManager.getVariant()).thenReturn(VariantManager.DEFAULT_VARIANT)
 
         testee = NotificationScheduler(
             workManager,
             clearNotification,
             privacyNotification,
+            mockVariantManager,
         )
     }
 
@@ -76,6 +81,7 @@ class AndroidNotificationSchedulerTest {
     fun whenPrivacyNotificationClearDataCanShowThenPrivacyNotificationIsScheduled() = runTest {
         whenever(privacyNotification.canShow()).thenReturn(true)
         whenever(clearNotification.canShow()).thenReturn(true)
+
         testee.scheduleNextNotification()
 
         assertNotificationScheduled(PrivacyNotificationWorker::class.javaObjectType.name)
@@ -85,6 +91,7 @@ class AndroidNotificationSchedulerTest {
     fun whenPrivacyNotificationCanShowButClearDataCannotThenPrivacyNotificationIsScheduled() = runTest {
         whenever(privacyNotification.canShow()).thenReturn(true)
         whenever(clearNotification.canShow()).thenReturn(false)
+
         testee.scheduleNextNotification()
 
         assertNotificationScheduled(PrivacyNotificationWorker::class.javaObjectType.name)
@@ -94,6 +101,7 @@ class AndroidNotificationSchedulerTest {
     fun whenPrivacyNotificationCannotShowAndClearNotificationCanShowThenClearNotificationIsScheduled() = runTest {
         whenever(privacyNotification.canShow()).thenReturn(false)
         whenever(clearNotification.canShow()).thenReturn(true)
+
         testee.scheduleNextNotification()
 
         assertNotificationScheduled(ClearDataNotificationWorker::class.javaObjectType.name)
@@ -103,9 +111,21 @@ class AndroidNotificationSchedulerTest {
     fun whenPrivacyNotificationAndClearNotificationCannotShowThenNoNotificationScheduled() = runTest {
         whenever(privacyNotification.canShow()).thenReturn(false)
         whenever(clearNotification.canShow()).thenReturn(false)
+
         testee.scheduleNextNotification()
 
         assertNoNotificationScheduled()
+    }
+
+    @Test
+    fun givenControlVariantWhenClearNotificationAndPrivacyNotificationCanShowThenBothNotificationsAreScheduled() = runTest {
+        whenever(privacyNotification.canShow()).thenReturn(true)
+        whenever(clearNotification.canShow()).thenReturn(true)
+
+        testee.scheduleNextNotification()
+
+        assertNotificationScheduled(PrivacyNotificationWorker::class.javaObjectType.name)
+        assertNotificationScheduled(ClearDataNotificationWorker::class.javaObjectType.name)
     }
 
     private fun assertNotificationScheduled(
@@ -113,6 +133,17 @@ class AndroidNotificationSchedulerTest {
         tag: String = NotificationScheduler.UNUSED_APP_WORK_REQUEST_TAG,
     ) {
         assertTrue(
+            getScheduledWorkers(tag).any {
+                it.tags.contains(workerName)
+            },
+        )
+    }
+
+    private fun assertNotificationNotScheduled(
+        workerName: String?,
+        tag: String = NotificationScheduler.UNUSED_APP_WORK_REQUEST_TAG,
+    ) {
+        assertFalse(
             getScheduledWorkers(tag).any {
                 it.tags.contains(workerName)
             },

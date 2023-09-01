@@ -16,7 +16,7 @@
   -->
 <!-- smartling.entity_escaping = false -->
 <!-- smartling.instruction_attributes = instruction -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="atp_name">Zaščita pred sledenjem aplikacij</string>
     <string name="refresh">Osveži</string>
 
@@ -167,10 +167,10 @@
     <string name="atp_ReportBreakageAppNextCta">Naslednji</string>
     <string name="atp_ReportBreakageFormWhatHappenedText">Opišite, kaj se dogaja, kaj ste pričakovali, da se bo zgodilo, in ukrepe, ki so pripeljali do težave.</string>
     <string name="atp_ReportBreakageFormInputHint">Povejte nam več o vaši težavi</string>
-    <string name="atp_ReportBreakageFormCheckboxText">S klikom na »Pošlji« se strinjam, da lahko DuckDuckGo uporabi informacije v tem poročilu za namene izboljšanja zaščite pred sledenjem aplikacijam.
+    <string name="atp_ReportBreakageFormCheckboxText">S klikom gumba »Pošlji« se strinjam, da lahko DuckDuckGo podatke iz tega poročila uporabi za namene izboljšanja funkcij aplikacije.
     </string>
     <string name="atp_ReportBreakageFormDisclaimerText">
-        <![CDATA[Poleg podatkov, vnesenih v ta obrazec, bo poročilo o težavah z aplikacijo vsebovalo:<br/>– Ime paketa aplikacije<br/>– Seznam sledilnikov, blokiranih v aplikaciji<br/>– Ali je omogočena zaščita pred sledenjem aplikacij<br/>– Skupna diagnostika aplikacije DuckDuckGo<br/>]]>
+        <![CDATA[Poleg podatkov, vnesenih v ta obrazec, bo poročilo o težavah z aplikacijo vsebovalo naslednje:<br/>• ime paketa aplikacije<br/>• seznam sledilnikov, blokiranih v aplikaciji<br/>• ali so omogočene posamezne funkcije DuckDuckGo<br/>• skupna diagnostika aplikacije DuckDuckGo<br/>]]>
     </string>
     <string name="atp_ReportBreakageSent">Poročilo poslano, hvala! Vaše povratne informacije nam pomagajo izboljšati zaščito pred sledenjem aplikacijam za vse.</string>
     <string name="atp_ThanksForTheFeedback">Hvala za povratne informacije!</string>
@@ -218,13 +218,13 @@
     <string name="atp_ActivityPastWeekBlocked">Blokirana stran</string>
     <string name="atp_ActivityPastWeekAcross">Na spletni strani</string>
 
-    <plurals name="atp_ActivityPastWeekTrackerCount">
+    <plurals name="atp_ActivityPastWeekTrackerCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Poskus sledenja</item>
         <item quantity="two">Poskusa sledenja</item>
         <item quantity="few">Poskusi sledenja</item>
         <item quantity="other">Poskusi sledenja</item>
     </plurals>
-    <plurals name="atp_ActivityPastWeekAppCount">
+    <plurals name="atp_ActivityPastWeekAppCount" tools:ignore="ImpliedQuantity">
         <item quantity="one">Aplikacija</item>
         <item quantity="two">Aplikaciji</item>
         <item quantity="few">Aplikacije</item>
@@ -237,6 +237,10 @@
     <string name="atp_ActivityAbout">O nas</string>
     <string name="atp_ActivityManage">Upravljanje</string>
     <string name="atp_ActivityRemoveFeature">Onemogočanje in brisanje podatkov</string>
+    <string name="atp_ActivityBlockingTrackersEnabledDescription">DuckDuckGo blokira skrite sledilnike v aplikacijah.</string>
+    <string name="atp_ActivityBlockingTrackersDisabledDescription">Znova omogočite funkcijo App Tracking Protection in še naprej blokirajte sledilnike v aplikacijah.</string>
+    <string name="atp_ActivityBlockedByHeaderText" instruction="Placeholder %1$s is a text containing either Today or Yesterday. Example: Blocked by DuckDuckGo Today">Blokira DuckDuckGo %1$s</string>
+    <string name="atp_ActivityBlockedByOnDateHeaderText" instruction="Placeholder %1$s is a text containing a formatted date like Feb 05. Example: Blocked by DuckDuckGo on Feb 05">Blokiral DuckDuckGo dne %1$s</string>
 
     <!--  App Tracking Protection FAQ -->
     <string name="atp_FAQActivityTitle">POGOSTA VPRAŠANJA</string>
@@ -254,8 +258,6 @@
     <string name="atp_FAQSixthText">Zaščita pred sledenjem aplikacijam App Tracking Protection deluje v vaši napravi in vaših osebnih podatkov ne pošilja iz naprave v DuckDuckGo.</string>
 
     <!--  App Tracking Protection Waitlist -->
-    <string name="atp_WaitlistActivityTitle">Zaščita pred sledenjem aplikacij</string>
-    <string name="atp_WaitlistActivityWaitlistTitle">Čakalna lista za zaščito pred sledenjem aplikacijam App Tracking Protection</string>
     <string name="atp_WaitlistNotificationTitle">Vaše povabilo za zaščito pred sledenjem aplikacijam App Tracking Protection je tu!</string>
     <string name="atp_WaitlistNotificationDescription">Pridružili ste se čakalnemu seznamu in prosili, da vas obvestimo, ko boste na vrsti za preizkus naše funkcije zaščite e-pošte. Dotaknite se za ogled vabila.</string>
     <string name="atp_WaitlistStatusNotJoined">En enostaven korak za boljšo zasebnost aplikacij!</string>
@@ -274,7 +276,6 @@
     <string name="atp_WaitlistErrorJoining">Pri dodajanju na čakalni seznam je prišlo do napake. Poskusite znova pozneje.</string>
     <string name="atp_WaitlistJoinedWithNotification">Obvestili vas bomo, ko bo zaščita e-pošte pripravljena za vas.\n\n<annotation type="beta_link">Več informacij o različici beta</annotation></string>
     <string name="atp_WaitlistJoinedWithoutNotification">Povabilo za preizkus programa App Tracking Protection bo prispelo sem. V kratkem se spet oglasite ali pa vam lahko pošljemo obvestilo, ko pridete na vrsto\n\n<annotation type="notify_me_link">Želim prejeti obvestilo</annotation>\n\n<annotation type="beta_link">Več informacij o različici beta</annotation></string>
-    <string name="atp_WaitlistRedeemCodeActivityTitle">Vnesite kodo vabila</string>
     <string name="atp_WaitlistRedeemedCodeStatus">Uspešno ste se prijavili v aplikacijo.</string>
     <string name="atp_WaitlistBetaBlogPost">https://spreadprivacy.com/introducing-app-tracking-protection</string>
 
@@ -286,10 +287,10 @@
         <item quantity="other">%1$d poskusov. Poznano pri zbiranju:</item>
     </plurals>
     <plurals name="atp_CompanyDetailsTrackingAttemptsTitle">
-        <item quantity="one">Blokada %1$d poskusa sledenja</item>
-        <item quantity="two">Blokada %1$d poskusov sledenja</item>
-        <item quantity="few">Blokada %1$d poskusov sledenja</item>
-        <item quantity="other">Blokada %1$d poskusov sledenja</item>
+        <item quantity="one">DuckDuckGo je blokiral %1$d poskus sledenja</item>
+        <item quantity="two">DuckDuckGo je blokiral %1$d poskusa sledenja</item>
+        <item quantity="few">DuckDuckGo je blokiral %1$d poskuse sledenja</item>
+        <item quantity="other">DuckDuckGo je blokiral %1$d poskusov sledenja</item>
     </plurals>
     <string name="atp_CompanyDetailsTrackingMenuReport">Prijava težave s to aplikacijo</string>
     <string name="atp_CompanyDetailsTrackingShowMore" instruction="Placeholder is a number">Pokaži več %1$d</string>
@@ -376,7 +377,7 @@
     <string name="atp_ManageRecentAppsProtectionEmpty">Aplikacije z nedavno blokiranimi poskusi sledenja bodo prikazane tukaj</string>
 
     <!--  App Tracking Protection Remove Feature Dialog -->
-    <string name="atp_RemoveFeatureDialogTitle">Onemogočiti in izbrisati podatke?</string>
+    <string name="atp_RemoveFeatureDialogTitle">Želite onemogočiti in izbrisati podatke?</string>
     <string name="atp_RemoveFeatureDialogMessage">Zaščita sledenja aplikacij bo onemogočena, vse nastavitve in zgodovina poskusov sledenja pa bodo izbrisane. Ponovno ga lahko kadar koli omogočite v nastavitvah.</string>
     <string name="atp_RemoveFeatureDialogCancel">Preklic</string>
     <string name="atp_RemoveFeatureDialogRemove">Onemogoči</string>
@@ -428,5 +429,9 @@
     <string name="atp_ActivityEnabledMoreThanADayLabel">Ta funkcija je v različici beta. Imate težave z aplikacijo? <annotation type="app_settings_link">Pomagajte nam jo izboljšati</annotation></string>
     <string name="atp_ExcludedAppsEnabledLearnWhyLabel">Pri nekaterih aplikacijah se lahko pojavijo težave, ko je omogočena zaščita pred sledenjem aplikaciji.\n<annotation type="learn_why_link">Več o tem</annotation></string>
     <string name="atp_ExcludedAppsDisabledLearnWhyLabel">Zaščita je onemogočena za aplikacije z znanimi težavami. Te aplikacije lahko omogočite, vendar morda ne bodo delovale po pričakovanjih. <annotation type="learn_why_link">Več o tem</annotation></string>
+
+    <!-- Notify Me View on AppTP -->
+    <string name="appTrackingProtectionNotifyMeTitle">Bodite pozorni na blokirane sledilnike</string>
+    <string name="appTrackingProtectionNotifyMeSubtitle">Posodobitve o blokiranih poskusih sledenja prejemajte v predal za obvestila.</string>
 
 </resources>

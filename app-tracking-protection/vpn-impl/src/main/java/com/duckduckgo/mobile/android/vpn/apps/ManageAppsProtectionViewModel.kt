@@ -16,6 +16,7 @@
 
 package com.duckduckgo.mobile.android.vpn.apps
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.*
 import com.duckduckgo.anvil.annotations.ContributesViewModel
 import com.duckduckgo.app.global.DispatcherProvider
@@ -26,11 +27,13 @@ import com.duckduckgo.mobile.android.vpn.apps.AppsProtectionType.FilterType
 import com.duckduckgo.mobile.android.vpn.apps.AppsProtectionType.InfoPanelType
 import com.duckduckgo.mobile.android.vpn.apps.ui.TrackingProtectionExclusionListActivity.Companion.AppsFilter
 import com.duckduckgo.mobile.android.vpn.breakage.ReportBreakageScreen
-import com.duckduckgo.mobile.android.vpn.model.BucketizedVpnTracker
+import com.duckduckgo.mobile.android.vpn.di.AppTpBreakageCategories
 import com.duckduckgo.mobile.android.vpn.model.TrackingApp
+import com.duckduckgo.mobile.android.vpn.model.VpnTrackerWithEntity
 import com.duckduckgo.mobile.android.vpn.pixels.DeviceShieldPixels
 import com.duckduckgo.mobile.android.vpn.stats.AppTrackerBlockingStatsRepository
 import com.duckduckgo.mobile.android.vpn.stats.AppTrackerBlockingStatsRepository.TimeWindow
+import com.duckduckgo.mobile.android.vpn.ui.AppBreakageCategory
 import java.util.concurrent.TimeUnit.DAYS
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
@@ -40,12 +43,14 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@SuppressLint("NoLifecycleObserver") // we don't observe app lifecycle
 @ContributesViewModel(ActivityScope::class)
 class ManageAppsProtectionViewModel @Inject constructor(
     private val excludedApps: TrackingProtectionAppsRepository,
     private val appTrackersRepository: AppTrackerBlockingStatsRepository,
     private val pixel: DeviceShieldPixels,
     private val dispatcherProvider: DispatcherProvider,
+    @AppTpBreakageCategories private val breakageCategories: List<AppBreakageCategory>,
 ) : ViewModel(), DefaultLifecycleObserver {
 
     private val command = Channel<Command>(1, BufferOverflow.DROP_OLDEST)
@@ -133,19 +138,19 @@ class ManageAppsProtectionViewModel @Inject constructor(
             .flowOn(dispatcherProvider.io())
 
     private suspend fun aggregateDataPerApp(
-        trackerData: List<BucketizedVpnTracker>,
+        trackerData: List<VpnTrackerWithEntity>,
     ): List<TrackingApp> {
         val sourceData = mutableListOf<TrackingApp>()
-        val perSessionData = trackerData.groupBy { it.trackerCompanySignal.tracker.bucket }
+        val perSessionData = trackerData.groupBy { it.tracker.bucket }
 
         perSessionData.values.forEach { sessionTrackers ->
             coroutineContext.ensureActive()
 
-            val perAppData = sessionTrackers.groupBy { it.trackerCompanySignal.tracker.trackingApp.packageId }
+            val perAppData = sessionTrackers.groupBy { it.tracker.trackingApp.packageId }
 
             perAppData.values.forEach { appTrackers ->
-                val item = appTrackers.sortedByDescending { it.trackerCompanySignal.tracker.timestamp }.first()
-                sourceData.add(item.trackerCompanySignal.tracker.trackingApp)
+                val item = appTrackers.sortedByDescending { it.tracker.timestamp }.first()
+                sourceData.add(item.tracker.trackingApp)
             }
         }
 
@@ -162,7 +167,11 @@ class ManageAppsProtectionViewModel @Inject constructor(
             excludedApps.manuallyExcludeApp(packageName)
             pixel.didSubmitManuallyDisableAppProtectionDialog()
             if (report) {
-                command.send(Command.LaunchFeedback(ReportBreakageScreen.IssueDescriptionForm(appName, packageName)))
+                command.send(
+                    Command.LaunchFeedback(
+                        ReportBreakageScreen.IssueDescriptionForm("apptp", breakageCategories, appName, packageName),
+                    ),
+                )
             } else {
                 pixel.didSkipManuallyDisableAppProtectionDialog()
             }
@@ -261,7 +270,11 @@ class ManageAppsProtectionViewModel @Inject constructor(
     fun launchFeedback() {
         pixel.launchAppTPFeedback()
         viewModelScope.launch {
-            command.send(Command.LaunchFeedback(ReportBreakageScreen.ListOfInstalledApps))
+            command.send(
+                Command.LaunchFeedback(
+                    ReportBreakageScreen.ListOfInstalledApps("apptp", breakageCategories),
+                ),
+            )
         }
     }
 

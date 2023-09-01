@@ -16,18 +16,17 @@
 
 package com.duckduckgo.app.referencetests
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import androidx.core.net.toUri
 import androidx.test.platform.app.InstrumentationRegistry
 import com.duckduckgo.app.FileUtilities
+import com.duckduckgo.app.fire.FireproofRepository
 import com.duckduckgo.app.fire.WebViewDatabaseLocator
 import com.duckduckgo.app.global.DefaultDispatcherProvider
-import com.duckduckgo.app.global.exception.RootExceptionFinder
 import com.duckduckgo.app.privacy.db.UserAllowListRepository
-import com.duckduckgo.app.statistics.pixels.ExceptionPixel
-import com.duckduckgo.app.statistics.pixels.Pixel
 import com.duckduckgo.cookies.api.CookieException
 import com.duckduckgo.cookies.impl.DefaultCookieManagerProvider
 import com.duckduckgo.cookies.impl.SQLCookieRemover
@@ -67,15 +66,16 @@ import org.threeten.bp.temporal.ChronoUnit
 
 @ExperimentalCoroutinesApi
 @RunWith(Parameterized::class)
+@SuppressLint("NoHardcodedCoroutineDispatcher")
 class FirstPartyCookiesReferenceTest(private val testCase: TestCase) {
 
     private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
     private val cookieManagerProvider = DefaultCookieManagerProvider()
     private val cookieManager = cookieManagerProvider.get()
-    private val mockPixel = mock<Pixel>()
     private val cookiesRepository = mock<CookiesRepository>()
     private val unprotectedTemporary = mock<UnprotectedTemporary>()
     private val userAllowListRepository = mock<UserAllowListRepository>()
+    private val fireproofRepository = mock<FireproofRepository>()
     private val webViewDatabaseLocator = WebViewDatabaseLocator(context)
     private lateinit var cookieModifier: FirstPartyCookiesModifier
 
@@ -106,7 +106,8 @@ class FirstPartyCookiesReferenceTest(private val testCase: TestCase) {
             unprotectedTemporary,
             userAllowListRepository,
             webViewDatabaseLocator,
-            ExceptionPixel(mockPixel, RootExceptionFinder()),
+            mock(),
+            fireproofRepository,
             DefaultDispatcherProvider(),
         )
         val host = testCase.siteURL.toUri().host
@@ -221,6 +222,7 @@ class FirstPartyCookiesReferenceTest(private val testCase: TestCase) {
         whenever(cookiesRepository.exceptions).thenReturn(CopyOnWriteArrayList(cookieExceptions))
         whenever(cookiesRepository.firstPartyCookiePolicy).thenReturn(policy)
         whenever(unprotectedTemporary.unprotectedTemporaryExceptions).thenReturn(unprotectedTemporaryExceptions)
+        whenever(fireproofRepository.fireproofWebsites()).thenReturn(emptyList())
     }
 
     data class TestCase(

@@ -31,34 +31,13 @@ interface Pixel {
     }
 
     enum class StatisticsPixelName(override val pixelName: String) : PixelName {
-        WEB_RENDERER_GONE_CRASH("m_d_wrg_c"),
-        WEB_RENDERER_GONE_KILLED("m_d_wrg_k"),
-        COOKIE_DATABASE_NOT_FOUND("m_cdb_nf"),
-        COOKIE_DATABASE_OPEN_ERROR("m_cdb_oe"),
-        COOKIE_DATABASE_DELETE_ERROR("m_cdb_de"),
-        COOKIE_DATABASE_CORRUPTED_ERROR("m_cdb_ce"),
-        APPLICATION_CRASH("m_d_ac"),
         APPLICATION_CRASH_GLOBAL("m_d_ac_g"),
-        APPLICATION_CRASH_WEBVIEW_SHOULD_INTERCEPT_SERVICE_WORKER("m_d_ac_wisw"),
-        APPLICATION_CRASH_WEBVIEW_SHOULD_INTERCEPT("m_d_ac_wi"),
-        APPLICATION_CRASH_WEBVIEW_PAGE_STARTED("m_d_ac_wps"),
-        APPLICATION_CRASH_WEBVIEW_PAGE_FINISHED("m_d_ac_wpf"),
-        APPLICATION_CRASH_WEBVIEW_OVERRIDE_REQUEST("m_d_ac_wo"),
-        APPLICATION_CRASH_WEBVIEW_HTTP_AUTH_REQUEST("m_d_ac_wh"),
-        APPLICATION_CRASH_WEBVIEW_SHOW_CUSTOM_VIEW("m_d_ac_wcs"),
-        APPLICATION_CRASH_WEBVIEW_HIDE_CUSTOM_VIEW("m_d_ac_wch"),
-        APPLICATION_CRASH_WEBVIEW_ON_PROGRESS_CHANGED("m_d_ac_wpc"),
-        APPLICATION_CRASH_WEBVIEW_RECEIVED_PAGE_TITLE("m_d_ac_wpt"),
-        APPLICATION_CRASH_WEBVIEW_SHOW_FILE_CHOOSER("m_d_ac_wfc"),
+        BROWSER_DAILY_ACTIVE_FEATURE_STATE("m_browser_feature_daily_active_user_d"),
     }
 
     object PixelParameter {
         const val APP_VERSION = "appVersion"
         const val URL = "url"
-        const val COUNT = "count"
-        const val EXCEPTION_MESSAGE = "m"
-        const val EXCEPTION_APP_VERSION = "v"
-        const val EXCEPTION_TIMESTAMP = "t"
         const val BOOKMARK_CAPABLE = "bc"
         const val SHOWED_BOOKMARKS = "sb"
         const val DEFAULT_BROWSER_BEHAVIOUR_TRIGGERED = "bt"
@@ -76,6 +55,10 @@ interface Pixel {
         const val LAST_USED_DAY = "duck_address_last_used"
         const val WEBVIEW_VERSION = "webview_version"
         const val OS_VERSION = "os_version"
+        const val DEFAULT_BROWSER = "default_browser"
+        const val EMAIL = "email"
+        const val MESSAGE_SHOWN = "message"
+        const val ACTION_SUCCESS = "success"
     }
 
     object PixelValues {
@@ -125,8 +108,9 @@ interface Pixel {
 }
 
 @ContributesBinding(AppScope::class)
-class RxBasedPixel @Inject constructor(private val pixelSender: PixelSender) : Pixel {
-
+class RxBasedPixel @Inject constructor(
+    private val pixelSender: PixelSender,
+) : Pixel {
     override fun fire(
         pixel: Pixel.PixelName,
         parameters: Map<String, String>,

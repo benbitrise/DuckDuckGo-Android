@@ -19,14 +19,14 @@ package com.duckduckgo.app.dev.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.duckduckgo.anvil.annotations.ContributesViewModel
-import com.duckduckgo.app.bookmarks.model.BookmarksRepository
-import com.duckduckgo.app.bookmarks.model.FavoritesRepository
 import com.duckduckgo.app.browser.useragent.UserAgentProvider
 import com.duckduckgo.app.dev.settings.db.DevSettingsDataStore
 import com.duckduckgo.app.dev.settings.db.UAOverride
 import com.duckduckgo.app.global.DispatcherProvider
+import com.duckduckgo.app.survey.api.SurveyEndpointDataStore
 import com.duckduckgo.app.traces.api.StartupTraces
 import com.duckduckgo.di.scopes.ActivityScope
+import com.duckduckgo.savedsites.api.SavedSitesRepository
 import javax.inject.Inject
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -42,9 +42,9 @@ class DevSettingsViewModel @Inject constructor(
     private val devSettingsDataStore: DevSettingsDataStore,
     private val startupTraces: StartupTraces,
     private val userAgentProvider: UserAgentProvider,
-    private val bookmarksRepository: BookmarksRepository,
-    private val favoritesRepository: FavoritesRepository,
+    private val savedSitesRepository: SavedSitesRepository,
     private val dispatcherProvider: DispatcherProvider,
+    private val surveyEndpointDataStore: SurveyEndpointDataStore,
 ) : ViewModel() {
 
     data class ViewState(
@@ -52,12 +52,14 @@ class DevSettingsViewModel @Inject constructor(
         val startupTraceEnabled: Boolean = false,
         val overrideUA: Boolean = false,
         val userAgent: String = "",
+        val useSandboxSurvey: Boolean = false,
     )
 
     sealed class Command {
         object SendTdsIntent : Command()
         object OpenUASelector : Command()
         object ShowSavedSitesClearedConfirmation : Command()
+        object ChangePrivacyConfigUrl : Command()
     }
 
     private val viewState = MutableStateFlow(ViewState())
@@ -71,6 +73,7 @@ class DevSettingsViewModel @Inject constructor(
                     startupTraceEnabled = startupTraces.isTraceEnabled,
                     overrideUA = devSettingsDataStore.overrideUA,
                     userAgent = userAgentProvider.userAgent("", false),
+                    useSandboxSurvey = surveyEndpointDataStore.useSurveyCustomEnvironmentUrl,
                 ),
             )
         }
@@ -108,12 +111,23 @@ class DevSettingsViewModel @Inject constructor(
         }
     }
 
+    fun onSandboxSurveyToggled(enabled: Boolean) {
+        surveyEndpointDataStore.useSurveyCustomEnvironmentUrl = enabled
+        viewModelScope.launch {
+            viewState.emit(currentViewState().copy(useSandboxSurvey = enabled))
+        }
+    }
+
     private fun currentViewState(): ViewState {
         return viewState.value
     }
 
     fun onUserAgentSelectorClicked() {
         viewModelScope.launch { command.send(Command.OpenUASelector) }
+    }
+
+    fun onRemotePrivacyUrlClicked() {
+        viewModelScope.launch { command.send(Command.ChangePrivacyConfigUrl) }
     }
 
     fun onUserAgentSelected(userAgent: UAOverride) {
@@ -125,8 +139,7 @@ class DevSettingsViewModel @Inject constructor(
 
     fun clearSavedSites() {
         viewModelScope.launch(dispatcherProvider.io()) {
-            favoritesRepository.deleteAll()
-            bookmarksRepository.deleteAll()
+            savedSitesRepository.deleteAll()
             command.send(Command.ShowSavedSitesClearedConfirmation)
         }
     }

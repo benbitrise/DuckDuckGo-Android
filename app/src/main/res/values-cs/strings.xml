@@ -104,7 +104,7 @@
     <string name="faviconContentDescription">Favicon</string>
     <string name="closeContentDescription">Zavřít</string>
     <string name="closeAllTabsMenuItem">Zavřít všechny karty</string>
-    <string name="closeTab">Zavřít karta</string>
+    <string name="closeTab">Zavřít kartu</string>
     <string name="tabClosed">Karta zavřená</string>
     <string name="tabClosedUndo">Vrátit</string>
     <string name="downloadsMenuItemTitle">Stahování</string>
@@ -138,6 +138,51 @@
     <string name="settingsAppLinksAskEveryTime">Vždycky se ptát</string>
     <string name="settingsAppLinksAlways">Vždy</string>
     <string name="settingsAppLinksNever">Nikdy</string>
+    <string name="settingsTitleNotifications">Oznámení</string>
+    <string name="settingsSubtitleNotificationsDisabled">Zakázáno</string>
+    <string name="settingsSubtitleNotificationsEnabled">Povoleno</string>
+    <string name="settingsDefaultBrowserTitle">Výchozí prohlížeč</string>
+    <string name="settingsDefaultBrowserSetDescription">DuckDuckGo je tvůj výchozí prohlížeč</string>
+    <string name="settingsDefaultBrowserNotSetDescription">Nastav si DuckDuckGo jako výchozí prohlížeč</string>
+    <string name="settingsPrivateSearchTitle">Soukromé vyhledávání</string>
+    <string name="settingsPrivateSearchDescription">Ve výchozím nastavení povoleno</string>
+    <string name="settingsWebTrackingProtectionTitle">Ochrana před sledováním na webu</string>
+    <string name="settingsWebTrackingProtectionDescription">Ve výchozím nastavení povoleno</string>
+    <string name="settingsHeadingSettings">Nastavení</string>
+    <string name="settingsPermissionsSetting">Oprávnění</string>
+    <string name="settingsAutofillLoginsSetting">Automatické vyplňování přihlašovacích údajů</string>
+    <string name="settingsSyncSetting">Synchronizace</string>
+    <string name="settingsFireButton">Fire Button</string>
+
+    <!-- Private Search -->
+    <string name="privateSearchActivityTitle">Soukromé vyhledávání</string>
+    <string name="privateSearchTitle">Soukromé vyhledávání je povolené</string>
+    <string name="privateSearchDescription">DuckDuckGo Private Search je tvůj výchozí vyhledávač, takže můžeš hledat na webu, aniž by tě někdo sledoval.</string>
+    <string name="privateSearchHeadingSearchSettings">Nastavení vyhledávání</string>
+    <string name="privateSearchAutocompleteToggle">Zobrazit návrhy automatického doplňování</string>
+    <string name="privateSearchMoreSearchSettingsPrimaryText">Další nastavení vyhledávání</string>
+    <string name="privateSearchMoreSearchSettingsSecondaryText">Přizpůsob si jazyk vyhledávání, region a další nastavení</string>
+    <string name="privateSearchMoreSearchSettingsTitle">Další nastavení vyhledávání</string>
+
+    <!-- Web Tracking Protection -->
+    <string name="webTrackingProtectionActivityTitle">Ochrana před sledováním na webu</string>
+    <string name="webTrackingProtectionLearnMoreTitle">Ochrana před sledováním na webu</string>
+    <string name="webTrackingProtectionTitle">Ochrana před sledováním na webu je povolená</string>
+    <string name="webTrackingProtectionDescription"><![CDATA[DuckDuckGo tě nikdy nesleduje a snaží se co nejvíc chránit tvoje soukromí. Neustále vylepšujeme a vyvíjíme další vrstvy ochrany, abychom drželi krok s novými metodami sledování a poskytovali co nejkomplexnější ochranu. Něco takového jiné prohlížeče ve výchozím nastavení nenabízejí. <u><a href=\"\">Další informace</a><u/>]]></string>
+
+    <!-- Cookie Pop-Up Protection -->
+    <string name="cookiePopupProtectionTitle">Ochrana před vyskakovacími okny ohledně cookies</string>
+    <string name="cookiePopupProtectionDescription">Zakaž tato vyskakovací okna a omez soubory cookie na nezbytné minimum</string>
+    <string name="cookiePopupProtectionEnabled">Povoleno</string>
+
+    <!-- Fire Button -->
+    <string name="fireButtonActivityTitle">Fire Button</string>
+
+    <!-- Permissions -->
+    <string name="permissionsActivityTitle">Oprávnění</string>
+
+    <!-- Appearance -->
+    <string name="appearanceActivityTitle">Vzhled</string>
 
     <!-- Settings - Automatically clearing data -->
     <string name="settingsAutomaticallyClearingDialogSave">Uložit</string>
@@ -182,6 +227,7 @@
     <string name="brokenSiteCategoryLogin">Nemohu se přihlásit</string>
     <string name="brokenSiteCategoryUnsupported">Prohlížeč je nekompatibilní</string>
     <string name="brokenSiteCategoryOther">Něco jiného</string>
+    <string name="brokenSiteDescriptionTextInputHint">Poděl se o další podrobnosti (volitelné)</string>
 
     <!-- Bookmarks Activity -->
     <string name="bookmarksMenuTitle">Záložky</string>
@@ -242,7 +288,7 @@
     <string name="surveyCtaLaunchButton">Zúčastnit se průzkumu</string>
     <string name="surveyCtaDismissButton">Ne, děkuji</string>
     <string name="surveyActivityTitle">Průzkum uživatelů</string>
-    <string name="surveyTitle">PRŮZKUM DUCKDUCKGO</string>
+    <string name="surveyTitle">Průzkum DuckDuckGo</string>
     <string name="surveyDismissContentDescription">Odmítnout průzkum</string>
     <string name="surveyLoadingErrorTitle">Ale ne!</string>
     <string name="surveyLoadingErrorText">Náš průzkum se momentálně nenačítá.\nZkuste to prosím později.</string>
@@ -358,7 +404,7 @@
     <string name="otherMainReasonTitleShort">Další problémy</string>
 
     <string name="openEndedInputHint">Buďte co nejkonkrétnější.</string>
-    <string name="submitFeedback">ODESLAT</string>
+    <string name="submitFeedback">Odeslat</string>
 
     <string name="tellUsHowToImprove">Řekněte nám prosím, co můžeme zlepšit.</string>
     <string name="thanksForTheFeedback">Děkujeme za zpětnou vazbu!</string>
@@ -369,8 +415,8 @@
     <string name="whatHaveYouBeenEnjoying">Co se vám líbilo?</string>
     <string name="awesomeToHear">To rádi slyšíme!</string>
     <string name="shareTheLoveWithARating">Podělte se prosím o pozitiva hodnocením na Play Store.</string>
-    <string name="rateTheApp">OHODNOŤTE APLIKACI</string>
-    <string name="declineFurtherFeedback">NE, DĚKUJI, JSEM HOTOV/A.</string>
+    <string name="rateTheApp">Ohodnoťte aplikaci</string>
+    <string name="declineFurtherFeedback">Ne, děkuji, jsme hotoví</string>
     <string name="whichBrokenSites">Kde jste narazili na tyto problémy?</string>
     <string name="whichBrokenSitesHint">Které webové stránky mají problémy?</string>
     <string name="feedbackSpecificAsPossible">Buďte co nejkonkrétnější.</string>
@@ -386,7 +432,6 @@
 
     <!-- System Search-->
     <string name="systemSearchDeviceAppLabel">Z tohoto zařízení</string>
-    <string name="systemSearchOmnibarInputHint"><font size="13">Vyhledat nebo zadat URL</font></string>
     <string name="systemSearchAppNotFound">Aplikace nebyla nalezena</string>
     <string name="systemSearchOnboardingText">Děkujeme, že jste si vybrali DuckDuckGo!\nPři použití našeho vyhledávání nebo aplikace jsou od tohoto okamžiku Vaše vyhledávání chráněna.</string>
     <string name="systemSearchOnboardingFeaturesIntroText">Aplikace DuckDuckGo také:</string>
@@ -398,7 +443,7 @@
     <string name="systemSearchOnboardingButtonOk">Mám to</string>
 
     <!-- Dax Dialog -->
-    <string name="daxDialogHideButton">SKRÝT</string>
+    <string name="daxDialogHideButton">Skrýt</string>
     <string name="daxDialogPhew">Pche!</string>
     <string name="daxDialogNext">Další</string>
     <string name="daxDialogHighFive">Plácnutí!</string>
@@ -406,6 +451,11 @@
     <string name="hideTipsTitle">Skrýt zbývající tipy?</string>
     <string name="hideTipsText">Je jich jen pár a snažili jsme se udělat je informativní.</string>
     <string name="hideTipsButton">Navždy skrýt tipy</string>
+
+    <!-- AppTP Retention Experiment Dax Dialog -->
+    <string name="daxDialogAppTpRetentionText"><![CDATA[Teď máš zablokované trackery na webu 🎉<br/><br/>Můžu taky blokovat trackery aktivní v aplikacích, i když telefon zrovna nepoužíváš.]]></string>
+    <string name="daxDialogAppTpRetentionPrimaryButtonText">Zapnout App Tracking Protection</string>
+    <string name="daxDialogAppTpRetentionSecondaryButtonText">Teď ne</string>
 
     <!-- New Onboarding Experience -->
     <string name="onboardingWelcomeTitle">"Vítejte v DuckDuckGo!"</string>
@@ -420,7 +470,7 @@
         <item quantity="many"><![CDATA[  a <b>%1$d další</b> se vás snažili tady vysledovat. <br/><br/>Zablokovali jsme je!<br/><br/>☝️Můžete zkontrolovat panel s adresou a zjistit, kdo se vás snaží sledovat, když navštívíte nový web.]]></item>
         <item quantity="other"><![CDATA[  a <b>%1$d další</b> se vás snažili tady vysledovat. <br/><br/>Zablokovali jsme je!<br/><br/>☝️Můžete zkontrolovat panel s adresou a zjistit, kdo se vás snaží sledovat, když navštívíte nový web. ️]]></item>
     </plurals>
-    <plurals name="daxTrackersBlockedCtaZeroText">
+    <plurals name="daxTrackersBlockedCtaZeroText" tools:ignore="ImpliedQuantity">
         <item quantity="one"><![CDATA[ se vás snažil tady vysledovat. <br/><br/>Zablokovali jsme ho!<br/><br/>☝️Můžete zkontrolovat panel URL a zjistit, kdo se vás snaží sledovat, když navštívíte nový web. ️]]></item>
         <item quantity="few"><![CDATA[ se vás snažil tady vysledovat. <br/><br/>Zablokovali jsme je!<br/><br/>☝️Můžete zkontrolovat panel URL a zjistit, kdo se vás snaží sledovat, když navštívíte nový web. ️]]></item>
         <item quantity="many"><![CDATA[ se vás snažil tady vysledovat. <br/><br/>Zablokovali jsme je!<br/><br/>☝️Můžete zkontrolovat panel URL a zjistit, kdo se vás snaží sledovat, když navštívíte nový web. ️]]></item>
@@ -429,6 +479,23 @@
     <string name="daxNonSerpCtaText"><![CDATA[Zatímco Vy budete klepat a přejíždět, já budu blokovat zlovolné sledovače. <br/><br/>Nenechejte se rušit — pokračujte v prohlížení!]]></string>
     <string name="daxMainNetworkCtaText" instruction="%1$s is the name of a company, %2$s is the website where the tracking is happening, %3$s is the name of the company showing in %1$s">Upozornění! Nemůžeme zabránit, aby %1$s viděli vaši aktivitu na stránkách %2$s &lt;br/&gt;&lt;br/&gt;Ale procházejte s námi a budete moci omezit, co o vás %3$s celkově ví zablokováním jejich trackerů na mnoha jiných stránkách.</string>
     <string name="daxMainNetworkOwnedCtaText" instruction="%1$s is the name of a company, %2$s is the website where the tracking is happening, %3$s is the name of the company showing in %1$s">Upozornění! Vzhledem k tomu, že %2$s vlastní %1$s, nemůžeme jim zabránit, aby viděli vaši aktivitu tady.&lt;br/&gt;&lt;br/&gt;Ale procházejte s námi a budeme moci redukovat, co o vás celkově %3$s ví zablokováním jejich trackerů na mnoha jiných stránkách.</string>
+
+    <!-- Onboarding DDG Feature Options -->
+    <string name="onboardingFeatureOptionsTitle">Co tě přivádí na DuckDuckGo?</string>
+    <string name="onboardingFeatureOptionsContinue">Pokračovat</string>
+    <string name="onboardingFeatureOptionsSkip">Přeskočit tento krok</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionPrivateSearch">Soukromé vyhledávání</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionTrackerBlocking">Blokování trackerů</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionSmallerDigitalFootprint">Menší digitální stopa</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionFasterPageLoads">Rychlejší načítání stránek</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionFewerAds">Méně reklam</string>
+    <!-- smartling.character_limit = 28 -->
+    <string name="onboardingFeatureOptionOneClickDataClearing">Smazání dat jedním kliknutím</string>
 
     <!-- Download Confirmation -->
     <string name="downloadConfirmationContinue">Uložit do Stahování</string>
@@ -448,7 +515,7 @@
     <string name="changeIconDialogMessage">Aplikace se může zavřít, aby aplikovala změny. Až se pokocháte svou krásnou novou ikonou, vraťte se zpátky.</string>
 
     <!-- New dashboard / menu buttons -->
-    <string name="manageWhitelist">Nechráněné stránky</string>
+    <string name="manageAllowlist">Nechráněné stránky</string>
     <string name="reportBrokenSite">Nahlásit nefunkční webové stránky</string>
 
     <!-- Dialogs -->
@@ -456,19 +523,19 @@
     <string name="dialogEditTitle">Upravit</string>
     <string name="dialogSaveAction">Uložit</string>
 
-    <!-- Whitelist -->
-    <string name="whitelistActivityTitle">Nechráněné stránky</string>
+    <!-- Allowlist -->
+    <string name="allowlistActivityTitle">Nechráněné stránky</string>
     <string name="enablePrivacyProtection">Povolit ochranu soukromí</string>
     <string name="disablePrivacyProtection">Zakázat ochranu soukromí</string>
-    <string name="whitelistEntryOverflowContentDescription" instruction="Placeholder is a website">Další možnosti pro nechráněný web %1$s</string>
-    <string name="whitelistEntryDeleteConfirmMessage" instruction="Placeholder is a website">Opravdu chcete odstranit &lt;b&gt;%1$s&lt;/b&gt; z nechráněných stránek?</string>
-    <string name="whitelistExplanation">Tyto stránky nebudou vylepšeny ochranou soukromí.</string>
-    <string name="whitelistNoEntries">Ochrana osobních údajů povolena pro všechny weby</string>
-    <string name="whitelistDomainHint">www.example.com</string>
-    <string name="whitelistFormatError">Zadejte doménu jako <b>example.com</b> a zkuste to znovu</string>
+    <string name="allowlistEntryOverflowContentDescription" instruction="Placeholder is a website">Další možnosti pro nechráněný web %1$s</string>
+    <string name="allowlistEntryDeleteConfirmMessage" instruction="Placeholder is a website">Opravdu chcete odstranit &lt;b&gt;%1$s&lt;/b&gt; z nechráněných stránek?</string>
+    <string name="allowlistExplanation">Tyto stránky nebudou vylepšeny ochranou soukromí.</string>
+    <string name="allowlistNoEntries">Ochrana osobních údajů povolena pro všechny weby</string>
+    <string name="allowlistDomainHint">www.example.com</string>
+    <string name="allowlistFormatError">Zadejte doménu jako <b>example.com</b> a zkuste to znovu</string>
 
     <!-- Settings -->
-    <string name="settingsPrivacyProtectionWhitelist">Nechráněné stránky</string>
+    <string name="settingsPrivacyProtectionAllowlist">Nechráněné stránky</string>
 
     <!-- Fireproof websites -->
     <string name="fireproofWebsitesActivityTitle">Weby s ochranou</string>
@@ -493,8 +560,8 @@
     <string name="fireproofWebsiteSettingsSelectionDialogNever">Nikdy</string>
     <string name="disableLoginDetectionDialogTitle">Zakázat připomenutí ochrany při přihlašování k webovým stránkám?</string>
     <string name="disableLoginDetectionDialogDescription">Tuto předvolbu můžete v Nastavení kdykoli změnit.</string>
-    <string name="disableLoginDetectionDialogPositive">VYPNOUT</string>
-    <string name="disableLoginDetectionDialogNegative">ZRUŠIT</string>
+    <string name="disableLoginDetectionDialogPositive">Vypnout</string>
+    <string name="disableLoginDetectionDialogNegative">Zrušit</string>
     <string name="automaticFireproofWebsiteLoginDialogTitle">Chránit webové stránky automaticky při přihlášení?</string>
     <string name="automaticFireproofWebsiteLoginDialogDescription">Když je zapnutá ochrana, přihlášení zůstává zachované i po použití tlačítka pro mazání. Kdykoli se to dá změnit v Nastaveních. </string>
     <string name="automaticFireproofWebsiteLoginDialogFirstOption">Vždycky chránit</string>
@@ -543,9 +610,7 @@
 
     <!--  Global Privacy Control-->
     <string name="globalPrivacyControlActivityTitle">Globální kontrola ochrany osobních údajů (GPC)</string>
-    <string name="globalPrivacyControlDescription">
-        <![CDATA[DuckDuckGo automaticky blokuje mnoho trackerů. Pomocí Globální kontroly ochrany osobních údajů (GPC) můžete také požádat zúčastněné webové stránky, aby omezily prodej nebo sdílení vašich osobních údajů s jinými společnostmi. <u><a href=\"\">Více informací</a><u/>]]>
-    </string>
+    <string name="globalPrivacyControlDescription"><![CDATA[DuckDuckGo automaticky blokuje mnoho trackerů. Pomocí Globální kontroly ochrany osobních údajů (GPC) můžete také požádat zúčastněné webové stránky, aby omezily prodej nebo sdílení vašich osobních údajů s jinými společnostmi. <u><a href=\"\">Více informací</a><u/>]]></string>
     <string name="globalPrivacyControlSetting">Globální kontrola ochrany osobních údajů (GPC)</string>
     <string name="globalPrivacyControlToggle">Globální kontrola ochrany osobních údajů (GPC)</string>
     <string name="disabled">Zakázáno</string>
@@ -564,11 +629,16 @@
 
     <!-- Email Autofill -->
     <string name="aliasToClipboardMessage">Nová adresa zkopírovaná do vaší schránky</string>
-    <string name="autofillTooltipUseYourAlias" instruction="Placeholder is an alias previously saved by the user">Použít %1$s</string>
-    <string name="autofillTooltipUseYourAliasDescription">Blokuje sledování e-mailů</string>
-    <string name="autofillTooltipGenerateAddress">Vygenerovat soukromou adresu Duck</string>
-    <string name="autofillTooltipGenerateAddressDescription">Blokuje sledování e-mailů a skryje vaši adresu</string>
     <string name="newEmailAliasMenuTitle">Vygenerovat adresu Duck</string>
+
+    <!-- Autofill -->
+    <string name="autofillSnackbarAction" instruction="Label for a button that lets the user view the details for a login credential">Zobrazit</string>
+    <string name="autofillLoginSavedSnackbarMessage">Přihlašovací údaje uloženy</string>
+    <string name="autofillLoginUpdatedSnackbarMessage">Příhlašovací údaje aktualizovány</string>
+    <string name="autofillDisableAutofillPromptTitle">Chceš dál ukládat přihlašovací údaje?</string>
+    <string name="autofillDisableAutofillPromptMessage">Funkci můžeš kdykoli vypnout v Nastaveních.</string>
+    <string name="autofillDisableAutofillPromptPositiveButton">Dál ukládat</string>
+    <string name="autofillDisableAutofillPromptNegativeButton">Vypnout</string>
 
     <!-- Waitlist Notification -->
     <string name="waitlistNotificationDialogDescription">Chcete, abychom vám poslali upozornění, až na vás bude řada?</string>
@@ -587,6 +657,7 @@
     <string name="folderLocationTitle">Vybrat umístění</string>
     <string name="addFolder">Přidat složku</string>
     <string name="editFolder">Upravit složku</string>
+    <string name="bookmarkFolderDeleteDialogTitle" instruction="Dialog title for deleting a folder with bookmarks">"Smazat složku a její obsah?"</string>
     <string name="bookmarkFolderDeleteDialogMessage">"Opravdu chceš smazat "</string>
     <string name="bookmarkFolderEmpty">Prázdné</string>
 
@@ -623,7 +694,7 @@
 
     <!-- MacOs Settings -->
     <string name="macos_settings_description">Zajisti si soukromí při prohlížení webu – v naší aplikaci pro Mac</string>
-    <string name="macos_settings_title">DuckDuckGo Desktop</string>
+    <string name="macos_settings_title">DuckDuckGo pro Mac</string>
 
     <!-- Downloads -->
     <string name="downloadsMenuItem">Stahování</string>
@@ -651,16 +722,17 @@
 
     <!-- Autoconsent -->
     <!-- smartling.character_limit = 82 -->
-    <string name="autoconsentDialogTitle">Vypadá to, že tenhle web má vyskakovací okno pro souhlas se soubory cookie 👇</string>
+    <string name="autoconsentDialogTitle"><![CDATA[<b>Mám se postarat o vyskakovací okna ohledně souhlasu s cookies?</b>]]></string>
     <!-- smartling.character_limit = 160 -->
-    <string name="autoconsentDialogDescription">Mám ho vyřešit za tebe? Můžu zkusit vybrat jen nezbytné soubory cookie, maximalizovat ochranu soukromí a podobná vyskakovací okna odteď skrývat.</string>
+    <string name="autoconsentDialogDescription">Můžu zkusit vybrat nejsoukromější možné nastavení a podobná vyskakovací okna příště skrývat.</string>
     <!-- smartling.character_limit = 42 -->
-    <string name="autoconsentPrimaryCta">Správa vyskakovacích oken ohledně cookies</string>
+    <string name="autoconsentPrimaryCta">Řešit vyskakovací okna za mě</string>
     <!-- smartling.character_limit = 42 -->
-    <string name="autoconsentSecondaryCta">Ne, děkuji</string>
+    <string name="autoconsentSecondaryCta">Ne, já se o ně postarám</string>
 
     <string name="autoconsentSetting">Správa vyskakovacích oken ohledně cookies</string>
-    <string name="autoconsentAnimationText">O cookies je postaráno!</string>
+    <string name="autoconsentCosmeticNoticeAnimationText">Skryté vyskakovací okno</string>
+    <string name="autoconsentManagedNoticeAnimationText">O cookies je postaráno!</string>
 
     <!-- Site Permissions Settings -->
     <string name="settingsSitePermissions">Oprávnění webu</string>
@@ -679,6 +751,32 @@
     <string name="permissionsPerWebsiteAskDisabledSetting">Možnost „Zeptat se“ je u všech webů vypnutá</string>
     <string name="permissionsPerWebsiteSelectorDialogTitle" instruction="%1$s is the name of a permissions and %2$s is the name of a website, i.e. Camera permission for example.com">%1$s – povolení pro web %2$s</string>
 
-    <!-- Autofill -->
-    <string name="autofillSettingsDisplayName">Automaticky vyplnit</string>
+    <!-- Notify Me View on Downloads -->
+    <string name="downloadsNotifyMeTitle">Zjisti, až budou soubory ke stažení připraveny</string>
+    <string name="downloadsNotifyMeSubtitle">Dostávej oznámení, jakmile skončí stahování.</string>
+
+    <!-- Windows Settings -->
+    <string name="windows_settings_title">DuckDuckGo pro Windows</string>
+    <string name="windows_settings_description">Zajisti si soukromí na webu – v naší aplikaci pro Windows</string>
+    <string name="windows_settings_description_ready">Ke stažení</string>
+    <string name="windows_settings_description_list">Jsi na seznamu!</string>
+
+    <!-- Full screen message-->
+    <string name="fullScreenMessage">Přetažením dolů z horní části a klepnutím na tlačítko zpět ukončíš zobrazení na celou obrazovku</string>
+
+    <!-- Tab Switcher 'Close All Tabs' confirmation prompt -->
+    <string name="closeAppTabsConfirmationDialogTitle" instruction="Dialog title for deleting all open tabs">Zavřít všechny karty?</string>
+    <string name="closeAppTabsConfirmationDialogDescription">Opravdu chceš zavřít všechny karty?</string>
+    <string name="closeAppTabsConfirmationDialogCancel">Zrušit</string>
+    <string name="closeAppTabsConfirmationDialogClose">Zavřít</string>
+
+    <!-- Edit Saved Site screen, "Delete Saved Site" confirmation prompt -->
+    <string name="deleteBookmarkConfirmationDialogTitle" instruction="Dialog title for deleting a bookmark">Smazat tuhle záložku?</string>
+    <string name="deleteBookmarkConfirmationDialogDescription" instruction="Placeholder is the name of the bookmark">Tímhle smažeš svou záložku &lt;b&gt;%1$s&lt;/b&gt;.</string>
+    <string name="deleteFavoriteConfirmationDialogTitle" instruction="Dialog title for deleting a favorite site">Smazat tuhle oblíbenou položku?</string>
+    <string name="deleteFavoriteConfirmationDialogDescription" instruction="Placeholder is the name of the favorite site">Tímhle smažeš oblíbenou položku &lt;b&gt;%1$s&lt;/b&gt;.</string>
+    <string name="deleteBookmarkFolderConfirmationDialogTitle" instruction="Dialog title for deleting a bookmark folder">Smazat tuhle složku záložek?</string>
+    <string name="deleteBookmarkFolderConfirmationDialogDescription" instruction="Placeholder is the name of the favorite site">Tímhle smažeš složku záložek &lt;b&gt;%1$s&lt;/b&gt; .</string>
+    <string name="deleteSavedSiteConfirmationDialogCancel">Zrušit</string>
+    <string name="deleteSavedSiteConfirmationDialogDelete">Smazat</string>
 </resources>
