@@ -77,7 +77,7 @@ buildCache {
 
     registerBuildCacheService(BitriseBuildCache.class, BitriseBuildCacheServiceFactory.class)
     remote(BitriseBuildCache.class) {
-        endpoint= "grpcs://xxxxxx-cache.services.bitrise.io:6666" // north-america, eu, india, brazil (use closest to you)
+        endpoint= "grpcs://xxxxxx-cache.services.bitrise.io:6666" // north-america, eu, india (use closest to you)
         enabled = true
         push = true
         def localProperties = new Properties()
