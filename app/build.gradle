@@ -14,9 +14,9 @@ ext {
 android {
     defaultConfig {
         if (project.hasProperty('internal-testing')) {
-            applicationId "com.quackquackgo.mobile"
+            applicationId "com.bitrise.ddgmobile"
         } else {
-            applicationId "com.duckduckgo.mobile.android"
+            applicationId "com.bitrise.ddgmobile"
         }
         minSdk min_sdk
         targetSdk target_sdk
